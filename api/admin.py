@@ -10,7 +10,17 @@ from rest_framework.authtoken.admin import TokenAdmin
 from rest_framework.authtoken.models import TokenProxy
 
 from api.logics import Logics
-from api.models import Currency, LNPayment, MarketTick, OnchainPayment, Order, Robot
+from api.models import (
+    Currency,
+    LNPayment,
+    MarketTick,
+    OnchainPayment,
+    Order,
+    Robot,
+    CoordinatorNode,
+    CoordinatorCheckLog,
+    TaprootEscrowContract,
+)
 from api.utils import render_order_logs
 from api.tasks import send_notification
 
@@ -596,3 +606,155 @@ class MarketTickAdmin(admin.ModelAdmin):
     readonly_fields = ("timestamp", "price", "volume", "premium", "currency", "fee")
     list_filter = ["currency"]
     ordering = ("-timestamp",)
+
+
+@admin.register(CoordinatorNode)
+class CoordinatorNodeAdmin(admin.ModelAdmin):
+    list_display = (
+        "alias",
+        "name",
+        "status_badge",
+        "last_response_time_ms",
+        "last_order_count",
+        "last_book_liquidity",
+        "version",
+        "uptime_24h_display",
+        "last_checked_at",
+    )
+    list_filter = ("status", "is_active")
+    search_fields = ("alias", "name", "onion_url", "clearnet_url")
+    readonly_fields = (
+        "created_at",
+        "updated_at",
+        "last_seen_online",
+        "last_checked_at",
+    )
+    actions = ["check_status_now", "sync_from_federation"]
+
+    def status_badge(self, obj):
+        colors = {
+            CoordinatorNode.Status.ONLINE: "#10b981",  # green
+            CoordinatorNode.Status.DEGRADED: "#f59e0b",  # yellow
+            CoordinatorNode.Status.OFFLINE: "#ef4444",  # red
+            CoordinatorNode.Status.UNKNOWN: "#6b7280",  # gray
+        }
+        color = colors.get(obj.status, "#6b7280")
+        label = obj.get_status_display()
+        return mark_safe(
+            f'<span style="display:inline-block; padding:3px 8px; border-radius:12px; '
+            f'background-color:{color}20; color:{color}; font-weight:600; font-size:12px;">'
+            f'● {label}</span>'
+        )
+
+    status_badge.short_description = "Status"
+
+    def uptime_24h_display(self, obj):
+        uptime = obj.calculate_uptime_24h()
+        return f"{uptime}%"
+
+    uptime_24h_display.short_description = "24h Uptime"
+
+    @admin.action(description="Check health of selected coordinators now")
+    def check_status_now(self, request, queryset):
+        from api.coordinator_monitor import CoordinatorMonitorService
+
+        service = CoordinatorMonitorService()
+        checked = 0
+        for node in queryset:
+            service.check_coordinator(node)
+            checked += 1
+        self.message_user(
+            request, f"Successfully checked {checked} coordinators.", messages.SUCCESS
+        )
+
+    @admin.action(description="Sync coordinators from federation.json")
+    def sync_from_federation(self, request, queryset):
+        from api.coordinator_monitor import CoordinatorMonitorService
+
+        service = CoordinatorMonitorService()
+        count = service.sync_coordinators_from_federation()
+        self.message_user(
+            request, f"Synced {count} coordinators from federation seed."
+        )
+
+
+@admin.register(CoordinatorCheckLog)
+class CoordinatorCheckLogAdmin(admin.ModelAdmin):
+    list_display = (
+        "checked_at",
+        "coordinator",
+        "status_badge",
+        "response_time_ms",
+        "order_count",
+        "state_changed",
+        "error_summary",
+    )
+    list_filter = ("status", "state_changed", "coordinator")
+    search_fields = ("coordinator__alias", "coordinator__name", "error_message")
+    readonly_fields = ("checked_at",)
+    ordering = ("-checked_at",)
+
+    def status_badge(self, obj):
+        colors = {
+            CoordinatorNode.Status.ONLINE: "#10b981",
+            CoordinatorNode.Status.DEGRADED: "#f59e0b",
+            CoordinatorNode.Status.OFFLINE: "#ef4444",
+            CoordinatorNode.Status.UNKNOWN: "#6b7280",
+        }
+        color = colors.get(obj.status, "#6b7280")
+        label = CoordinatorNode.Status(obj.status).label
+        return mark_safe(f'<span style="color:{color}; font-weight:600;">● {label}</span>')
+
+    status_badge.short_description = "Status"
+
+    def error_summary(self, obj):
+        return (
+            (obj.error_message[:80] + "...")
+            if len(obj.error_message) > 80
+            else obj.error_message
+        )
+
+    error_summary.short_description = "Error"
+
+
+@admin.register(TaprootEscrowContract)
+class TaprootEscrowContractAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "order",
+        "status_badge",
+        "address",
+        "required_sats",
+        "funded_sats",
+        "funding_confirmed",
+        "created_at",
+    )
+    list_filter = ("status", "funding_confirmed", "network")
+    search_fields = (
+        "address",
+        "funding_txid",
+        "payout_txid",
+        "order__id",
+        "maker_pubkey",
+        "taker_pubkey",
+    )
+    readonly_fields = ("address", "descriptor", "created_at", "updated_at")
+
+    def status_badge(self, obj):
+        colors = {
+            TaprootEscrowContract.Status.CREATED: "#6b7280",
+            TaprootEscrowContract.Status.WAITING_DEPOSIT: "#f59e0b",
+            TaprootEscrowContract.Status.FUNDED: "#3b82f6",
+            TaprootEscrowContract.Status.RELEASED: "#10b981",
+            TaprootEscrowContract.Status.DISPUTED: "#ef4444",
+            TaprootEscrowContract.Status.RESOLVED: "#8b5cf6",
+            TaprootEscrowContract.Status.REFUNDED: "#6b7280",
+        }
+        color = colors.get(obj.status, "#6b7280")
+        return mark_safe(
+            f'<span style="padding:2px 8px; border-radius:10px; background:{color}20; '
+            f'color:{color}; font-weight:600;">● {obj.get_status_display()}</span>'
+        )
+
+    status_badge.short_description = "Status"
+

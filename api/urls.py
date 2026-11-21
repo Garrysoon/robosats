@@ -18,6 +18,8 @@ from .views import (
     TickView,
     ReviewView,
     NotificationsView,
+    CoordinatorMonitoringView,
+    TaprootEscrowView,
 )
 
 urlpatterns = [
@@ -42,4 +44,29 @@ urlpatterns = [
     path("notifications/", NotificationsView.as_view(), name="notifications"),
     path("review/", ReviewView.as_view(), name="review"),
     path("federation/", FederationView.as_view({"get": "get"}), name="federation"),
+    path(
+        "monitoring/coordinators/",
+        CoordinatorMonitoringView.as_view({"get": "get", "post": "post"}),
+        name="coordinator_monitoring",
+    ),
+    path(
+        "order/<int:pk>/escrow/create/",
+        TaprootEscrowView.as_view({"post": "create_escrow"}),
+        name="order_escrow_create",
+    ),
+    path(
+        "order/<int:pk>/escrow/status/",
+        TaprootEscrowView.as_view({"get": "get_status"}),
+        name="order_escrow_status",
+    ),
+    path(
+        "order/<int:pk>/escrow/sign/",
+        TaprootEscrowView.as_view({"post": "submit_signature"}),
+        name="order_escrow_sign",
+    ),
+    path(
+        "order/<int:pk>/escrow/arbitrate/",
+        TaprootEscrowView.as_view({"post": "arbitrate"}),
+        name="order_escrow_arbitrate",
+    ),
 ]

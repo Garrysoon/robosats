@@ -35,7 +35,12 @@ from api.models import (
     Notification,
     Robot,
     TakeOrder,
+    CoordinatorNode,
+    CoordinatorCheckLog,
+    TaprootEscrowContract,
 )
+from api.coordinator_monitor import CoordinatorMonitorService
+from api.multisig.taproot_escrow import TaprootMultisigEscrow
 from api.notifications import Notifications
 from api.oas_schemas import (
     BookViewSchema,
@@ -1272,3 +1277,263 @@ class ReviewView(APIView):
         token = Nostr.sign_message(f"{pubkey}{last_order.id}")
 
         return Response({"pubkey": pubkey, "token": token}, status.HTTP_200_OK)
+
+
+class CoordinatorMonitoringView(viewsets.ViewSet):
+    """Exposes real-time monitoring of all federation coordinators."""
+
+    def get(self, request):
+        summary = CoordinatorMonitorService.get_federation_summary()
+        return Response(summary, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        alias = request.data.get("alias")
+        service = CoordinatorMonitorService()
+        if alias:
+            try:
+                node = CoordinatorNode.objects.get(alias=alias)
+                log = service.check_coordinator(node)
+                return Response(
+                    {
+                        "checked": 1,
+                        "alias": node.alias,
+                        "status": node.get_status_display(),
+                        "response_time_ms": log.response_time_ms,
+                        "order_count": log.order_count,
+                    },
+                    status=status.HTTP_200_OK,
+                )
+            except CoordinatorNode.DoesNotExist:
+                return Response(
+                    {"error": f"Coordinator '{alias}' not found"},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+        else:
+            service.check_all()
+            summary = CoordinatorMonitorService.get_federation_summary()
+            return Response(summary, status=status.HTTP_200_OK)
+
+
+class TaprootEscrowView(viewsets.ViewSet):
+    """API endpoints for Non-Custodial 2-of-3 Taproot Multisig Escrow."""
+
+    def get_escrow_service(self):
+        network = getattr(settings, "BITCOIN_NETWORK", "testnet")
+        return TaprootMultisigEscrow(network=network)
+
+    def create_escrow(self, request, pk=None):
+        try:
+            order = Order.objects.get(pk=pk)
+        except (Order.DoesNotExist, ValueError):
+            return Response({"error": "Order not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        maker_pubkey = request.data.get("maker_pubkey")
+        taker_pubkey = request.data.get("taker_pubkey")
+        if not maker_pubkey or not taker_pubkey:
+            return Response(
+                {"error": "Both maker_pubkey and taker_pubkey are required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        escrow_svc = self.get_escrow_service()
+        try:
+            escrow_data = escrow_svc.create_order_escrow(
+                order_id=order.id,
+                maker_pubkey=maker_pubkey,
+                taker_pubkey=taker_pubkey,
+            )
+        except Exception as e:
+            return Response(
+                {"error": f"Failed generating Taproot escrow: {str(e)}"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        bond_percent = float(order.bond_size or 5.0) / 100.0
+        base_sats = order.last_satoshis or order.satoshis or 100000
+        total_required = int(base_sats * (1.0 + bond_percent))
+
+        contract, _ = TaprootEscrowContract.objects.update_or_create(
+            order=order,
+            defaults={
+                "address": escrow_data["address"],
+                "descriptor": escrow_data["descriptor"],
+                "network": escrow_svc.network,
+                "maker_pubkey": escrow_data["maker_pubkey"],
+                "taker_pubkey": escrow_data["taker_pubkey"],
+                "coordinator_pubkey": escrow_data["coordinator_pubkey"],
+                "required_sats": total_required,
+                "status": TaprootEscrowContract.Status.WAITING_DEPOSIT,
+            },
+        )
+
+        return Response(
+            {
+                "order_id": order.id,
+                "address": contract.address,
+                "descriptor": contract.descriptor,
+                "required_sats": contract.required_sats,
+                "status": contract.get_status_display(),
+                "status_code": contract.status,
+                "created_at": contract.created_at.isoformat(),
+            },
+            status=status.HTTP_201_CREATED,
+        )
+
+    def get_status(self, request, pk=None):
+        try:
+            contract = TaprootEscrowContract.objects.get(order_id=pk)
+        except TaprootEscrowContract.DoesNotExist:
+            return Response(
+                {"error": "No Taproot escrow found for this order"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        escrow_svc = self.get_escrow_service()
+        if contract.status in [
+            TaprootEscrowContract.Status.WAITING_DEPOSIT,
+            TaprootEscrowContract.Status.FUNDED,
+        ]:
+            deposit_info = escrow_svc.verify_funding_deposit(
+                contract.address, contract.required_sats
+            )
+            if deposit_info["funded"]:
+                contract.funded_sats = deposit_info["amount_sats"]
+                contract.funding_txid = deposit_info["txid"]
+                contract.funding_vout = deposit_info["vout"]
+                contract.funding_confirmed = deposit_info["is_confirmed"]
+                contract.confirmations_count = deposit_info["confirmations"]
+                if contract.status == TaprootEscrowContract.Status.WAITING_DEPOSIT:
+                    contract.status = TaprootEscrowContract.Status.FUNDED
+                contract.save()
+
+        return Response(
+            {
+                "order_id": contract.order_id,
+                "address": contract.address,
+                "status": contract.get_status_display(),
+                "status_code": contract.status,
+                "required_sats": contract.required_sats,
+                "funded_sats": contract.funded_sats,
+                "funding_txid": contract.funding_txid,
+                "funding_vout": contract.funding_vout,
+                "funding_confirmed": contract.funding_confirmed,
+                "payout_psbt": contract.payout_psbt,
+                "payout_txid": contract.payout_txid,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+    def submit_signature(self, request, pk=None):
+        try:
+            contract = TaprootEscrowContract.objects.get(order_id=pk)
+        except TaprootEscrowContract.DoesNotExist:
+            return Response(
+                {"error": "No Taproot escrow found for this order"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        action = request.data.get("action", "submit_psbt")
+        escrow_svc = self.get_escrow_service()
+
+        if action == "create_payout_psbt":
+            payout_address = request.data.get("payout_address")
+            if not payout_address:
+                return Response(
+                    {"error": "payout_address is required"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            if not contract.funding_txid:
+                return Response(
+                    {"error": "Escrow is not yet funded onchain"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            psbt_b64 = escrow_svc.create_payout_psbt(
+                escrow_address=contract.address,
+                funding_txid=contract.funding_txid,
+                funding_vout=contract.funding_vout or 0,
+                funding_amount_sats=contract.funded_sats or contract.required_sats,
+                payout_address=payout_address,
+                mining_fee_sats=int(request.data.get("mining_fee_sats", 2000)),
+            )
+            contract.payout_address = payout_address
+            contract.payout_psbt = psbt_b64
+            contract.save()
+            return Response({"payout_psbt": psbt_b64}, status=status.HTTP_200_OK)
+
+        submitted_psbt = request.data.get("psbt")
+        if not submitted_psbt:
+            return Response(
+                {"error": "psbt string is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        psbt_list = [submitted_psbt]
+        if contract.payout_psbt and contract.payout_psbt != submitted_psbt:
+            psbt_list.append(contract.payout_psbt)
+
+        res = escrow_svc.combine_and_finalize_psbt(
+            psbt_list, contract.descriptor, contract.order_id
+        )
+        if res["is_finalized"]:
+            contract.payout_txid = res["txid"]
+            contract.payout_psbt = res["combined_psbt"]
+            contract.status = TaprootEscrowContract.Status.RELEASED
+            contract.save()
+
+            broadcast_result = escrow_svc.broadcast_transaction(res["tx_hex"])
+            return Response(
+                {
+                    "is_finalized": True,
+                    "txid": res["txid"],
+                    "tx_hex": res["tx_hex"],
+                    "broadcasted": broadcast_result.get("broadcasted", False),
+                    "status": contract.get_status_display(),
+                },
+                status=status.HTTP_200_OK,
+            )
+        else:
+            contract.payout_psbt = res.get("combined_psbt", submitted_psbt)
+            contract.save()
+            return Response(
+                {
+                    "is_finalized": False,
+                    "message": "Signature recorded. Awaiting second signature.",
+                    "payout_psbt": contract.payout_psbt,
+                },
+                status=status.HTTP_202_ACCEPTED,
+            )
+
+    def arbitrate(self, request, pk=None):
+        try:
+            contract = TaprootEscrowContract.objects.get(order_id=pk)
+        except TaprootEscrowContract.DoesNotExist:
+            return Response(
+                {"error": "No Taproot escrow found for this order"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        escrow_svc = self.get_escrow_service()
+        psbt_to_sign = request.data.get("psbt") or contract.payout_psbt
+        if not psbt_to_sign:
+            return Response(
+                {"error": "No payout PSBT available to sign"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        signed_psbt = escrow_svc.coordinator_sign_psbt(
+            psbt_to_sign, contract.descriptor, contract.order_id
+        )
+        contract.payout_psbt = signed_psbt
+        contract.status = TaprootEscrowContract.Status.RESOLVED
+        contract.save()
+
+        return Response(
+            {
+                "signed_psbt": signed_psbt,
+                "status": contract.get_status_display(),
+                "message": "Coordinator signed payout PSBT for dispute resolution",
+            },
+            status=status.HTTP_200_OK,
+        )
+
