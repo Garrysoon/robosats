@@ -88,6 +88,7 @@ class OrderAdmin(AdminChangeLinksMixin, admin.ModelAdmin):
         "currency_link",
         "t0_satoshis",
         "is_disputed",
+        "dkim_receipt",
         "is_fiat_sent",
         "created_at",
         "expires_at",
@@ -144,6 +145,23 @@ class OrderAdmin(AdminChangeLinksMixin, admin.ModelAdmin):
 
     def _logs(self, obj):
         return mark_safe(render_order_logs(obj.logs))
+
+    @admin.display(description="Bank Receipt (DKIM)")
+    def dkim_receipt(self, obj):
+        if not obj.is_disputed:
+            return "-"
+        try:
+            from api.dkim_verifier import validate_receipt_for_order
+            for st in [obj.taker_statement, obj.maker_statement]:
+                if st and ("DKIM-Signature:" in st or "From:" in st):
+                    valid, msg, receipt = validate_receipt_for_order(obj, st.encode("utf-8"))
+                    if valid:
+                        return mark_safe(f"<span style='color:#10b981;font-weight:bold;'>✓ {receipt.get('domain')} PASS</span>")
+                    elif receipt.get("is_trusted_bank"):
+                        return mark_safe(f"<span style='color:#f59e0b;'>⚠ {receipt.get('domain')} (FAIL)</span>")
+        except Exception:
+            pass
+        return "-"
 
     actions = [
         "cancel_public_order",
