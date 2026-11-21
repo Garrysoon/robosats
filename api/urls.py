@@ -90,4 +90,9 @@ urlpatterns = [
         F2FSecurityView.as_view({"post": "setup_pin"}),
         name="order_f2f_setup",
     ),
+    path(
+        "order/<int:pk>/f2f/verify_offline_receipt/",
+        F2FSecurityView.as_view({"post": "verify_offline_receipt"}),
+        name="order_f2f_verify_offline_receipt",
+    ),
 ]

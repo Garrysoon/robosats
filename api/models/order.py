@@ -238,6 +238,11 @@ class Order(models.Model):
     f2f_arrived_maker_time = models.DateTimeField(null=True, default=None, blank=True)
     f2f_arrived_taker_time = models.DateTimeField(null=True, default=None, blank=True)
     f2f_pin_attempts = models.PositiveSmallIntegerField(default=0, null=False)
+    f2f_offline_receipt = models.TextField(
+        blank=True,
+        default="",
+        help_text="Cryptographically signed coordinator receipt for offline verification",
+    )
 
     # in dispute
     is_disputed = models.BooleanField(default=False, null=False)

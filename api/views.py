@@ -1606,4 +1606,26 @@ class F2FSecurityView(viewsets.ViewSet):
             status=status.HTTP_200_OK,
         )
 
+    def verify_offline_receipt(self, request, pk=None):
+        order = self._get_order(pk)
+        receipt_token = request.data.get("receipt_token")
+        if not receipt_token:
+            return Response(
+                {"error": "receipt_token is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        expected_hash = None
+        if order and hasattr(order, "payout") and order.payout:
+            expected_hash = getattr(order.payout, "payment_hash", None)
+
+        result = F2FSecurityService.verify_offline_receipt(
+            receipt_token,
+            expected_payment_hash=expected_hash,
+        )
+        if result.get("is_valid"):
+            return Response(result, status=status.HTTP_200_OK)
+        else:
+            return Response(result, status=status.HTTP_400_BAD_REQUEST)
+
 

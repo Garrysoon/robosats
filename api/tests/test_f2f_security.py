@@ -114,6 +114,69 @@ class F2FSecurityTestCase(unittest.TestCase):
         self.assertTrue(any("ATM Cash-In" in t for t in titles))
         self.assertTrue(any("Public Safe Zones" in t for t in titles))
         self.assertTrue(any("Release PIN Handshake" in t for t in titles))
+        self.assertTrue(any("Offline Cryptographic Receipt" in t for t in titles))
+
+    def test_generate_and_verify_coordinator_receipt(self):
+        self.order.last_satoshis = 75000
+        receipt = F2FSecurityService.generate_coordinator_receipt(self.order, payout_txid="txid123")
+        self.assertTrue(receipt["token"].startswith("ROBOPROOF:v1:"))
+        self.assertEqual(receipt["payload"]["amount_sats"], 75000)
+
+        # Offline verification
+        verify_result = F2FSecurityService.verify_offline_receipt(receipt["token"])
+        self.assertTrue(verify_result["is_valid"])
+        self.assertEqual(verify_result["order_id"], self.order.id)
+        self.assertEqual(verify_result["amount_sats"], 75000)
+        self.assertEqual(verify_result["payout_txid"], "txid123")
+
+    def test_verify_offline_receipt_tampered_fails(self):
+        self.order.last_satoshis = 50000
+        receipt = F2FSecurityService.generate_coordinator_receipt(self.order)
+        token = receipt["token"]
+
+        # Tamper token signature
+        parts = token.split(":")
+        tampered_sig = ("00" * 32) + parts[3][64:]
+        tampered_token = f"{parts[0]}:{parts[1]}:{parts[2]}:{tampered_sig}:{parts[4]}"
+
+        verify_result = F2FSecurityService.verify_offline_receipt(tampered_token)
+        self.assertFalse(verify_result["is_valid"])
+
+    def test_verify_offline_receipt_with_lightning_preimage(self):
+        import hashlib
+        raw_preimage = "33" * 32
+        expected_hash = hashlib.sha256(bytes.fromhex(raw_preimage)).hexdigest()
+
+        receipt = F2FSecurityService.generate_coordinator_receipt(
+            self.order, lightning_preimage=raw_preimage
+        )
+
+        # Match payment hash
+        res_ok = F2FSecurityService.verify_offline_receipt(
+            receipt["token"], expected_payment_hash=expected_hash
+        )
+        self.assertTrue(res_ok["is_valid"])
+        self.assertTrue(res_ok["has_lightning_preimage"])
+
+        # Mismatch payment hash
+        res_wrong = F2FSecurityService.verify_offline_receipt(
+            receipt["token"], expected_payment_hash="ff" * 32
+        )
+        self.assertFalse(res_wrong["is_valid"])
+        self.assertIn("Preimage does not match", res_wrong["error"])
+
+    def test_arrival_pause_lock_extends_expiry(self):
+        from datetime import datetime, timezone as dt_tz, timedelta
+        initial_time = datetime(2026, 11, 21, 12, 0, 0, tzinfo=dt_tz.utc)
+        self.order.expires_at = initial_time
+
+        # Maker arrives
+        F2FSecurityService.register_arrival(self.order, self.maker_user)
+        self.assertEqual(self.order.expires_at, initial_time)
+
+        # Taker arrives (both on site)
+        F2FSecurityService.register_arrival(self.order, self.taker_user)
+        self.assertEqual(self.order.expires_at, initial_time + timedelta(minutes=60))
 
 
 if __name__ == "__main__":
