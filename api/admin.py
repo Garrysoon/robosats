@@ -99,6 +99,7 @@ class OrderAdmin(AdminChangeLinksMixin, admin.ModelAdmin):
         "t0_satoshis",
         "is_disputed",
         "dkim_receipt",
+        "f2f_badge",
         "is_fiat_sent",
         "created_at",
         "expires_at",
@@ -172,6 +173,17 @@ class OrderAdmin(AdminChangeLinksMixin, admin.ModelAdmin):
         except Exception:
             pass
         return "-"
+
+    @admin.display(description="F2F Cash")
+    def f2f_badge(self, obj):
+        if not obj.check_is_f2f():
+            return mark_safe("<span style='color:#9ca3af;'>No</span>")
+        pin_state = "PIN Active" if obj.f2f_release_secret_hash else "Pending"
+        both = " | Both Here" if (obj.f2f_arrived_maker and obj.f2f_arrived_taker) else ""
+        return mark_safe(
+            f"<span style='padding:2px 8px; border-radius:10px; background:#f59e0b20; "
+            f"color:#d97706; font-weight:600;'>🤝 F2F ({pin_state}{both})</span>"
+        )
 
     actions = [
         "cancel_public_order",

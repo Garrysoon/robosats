@@ -20,6 +20,7 @@ from .views import (
     NotificationsView,
     CoordinatorMonitoringView,
     TaprootEscrowView,
+    F2FSecurityView,
 )
 
 urlpatterns = [
@@ -68,5 +69,25 @@ urlpatterns = [
         "order/<int:pk>/escrow/arbitrate/",
         TaprootEscrowView.as_view({"post": "arbitrate"}),
         name="order_escrow_arbitrate",
+    ),
+    path(
+        "order/<int:pk>/f2f/status/",
+        F2FSecurityView.as_view({"get": "get_status"}),
+        name="order_f2f_status",
+    ),
+    path(
+        "order/<int:pk>/f2f/arrived/",
+        F2FSecurityView.as_view({"post": "arrived"}),
+        name="order_f2f_arrived",
+    ),
+    path(
+        "order/<int:pk>/f2f/verify_pin/",
+        F2FSecurityView.as_view({"post": "verify_pin"}),
+        name="order_f2f_verify_pin",
+    ),
+    path(
+        "order/<int:pk>/f2f/setup/",
+        F2FSecurityView.as_view({"post": "setup_pin"}),
+        name="order_f2f_setup",
     ),
 ]

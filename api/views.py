@@ -41,6 +41,7 @@ from api.models import (
 )
 from api.coordinator_monitor import CoordinatorMonitorService
 from api.multisig.taproot_escrow import TaprootMultisigEscrow
+from api.f2f_security import F2FSecurityService
 from api.notifications import Notifications
 from api.oas_schemas import (
     BookViewSchema,
@@ -1536,4 +1537,73 @@ class TaprootEscrowView(viewsets.ViewSet):
             },
             status=status.HTTP_200_OK,
         )
+
+
+class F2FSecurityView(viewsets.ViewSet):
+    """Endpoints for Face-to-Face (F2F) physical cash exchange security."""
+
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def _get_order(self, pk):
+        try:
+            return Order.objects.get(pk=pk)
+        except (Order.DoesNotExist, ValueError):
+            return None
+
+    def get_status(self, request, pk=None):
+        order = self._get_order(pk)
+        if not order:
+            return Response({"error": "Order not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        status_data = F2FSecurityService.get_order_f2f_status(order, request.user)
+        return Response(status_data, status=status.HTTP_200_OK)
+
+    def arrived(self, request, pk=None):
+        order = self._get_order(pk)
+        if not order:
+            return Response({"error": "Order not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            arrival_info = F2FSecurityService.register_arrival(order, request.user)
+            return Response(arrival_info, status=status.HTTP_200_OK)
+        except PermissionError as e:
+            return Response({"error": str(e)}, status=status.HTTP_403_FORBIDDEN)
+
+    def verify_pin(self, request, pk=None):
+        order = self._get_order(pk)
+        if not order:
+            return Response({"error": "Order not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        pin = request.data.get("pin")
+        if not pin:
+            return Response(
+                {"error": "Release PIN is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        result = F2FSecurityService.verify_release_pin(order, pin, request.user)
+        if result.get("success"):
+            return Response(result, status=status.HTTP_200_OK)
+        else:
+            return Response(result, status=status.HTTP_400_BAD_REQUEST)
+
+    def setup_pin(self, request, pk=None):
+        order = self._get_order(pk)
+        if not order:
+            return Response({"error": "Order not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        if request.user not in (order.maker, order.taker):
+            return Response({"error": "Forbidden"}, status=status.HTTP_403_FORBIDDEN)
+
+        F2FSecurityService.setup_f2f_order(order, force=True)
+        return Response(
+            {
+                "success": True,
+                "message": "F2F Release PIN successfully initialized.",
+                "is_f2f": True,
+            },
+            status=status.HTTP_200_OK,
+        )
+
 

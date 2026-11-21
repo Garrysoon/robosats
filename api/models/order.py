@@ -222,6 +222,23 @@ class Order(models.Model):
     is_fiat_sent = models.BooleanField(default=False, null=False)
     reverted_fiat_sent = models.BooleanField(default=False, null=False)
 
+    # F2F (Face-to-Face Cash) protection fields
+    is_f2f = models.BooleanField(
+        default=False, null=False, help_text="Cash / Face-to-Face physical handover order"
+    )
+    f2f_release_secret_hash = models.CharField(
+        max_length=64,
+        null=True,
+        default=None,
+        blank=True,
+        help_text="SHA-256 hash of buyer's 6-digit release PIN",
+    )
+    f2f_arrived_maker = models.BooleanField(default=False, null=False)
+    f2f_arrived_taker = models.BooleanField(default=False, null=False)
+    f2f_arrived_maker_time = models.DateTimeField(null=True, default=None, blank=True)
+    f2f_arrived_taker_time = models.DateTimeField(null=True, default=None, blank=True)
+    f2f_pin_attempts = models.PositiveSmallIntegerField(default=0, null=False)
+
     # in dispute
     is_disputed = models.BooleanField(default=False, null=False)
     maker_statement = models.TextField(
@@ -367,6 +384,13 @@ class Order(models.Model):
 
         self.log_status_transition(old_status, new_status)
 
+        if new_status == Order.Status.CHA and self.check_is_f2f():
+            try:
+                from api.f2f_security import F2FSecurityService
+                F2FSecurityService.setup_f2f_order(self)
+            except Exception:
+                pass
+
         if new_status == Order.Status.FAI:
             send_notification.delay(order_id=self.id, message="lightning_failed")
 
@@ -387,9 +411,35 @@ class Order(models.Model):
             old_status = self.status
             self.status = new_status
             self.log_status_transition(old_status, new_status)
+
+            if new_status == Order.Status.CHA and self.check_is_f2f():
+                try:
+                    from api.f2f_security import F2FSecurityService
+                    F2FSecurityService.setup_f2f_order(self)
+                except Exception:
+                    pass
+
             return True
 
         return False
+
+    @property
+    def buyer(self):
+        return self.maker if self.type == self.Types.BUY else self.taker
+
+    @property
+    def seller(self):
+        return self.taker if self.type == self.Types.BUY else self.maker
+
+    def check_is_f2f(self) -> bool:
+        """Determines if the order represents an in-person physical cash trade."""
+        if self.is_f2f:
+            return True
+        if self.latitude is not None or self.longitude is not None:
+            return True
+        pm = (self.payment_method or "").lower()
+        f2f_keywords = ["cash", "f2f", "наличные", "face to face", "in person", "cash-in"]
+        return any(k in pm for k in f2f_keywords)
 
     def log_status_transition(self, old_status, new_status):
         if old_status != new_status:
