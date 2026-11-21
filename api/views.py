@@ -575,6 +575,10 @@ class OrderView(viewsets.ViewSet):
                 # TakeOrder.objects.create() that would otherwise allow parallel requests to
                 # each observe "no active order" and both succeed in taking an order.
                 with transaction.atomic():
+                    locked_order = Order.objects.select_for_update().get(pk=order.pk)
+                    if locked_order.status != Order.Status.PUB:
+                        return Response(new_error(1046), status=status.HTTP_400_BAD_REQUEST)
+
                     Robot.objects.select_for_update().get(pk=request.user.robot.pk)
 
                     valid, context, _ = Logics.validate_already_maker_or_taker(
@@ -583,17 +587,17 @@ class OrderView(viewsets.ViewSet):
                     if not valid:
                         return Response(context, status=status.HTTP_409_CONFLICT)
 
-                    if order.has_range:
-                        valid, context = Logics.take(order, request.user, amount)
+                    if locked_order.has_range:
+                        valid, context = Logics.take(locked_order, request.user, amount)
                     else:
-                        valid, context = Logics.take(order, request.user)
+                        valid, context = Logics.take(locked_order, request.user)
                     if not valid:
                         return Response(context, status=status.HTTP_403_FORBIDDEN)
 
                 return self.get(request)
 
             else:
-                Response(new_error(1046), status.HTTP_400_BAD_REQUEST)
+                return Response(new_error(1046), status.HTTP_400_BAD_REQUEST)
 
         # 2) If action is cancel
         elif action == "cancel":

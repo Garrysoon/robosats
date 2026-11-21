@@ -1323,44 +1323,56 @@ class Logics:
         the contract is final"""
         order = take_order.order
 
-        order.taker = take_order.taker
-        order.taker_bond = take_order.taker_bond
+        with transaction.atomic():
+            locked_order = Order.objects.select_for_update().get(pk=order.pk)
+            # Atomic compare-and-swap: only transition if order is still PUB
+            if not locked_order.transition_status(
+                Order.Status.WF2, from_statuses=[Order.Status.PUB]
+            ):
+                # Another taker already locked the bond or order was cancelled.
+                # Safely return this taker's bond:
+                cls.return_bond(take_order.taker_bond)
+                take_order.delete()
+                return False
 
-        if order.has_range:
-            order.amount = take_order.amount
+            order = locked_order
+            order.taker = take_order.taker
+            order.taker_bond = take_order.taker_bond
 
-        # THE TRADE AMOUNT IS FINAL WITH THE CONFIRMATION OF THE TAKER BOND!
-        # (This is the last update to "last_satoshis", it becomes the escrow amount next)
-        order.last_satoshis = cls.satoshis_now(order)
-        order.last_satoshis_time = timezone.now()
+            if order.has_range:
+                order.amount = take_order.amount
 
-        # With the bond confirmation the order is extended 'public_order_duration' hours
-        order.expires_at = timezone.now() + timedelta(
-            seconds=order.t_to_expire(Order.Status.WF2)
-        )
-        order.status = Order.Status.WF2
-        order.save(
-            update_fields=[
-                "status",
-                "taker",
-                "taker_bond",
-                "amount",
-                "last_satoshis",
-                "last_satoshis_time",
-                "expires_at",
-            ]
-        )
+            # THE TRADE AMOUNT IS FINAL WITH THE CONFIRMATION OF THE TAKER BOND!
+            # (This is the last update to "last_satoshis", it becomes the escrow amount next)
+            order.last_satoshis = cls.satoshis_now(order)
+            order.last_satoshis_time = timezone.now()
 
-        order.taker_bond.status = LNPayment.Status.LOCKED
-        order.taker_bond.save(update_fields=["status"])
+            # With the bond confirmation the order is extended 'public_order_duration' hours
+            order.expires_at = timezone.now() + timedelta(
+                seconds=order.t_to_expire(Order.Status.WF2)
+            )
+            order.save(
+                update_fields=[
+                    "taker",
+                    "taker_bond",
+                    "amount",
+                    "last_satoshis",
+                    "last_satoshis_time",
+                    "expires_at",
+                ]
+            )
 
-        # Both users robots are added one more contract // Unsafe can add more than once.
-        order.maker.robot.total_contracts += 1
-        order.taker.robot.total_contracts += 1
-        order.maker.robot.save(update_fields=["total_contracts"])
-        order.taker.robot.save(update_fields=["total_contracts"])
+            order.taker_bond.status = LNPayment.Status.LOCKED
+            order.taker_bond.save(update_fields=["status"])
 
-        take_order.delete()
+            Robot.objects.filter(pk=order.maker.robot.pk).update(
+                total_contracts=F("total_contracts") + 1
+            )
+            Robot.objects.filter(pk=order.taker.robot.pk).update(
+                total_contracts=F("total_contracts") + 1
+            )
+
+            take_order.delete()
 
         # Log a market tick
         try:
@@ -1587,10 +1599,12 @@ class Logics:
         if bond is None:
             return
         try:
-            LNNode.cancel_return_hold_invoice(bond.payment_hash)
-            bond.status = LNPayment.Status.RETNED
-            bond.save(update_fields=["status"])
-            return True
+            cancelled = LNNode.cancel_return_hold_invoice(bond.payment_hash)
+            if cancelled:
+                bond.status = LNPayment.Status.RETNED
+                bond.save(update_fields=["status"])
+                return True
+            return False
         except Exception as e:
             if "invoice already settled" in str(e):
                 bond.status = LNPayment.Status.SETLED
@@ -1620,10 +1634,12 @@ class Logics:
         if bond is None:
             return True
         try:
-            LNNode.cancel_return_hold_invoice(bond.payment_hash)
-            bond.status = LNPayment.Status.CANCEL
-            bond.save(update_fields=["status"])
-            return True
+            cancelled = LNNode.cancel_return_hold_invoice(bond.payment_hash)
+            if cancelled:
+                bond.status = LNPayment.Status.CANCEL
+                bond.save(update_fields=["status"])
+                return True
+            return False
         except Exception as e:
             if "invoice already settled" in str(e):
                 bond.status = LNPayment.Status.SETLED
