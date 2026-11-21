@@ -18,18 +18,18 @@ TRUSTED_BANK_DOMAINS = {
 
 
 def _extract_domain(email_address: str) -> str:
-    """Extracts root/subdomain from an email address."""
+    """Extracts root/subdomain from an email address or domain string."""
     if not email_address:
         return ""
     if "@" in email_address:
         domain = email_address.split("@")[-1].strip("> \t\r\n").lower()
         return domain
-    return ""
+    return email_address.strip().lower()
 
 
 def is_trusted_bank_domain(domain: str) -> bool:
     """Checks if a domain belongs to or is a subdomain of a trusted bank."""
-    domain = domain.lower()
+    domain = _extract_domain(domain)
     for trusted in TRUSTED_BANK_DOMAINS:
         if domain == trusted or domain.endswith(f".{trusted}"):
             return True
@@ -95,6 +95,8 @@ def parse_bank_receipt(raw_bytes: bytes) -> Dict[str, Any]:
     dkim_valid, dkim_msg = verify_dkim_signature(raw_bytes)
     trusted = is_trusted_bank_domain(domain)
 
+    first_amount = float(amounts[0]) if amounts else None
+
     return {
         "from": sender,
         "to": recipient,
@@ -102,9 +104,12 @@ def parse_bank_receipt(raw_bytes: bytes) -> Dict[str, Any]:
         "subject": subject,
         "date": date_str,
         "body_preview": body[:500] if body else "",
+        "reference": reference_code,
         "reference_code": reference_code,
+        "amount": first_amount,
         "detected_amounts": [float(a) for a in amounts[:5]],
         "is_trusted_bank": trusted,
+        "is_dkim_valid": dkim_valid,
         "dkim_verified": dkim_valid,
         "dkim_message": dkim_msg,
     }
@@ -124,12 +129,12 @@ def validate_receipt_for_order(order, raw_bytes: bytes) -> Tuple[bool, str, Dict
     if not receipt["is_trusted_bank"]:
         return False, f"Sender domain '{receipt['domain']}' is not a recognised trusted bank.", receipt
 
-    if not receipt["dkim_verified"]:
+    if not receipt["is_dkim_valid"]:
         return False, f"DKIM verification failed: {receipt['dkim_message']}", receipt
 
     expected_ref = f"ROBO-{order.id}"
-    if receipt["reference_code"] != expected_ref:
-        return False, f"Reference code mismatch. Expected '{expected_ref}', found '{receipt['reference_code']}'.", receipt
+    if receipt["reference"] != expected_ref:
+        return False, f"Reference mismatch. Expected '{expected_ref}', found '{receipt['reference']}'.", receipt
 
     if order.amount is not None:
         expected_amount = float(order.amount)
@@ -139,3 +144,42 @@ def validate_receipt_for_order(order, raw_bytes: bytes) -> Tuple[bool, str, Dict
             return False, f"Amount mismatch. Expected {expected_amount}, detected in receipt: {receipt['detected_amounts']}", receipt
 
     return True, "Receipt mathematically verified by bank DKIM signature and matches order parameters.", receipt
+
+
+class BankReceiptVerifier:
+    """Helper wrapper for OOP-style access to DKIM verification services."""
+    TRUSTED_DOMAINS = TRUSTED_BANK_DOMAINS
+
+    @staticmethod
+    def is_trusted_bank_domain(domain_or_email: str) -> bool:
+        return is_trusted_bank_domain(domain_or_email)
+
+    @staticmethod
+    def extract_payment_details(text: str, domain: str = "") -> Dict[str, Any]:
+        ref_match = re.search(r"ROBO-\d+", text, re.IGNORECASE)
+        reference_code = ref_match.group(0).upper() if ref_match else None
+
+        amounts = []
+        for match in re.finditer(r"(\d[\d\s]{1,12}(?:[.,]\d{2})?)\s*(?:₽|руб|RUB|EUR|USD|sats)?", text):
+            raw_val = match.group(1).replace(" ", "").replace(",", ".")
+            try:
+                val = Decimal(raw_val)
+                if val > 0:
+                    amounts.append(float(val))
+            except Exception:
+                pass
+
+        return {
+            "reference": reference_code,
+            "amount": amounts[0] if amounts else None,
+            "amounts": amounts,
+            "domain": domain,
+        }
+
+    @staticmethod
+    def parse_receipt(raw_bytes: bytes) -> Dict[str, Any]:
+        return parse_bank_receipt(raw_bytes)
+
+    @staticmethod
+    def validate_receipt_for_order(order, raw_bytes: bytes) -> Tuple[bool, str, Dict[str, Any]]:
+        return validate_receipt_for_order(order, raw_bytes)
