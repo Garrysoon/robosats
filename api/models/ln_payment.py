@@ -1,8 +1,52 @@
+import base64
+import hashlib
+
+from cryptography.fernet import Fernet
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.template.defaultfilters import truncatechars
+
+
+def _get_preimage_cipher():
+    raw_key = getattr(settings, "PREIMAGE_ENCRYPTION_KEY", None)
+    if not raw_key:
+        raw_key = settings.SECRET_KEY
+    key = base64.urlsafe_b64encode(hashlib.sha256(raw_key.encode("utf-8")).digest())
+    return Fernet(key)
+
+
+def _encrypt_preimage(val: str) -> str:
+    if not val or not isinstance(val, str) or val.startswith("enc:"):
+        return val
+    token = _get_preimage_cipher().encrypt(val.encode("utf-8")).decode("utf-8")
+    return f"enc:{token}"
+
+
+def _decrypt_preimage(val: str) -> str:
+    if not val or not isinstance(val, str) or not val.startswith("enc:"):
+        return val
+    try:
+        return _get_preimage_cipher().decrypt(val[4:].encode("utf-8")).decode("utf-8")
+    except Exception:
+        return val
+
+
+class EncryptedPreimageField(models.CharField):
+    """CharField that transparently encrypts preimages before writing to DB and decrypts when reading."""
+
+    def from_db_value(self, value, expression, connection):
+        return _decrypt_preimage(value)
+
+    def to_python(self, value):
+        if value is None:
+            return value
+        return _decrypt_preimage(value)
+
+    def get_prep_value(self, value):
+        value = super().get_prep_value(value)
+        return _encrypt_preimage(value)
 
 
 class LNPayment(models.Model):
@@ -70,8 +114,8 @@ class LNPayment(models.Model):
     invoice = models.CharField(
         max_length=1200, unique=True, null=True, default=None, blank=True
     )  # Some invoices with lots of routing hints might be long
-    preimage = models.CharField(
-        max_length=64, unique=True, null=True, default=None, blank=True
+    preimage = EncryptedPreimageField(
+        max_length=255, unique=True, null=True, default=None, blank=True
     )
     description = models.CharField(
         max_length=500, unique=False, null=True, default=None, blank=True

@@ -322,6 +322,7 @@ class OrderView(viewsets.ViewSet):
         data["is_disputed"] = order.is_disputed
         data["ur_nick"] = request.user.username
         data["satoshis_now"] = order.last_satoshis
+        data["payment_reference"] = f"ROBO-{order.id}"
 
         # Add whether hold invoices are LOCKED (ACCEPTED)
         # Is there a maker bond? If so, True if locked, False otherwise

@@ -1,5 +1,7 @@
 import math
+import secrets
 from datetime import timedelta
+from decimal import Decimal
 
 from decouple import config, Csv
 from django.contrib.auth.models import User
@@ -222,14 +224,21 @@ class Logics:
                 + timedelta(seconds=order.t_to_expire(Order.Status.TAK)),
             )
 
-            if order.has_range:
-                take_order.amount = amount
-            else:
-                take_order.amount = order.amount
+            final_amount = amount if order.has_range else order.amount
+            if final_amount is not None:
+                try:
+                    dec_amount = Decimal(str(final_amount))
+                    if dec_amount % 1 == 0 and dec_amount >= 10:
+                        cents = Decimal(secrets.randbelow(89) + 11) / Decimal(100)
+                        final_amount = dec_amount + cents
+                except Exception:
+                    pass
+
+            take_order.amount = final_amount
             take_order.save(update_fields=["amount"])
 
             order.log(
-                f"Pre-Taken by Robot({user.robot.id},{user.username}) for {order.amount} fiat units"
+                f"Pre-Taken by Robot({user.robot.id},{user.username}) for {take_order.amount} fiat units"
             )
             return True, None
 
