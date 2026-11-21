@@ -3,6 +3,7 @@ from datetime import timedelta
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.contrib.auth.models import User
+from django.db import transaction
 from django.utils import timezone
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import status, viewsets
@@ -48,7 +49,10 @@ class ChatView(viewsets.ViewSet):
         if order_id is None:
             return Response(new_error(6000), status.HTTP_400_BAD_REQUEST)
 
-        order = Order.objects.get(id=order_id)
+        try:
+            order = Order.objects.get(id=order_id)
+        except (Order.DoesNotExist, ValueError):
+            return Response(new_error(6000), status=status.HTTP_404_NOT_FOUND)
 
         if not (request.user == order.maker or request.user == order.taker):
             return Response(new_error(6001), status.HTTP_400_BAD_REQUEST)
@@ -61,7 +65,12 @@ class ChatView(viewsets.ViewSet):
         ]:
             return Response(new_error(6002), status.HTTP_400_BAD_REQUEST)
 
-        queryset = Message.objects.filter(order=order, index__gt=offset)
+        try:
+            offset = int(offset)
+        except (ValueError, TypeError):
+            offset = 0
+
+        queryset = Message.objects.filter(order=order, index__gt=offset).order_by("index")[:100]
         chatroom, created = ChatRoom.objects.get_or_create(
             id=order_id,
             order=order,
@@ -128,7 +137,10 @@ class ChatView(viewsets.ViewSet):
         if order_id is None:
             return Response(new_error(6000), status.HTTP_400_BAD_REQUEST)
 
-        order = Order.objects.get(id=order_id)
+        try:
+            order = Order.objects.get(id=order_id)
+        except (Order.DoesNotExist, ValueError):
+            return Response(new_error(6000), status=status.HTTP_404_NOT_FOUND)
 
         if not (request.user == order.maker or request.user == order.taker):
             return Response(new_error(6001), status.HTTP_400_BAD_REQUEST)
@@ -155,15 +167,22 @@ class ChatView(viewsets.ViewSet):
             },
         )
 
-        last_index = Message.objects.filter(order=order, chatroom=chatroom).count()
-        new_message = Message.objects.create(
-            index=last_index + 1,
-            PGP_message=serializer.data.get("PGP_message"),
-            order=order,
-            chatroom=chatroom,
-            sender=sender,
-            receiver=receiver,
-        )
+        with transaction.atomic():
+            Order.objects.select_for_update().get(pk=order.pk)
+            last_msg = (
+                Message.objects.filter(order=order, chatroom=chatroom)
+                .order_by("-index")
+                .first()
+            )
+            new_index = (last_msg.index + 1) if last_msg else 1
+            new_message = Message.objects.create(
+                index=new_index,
+                PGP_message=serializer.data.get("PGP_message"),
+                order=order,
+                chatroom=chatroom,
+                sender=sender,
+                receiver=receiver,
+            )
 
         # send Telegram notification for new message (if conditions apply)
         send_notification.delay(

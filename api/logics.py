@@ -1917,7 +1917,8 @@ class Logics:
             if user.robot.earned_rewards < 1:
                 return False, new_error(3003)
 
-            num_satoshis = user.robot.earned_rewards
+            original_reserved_rewards = user.robot.earned_rewards
+            num_satoshis = original_reserved_rewards
 
             # Optional limits on what leaves as rewards, whatever inflated a balance:
             # one withdrawal per robot every REWARD_WITHDRAW_COOLDOWN seconds, and at
@@ -2019,24 +2020,16 @@ class Logics:
         paid, failure_reason = LNNode.pay_invoice(lnpayment)
         if paid:
             Robot.objects.filter(pk=user.robot.pk).update(
-                earned_rewards=0,
-                claimed_rewards=F("claimed_rewards") + num_satoshis,
+                claimed_rewards=F("claimed_rewards") + original_reserved_rewards,
             )
             return True, None
 
         # Re-fetch lnpayment to get the status written by pay_invoice.
         lnpayment.refresh_from_db(fields=["status"])
 
-        # Only restore rewards when the node has confirmed the payment definitively
-        # failed (FAILRO). Any other outcome — stream ended without a final status
-        # (VALIDI, unchanged) or still in-flight (FLIGHT on CLN PENDING) — means the
-        # HTLC may still settle. Restoring rewards in that window would allow a second
-        # withdrawal against the same funds. The LNPayment row with its payment_hash
-        # stays in the DB; a retry with the same invoice is blocked by the duplicate-
-        # hash guard above (error 3004) until the hash is resolved or expires.
         if lnpayment.status == LNPayment.Status.FAILRO:
             Robot.objects.filter(pk=user.robot.pk).update(
-                earned_rewards=num_satoshis,
+                earned_rewards=F("earned_rewards") + original_reserved_rewards,
             )
             return False, new_error(3005, {"failure_reason": failure_reason})
 

@@ -2,6 +2,7 @@ import json
 
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
+from django.db import transaction
 
 from api.models import Order
 from api.tasks import send_notification
@@ -65,29 +66,33 @@ class ChatRoomConsumer(AsyncWebsocketConsumer):
     def save_new_PGP_message(self, PGP_message):
         """Creates a Message object"""
 
-        order = Order.objects.get(id=self.order_id)
-        chatroom = ChatRoom.objects.get(order=order)
+        with transaction.atomic():
+            order = Order.objects.select_for_update().get(id=self.order_id)
+            chatroom = ChatRoom.objects.get(order=order)
 
-        try:
-            last_message = Message.objects.filter(order=order).latest()
-            index = last_message.index + 1
-        except Exception:
-            index = 1
+            last_message = (
+                Message.objects.filter(order=order, chatroom=chatroom)
+                .order_by("-index")
+                .first()
+            )
+            index = (last_message.index + 1) if last_message else 1
 
-        sender = self.scope["user"]
-        if order.taker == sender:
-            receiver = order.maker
-        elif order.maker == sender:
-            receiver = order.taker
+            sender = self.scope["user"]
+            if order.taker == sender:
+                receiver = order.maker
+            elif order.maker == sender:
+                receiver = order.taker
+            else:
+                return None
 
-        msg_obj = Message.objects.create(
-            order=order,
-            chatroom=chatroom,
-            index=index,
-            sender=sender,
-            receiver=receiver,
-            PGP_message=PGP_message,
-        )
+            msg_obj = Message.objects.create(
+                order=order,
+                chatroom=chatroom,
+                index=index,
+                sender=sender,
+                receiver=receiver,
+                PGP_message=PGP_message,
+            )
 
         # send Telegram notification for new message (if conditions apply)
         send_notification.delay(chat_message_id=msg_obj.id, message="new_chat_message")
@@ -137,7 +142,7 @@ class ChatRoomConsumer(AsyncWebsocketConsumer):
         """Returns all PGP messages"""
 
         order = Order.objects.get(id=self.order_id)
-        messages = Message.objects.filter(order=order)
+        messages = Message.objects.filter(order=order).order_by("index")[:200]
 
         msgs = []
         for message in messages:
