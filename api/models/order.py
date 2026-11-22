@@ -11,6 +11,7 @@ from django.db import models
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 from api.tasks import send_notification
 
 if config("TESTING", cast=bool, default=False):
@@ -33,25 +34,25 @@ class Order(models.Model):
         SELL = 1, "SELL"
 
     class Status(models.IntegerChoices):
-        WFB = 0, "Waiting for maker bond"
-        PUB = 1, "Public"
-        PAU = 2, "Paused"
-        TAK = 3, "Waiting for taker bond"
-        UCA = 4, "Cancelled"
-        EXP = 5, "Expired"
-        WF2 = 6, "Waiting for trade collateral and buyer invoice"
-        WFE = 7, "Waiting only for seller trade collateral"
-        WFI = 8, "Waiting only for buyer invoice"
-        CHA = 9, "Sending fiat - In chatroom"
-        FSE = 10, "Fiat sent - In chatroom"
-        DIS = 11, "In dispute"
-        CCA = 12, "Collaboratively cancelled"
-        PAY = 13, "Sending satoshis to buyer"
-        SUC = 14, "Successful trade"
-        FAI = 15, "Failed lightning network routing"
-        WFR = 16, "Wait for dispute resolution"
-        MLD = 17, "Maker lost dispute"
-        TLD = 18, "Taker lost dispute"
+        WFB = 0, _("Waiting for maker bond")
+        PUB = 1, _("Public")
+        PAU = 2, _("Paused")
+        TAK = 3, _("Waiting for taker bond")
+        UCA = 4, _("Cancelled")
+        EXP = 5, _("Expired")
+        WF2 = 6, _("Waiting for trade collateral and buyer invoice")
+        WFE = 7, _("Waiting only for seller trade collateral")
+        WFI = 8, _("Waiting only for buyer invoice")
+        CHA = 9, _("Sending fiat - In chatroom")
+        FSE = 10, _("Fiat sent - In chatroom")
+        DIS = 11, _("In dispute")
+        CCA = 12, _("Collaboratively cancelled")
+        PAY = 13, _("Sending satoshis to buyer")
+        SUC = 14, _("Successful trade")
+        FAI = 15, _("Failed lightning network routing")
+        WFR = 16, _("Wait for dispute resolution")
+        MLD = 17, _("Maker lost dispute")
+        TLD = 18, _("Taker lost dispute")
 
     class ExpiryReasons(models.IntegerChoices):
         NTAKEN = 0, "Expired not taken"

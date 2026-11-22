@@ -16,6 +16,7 @@ import textwrap
 from pathlib import Path
 
 from decouple import config
+from django.utils.translation import gettext_lazy as _
 
 from .celery.conf import *  # noqa
 
@@ -173,6 +174,7 @@ MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     # CsrfViewMiddleware is active; DRF API views are individually exempt via
     # APIView.as_view() which calls csrf_exempt internally.  The middleware is
@@ -183,7 +185,6 @@ MIDDLEWARE = [
     "robosats.middleware.RobotTokenSHA256AuthenticationMiddleWare",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "django.middleware.common.CommonMiddleware",
 ]
 
 
@@ -243,7 +244,19 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = config("LANGUAGE_CODE", cast=str, default="ru")
+
+LANGUAGES = [
+    ("ru", _("Russian")),
+    ("en", _("English")),
+    ("es", _("Spanish")),
+    ("de", _("German")),
+    ("fr", _("French")),
+]
+
+LOCALE_PATHS = [
+    BASE_DIR / "locale",
+]
 
 TIME_ZONE = "UTC"
 

@@ -2,7 +2,10 @@ import pygeohash
 import hashlib
 import uuid
 
-from secp256k1 import PrivateKey
+try:
+    from secp256k1 import PrivateKey
+except ImportError:
+    from coincurve import PrivateKey
 from asgiref.sync import sync_to_async
 from nostr_sdk import (
     Keys,

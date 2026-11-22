@@ -5,6 +5,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import Group, User
 from django.db.models import F
 from django.utils.html import mark_safe
+from django.utils.translation import gettext_lazy as _
 from django_admin_relation_links import AdminChangeLinksMixin
 from rest_framework.authtoken.admin import TokenAdmin
 from rest_framework.authtoken.models import TokenProxy
@@ -159,7 +160,7 @@ class OrderAdmin(AdminChangeLinksMixin, admin.ModelAdmin):
     def _logs(self, obj):
         return mark_safe(render_order_logs(obj.logs))
 
-    @admin.display(description="Bank Receipt (DKIM/PDF)")
+    @admin.display(description=_("Bank Receipt (DKIM/PDF)"))
     def dkim_receipt(self, obj):
         if not obj.is_disputed:
             return "-"
@@ -180,7 +181,7 @@ class OrderAdmin(AdminChangeLinksMixin, admin.ModelAdmin):
             pass
         return "-"
 
-    @admin.display(description="AI Verdict")
+    @admin.display(description=_("AI Verdict"))
     def arbitration_recommendation(self, obj):
         if not obj.is_disputed:
             return mark_safe("<span style='color:#9ca3af;'>-</span>")
@@ -200,7 +201,7 @@ class OrderAdmin(AdminChangeLinksMixin, admin.ModelAdmin):
         except Exception:
             return mark_safe("<span style='color:#9ca3af;'>-</span>")
 
-    @admin.display(description="F2F Cash")
+    @admin.display(description=_("F2F Cash"))
     def f2f_badge(self, obj):
         if not obj.check_is_f2f():
             return mark_safe("<span style='color:#9ca3af;'>No</span>")
@@ -221,7 +222,7 @@ class OrderAdmin(AdminChangeLinksMixin, admin.ModelAdmin):
         "compute_median_trade_time",
     ]
 
-    @admin.action(description="⚡ Apply recommended arbitration verdict (1-Click)")
+    @admin.action(description=_("⚡ Apply recommended arbitration verdict (1-Click)"))
     def apply_recommended_arbitration(self, request, queryset):
         """
         Applies pre-flight AI/rule-based arbitration recommendation in 1 click.
@@ -250,7 +251,7 @@ class OrderAdmin(AdminChangeLinksMixin, admin.ModelAdmin):
                     messages.WARNING,
                 )
 
-    @admin.action(description="Close public order")
+    @admin.action(description=_("Close public order"))
     def cancel_public_order(self, request, queryset):
         """
         Closes an existing Public/Paused order.
@@ -292,7 +293,7 @@ class OrderAdmin(AdminChangeLinksMixin, admin.ModelAdmin):
                     messages.ERROR,
                 )
 
-    @admin.action(description="Solve dispute: maker wins")
+    @admin.action(description=_("Solve dispute: maker wins"))
     def maker_wins(self, request, queryset):
         """
         Solves a dispute on favor of the maker.
@@ -332,7 +333,7 @@ class OrderAdmin(AdminChangeLinksMixin, admin.ModelAdmin):
                     messages.ERROR,
                 )
 
-    @admin.action(description="Solve dispute: taker wins")
+    @admin.action(description=_("Solve dispute: taker wins"))
     def taker_wins(self, request, queryset):
         """
         Solves a dispute on favor of the taker.
@@ -373,7 +374,7 @@ class OrderAdmin(AdminChangeLinksMixin, admin.ModelAdmin):
                     messages.ERROR,
                 )
 
-    @admin.action(description="Solve dispute: return everything")
+    @admin.action(description=_("Solve dispute: return everything"))
     def return_everything(self, request, queryset):
         """
         Solves a dispute by pushing back every bond and escrow to their sender.
@@ -413,7 +414,7 @@ class OrderAdmin(AdminChangeLinksMixin, admin.ModelAdmin):
                     messages.ERROR,
                 )
 
-    @admin.action(description="Solve dispute: successful trade")
+    @admin.action(description=_("Solve dispute: successful trade"))
     def successful_trade(self, request, queryset):
         """
         Solves a dispute as if the trade had been successful, i.e.,
@@ -476,7 +477,7 @@ class OrderAdmin(AdminChangeLinksMixin, admin.ModelAdmin):
                     messages.ERROR,
                 )
 
-    @admin.action(description="Compute median trade completion time")
+    @admin.action(description=_("Compute median trade completion time"))
     def compute_median_trade_time(self, request, queryset):
         """
         Computes the median time from an order taken to finishing
@@ -714,15 +715,15 @@ class CoordinatorNodeAdmin(admin.ModelAdmin):
             f'● {label}</span>'
         )
 
-    status_badge.short_description = "Status"
+    status_badge.short_description = _("Status")
 
     def uptime_24h_display(self, obj):
         uptime = obj.calculate_uptime_24h()
         return f"{uptime}%"
 
-    uptime_24h_display.short_description = "24h Uptime"
+    uptime_24h_display.short_description = _("24h Uptime")
 
-    @admin.action(description="Check health of selected coordinators now")
+    @admin.action(description=_("Check health of selected coordinators now"))
     def check_status_now(self, request, queryset):
         from api.coordinator_monitor import CoordinatorMonitorService
 
@@ -735,7 +736,7 @@ class CoordinatorNodeAdmin(admin.ModelAdmin):
             request, f"Successfully checked {checked} coordinators.", messages.SUCCESS
         )
 
-    @admin.action(description="Sync coordinators from federation.json")
+    @admin.action(description=_("Sync coordinators from federation.json"))
     def sync_from_federation(self, request, queryset):
         from api.coordinator_monitor import CoordinatorMonitorService
 
@@ -773,7 +774,7 @@ class CoordinatorCheckLogAdmin(admin.ModelAdmin):
         label = CoordinatorNode.Status(obj.status).label
         return mark_safe(f'<span style="color:{color}; font-weight:600;">● {label}</span>')
 
-    status_badge.short_description = "Status"
+    status_badge.short_description = _("Status")
 
     def error_summary(self, obj):
         return (
@@ -782,7 +783,7 @@ class CoordinatorCheckLogAdmin(admin.ModelAdmin):
             else obj.error_message
         )
 
-    error_summary.short_description = "Error"
+    error_summary.short_description = _("Error")
 
 
 @admin.register(TaprootEscrowContract)
@@ -824,7 +825,7 @@ class TaprootEscrowContractAdmin(admin.ModelAdmin):
             f'color:{color}; font-weight:600;">● {obj.get_status_display()}</span>'
         )
 
-    status_badge.short_description = "Status"
+    status_badge.short_description = _("Status")
 
 
 @admin.register(EmailInboxConfig)
@@ -845,7 +846,7 @@ class EmailInboxConfigAdmin(admin.ModelAdmin):
     search_fields = ("username", "public_receipt_email", "host")
     actions = ["test_imap_connection", "poll_now"]
 
-    @admin.action(description="🔌 Test IMAP connection")
+    @admin.action(description=_("🔌 Test IMAP connection"))
     def test_imap_connection(self, request, queryset):
         from api.email_ingestion import BankReceiptEmailWatcher
         for inbox in queryset:
@@ -855,7 +856,7 @@ class EmailInboxConfigAdmin(admin.ModelAdmin):
             else:
                 self.message_user(request, f"✗ {inbox.username}: {msg}", messages.ERROR)
 
-    @admin.action(description="📥 Poll unread receipts now")
+    @admin.action(description=_("📥 Poll unread receipts now"))
     def poll_now(self, request, queryset):
         from api.email_ingestion import BankReceiptEmailWatcher
         total = 0

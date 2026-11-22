@@ -1,13 +1,14 @@
 from django.db import models
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 
 class CoordinatorNode(models.Model):
     class Status(models.IntegerChoices):
-        UNKNOWN = 0, "Unknown"
-        ONLINE = 1, "Online"
-        DEGRADED = 2, "Degraded"
-        OFFLINE = 3, "Offline"
+        UNKNOWN = 0, _("Unknown")
+        ONLINE = 1, _("Online")
+        DEGRADED = 2, _("Degraded")
+        OFFLINE = 3, _("Offline")
 
     alias = models.CharField(max_length=64, unique=True, db_index=True)
     name = models.CharField(max_length=128)
@@ -35,8 +36,8 @@ class CoordinatorNode(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = "Coordinator Node"
-        verbose_name_plural = "Coordinator Nodes"
+        verbose_name = _("Coordinator Node")
+        verbose_name_plural = _("Coordinator Nodes")
         ordering = ["alias"]
 
     def __str__(self):
@@ -81,8 +82,8 @@ class CoordinatorCheckLog(models.Model):
     details = models.JSONField(default=dict, blank=True)
 
     class Meta:
-        verbose_name = "Coordinator Check Log"
-        verbose_name_plural = "Coordinator Check Logs"
+        verbose_name = _("Coordinator Check Log")
+        verbose_name_plural = _("Coordinator Check Logs")
         ordering = ["-checked_at"]
         indexes = [
             models.Index(fields=["coordinator", "-checked_at"]),

@@ -1,0 +1,259 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: RoboSats Coordinator 0.9.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-23 00:00+0000\n"
+"PO-Revision-Date: 2026-11-23 00:00+0000\n"
+"Last-Translator: Antigravity <admin@robosats.local>\n"
+"Language-Team: Russian <ru@li.org>\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "RoboSats Core API"
+msgstr "Основное API RoboSats"
+
+msgid "Email Receipt Inbox"
+msgstr "Почтовый ящик банковских чеков"
+
+msgid "Email Receipt Inboxes"
+msgstr "Почтовые ящики банковских чеков"
+
+msgid "IMAP Host"
+msgstr "Хост IMAP"
+
+msgid "IMAP Port"
+msgstr "Порт IMAP"
+
+msgid "Username / Login"
+msgstr "Логин / Email"
+
+msgid "Password / App Token"
+msgstr "Пароль / Токен приложения"
+
+msgid "Use SSL/TLS"
+msgstr "Использовать SSL/TLS"
+
+msgid "Mailbox Folder"
+msgstr "Папка ящика"
+
+msgid "Public Receipt Email"
+msgstr "Публичный email для чеков"
+
+msgid "Active"
+msgstr "Активен"
+
+msgid "Inactive"
+msgstr "Неактивен"
+
+msgid "Last Checked At"
+msgstr "Последняя проверка"
+
+msgid "Last Status"
+msgstr "Последний статус"
+
+msgid "Processed Receipts Count"
+msgstr "Обработано чеков"
+
+msgid "Never checked"
+msgstr "Никогда не проверялся"
+
+msgid ""
+"IMAP server hostname (e.g., imap.yandex.ru, imap.gmail.com, imap.mail.ru)"
+msgstr ""
+"Адрес сервера IMAP (например, imap.yandex.ru, imap.gmail.com, imap.mail.ru)"
+
+msgid "IMAP server port (usually 993 for SSL)"
+msgstr "Порт сервера IMAP (обычно 993 для SSL)"
+
+msgid "Email address / login used to authenticate with IMAP server"
+msgstr "Адрес почты или логин для подключения к IMAP-серверу"
+
+msgid "IMAP App Password or secret key"
+msgstr "Пароль приложения IMAP или секретный ключ"
+
+msgid "Connect using SSL/TLS encryption"
+msgstr "Подключаться с использованием шифрования SSL/TLS"
+
+msgid "IMAP mailbox folder to inspect for unread bank receipts"
+msgstr "Папка почтового ящика для поиска непрочитанных банковских чеков"
+
+msgid ""
+"Public email address shown to traders in order view (e.g., "
+"pay@coordinator.org)"
+msgstr ""
+"Публичный адрес почты, отображаемый трейдерам в сделке (например, "
+"pay@coordinator.org)"
+
+msgid "Enable or disable automated polling for this mailbox"
+msgstr "Включить или отключить автоматический опрос этого ящика"
+
+msgid "🔌 Test IMAP connection"
+msgstr "🔌 Проверить IMAP-подключение"
+
+msgid "📥 Poll unread receipts now"
+msgstr "📥 Опросить непрочитанные чеки сейчас"
+
+msgid "⚡ Apply recommended arbitration verdict (1-Click)"
+msgstr "⚡ Применить рекомендуемый вердикт арбитража (1 клик)"
+
+msgid "Bank Receipt (DKIM/PDF)"
+msgstr "Банковский чек (DKIM/PDF)"
+
+msgid "AI Verdict"
+msgstr "Вердикт ИИ/Правил"
+
+msgid "F2F Cash"
+msgstr "Наличные F2F"
+
+msgid "Close public order"
+msgstr "Закрыть публичный оффер"
+
+msgid "Solve dispute: maker wins"
+msgstr "Разрешить спор: победа мейкера"
+
+msgid "Solve dispute: taker wins"
+msgstr "Разрешить спор: победа тейкера"
+
+msgid "Solve dispute: return everything"
+msgstr "Разрешить спор: возврат всех залогов"
+
+msgid "Solve dispute: successful trade"
+msgstr "Разрешить спор: успешная сделка"
+
+msgid "Compute median trade completion time"
+msgstr "Рассчитать медианное время завершения сделок"
+
+msgid "Coordinator Node"
+msgstr "Нода координатора"
+
+msgid "Coordinator Nodes"
+msgstr "Ноды координаторов"
+
+msgid "Coordinator Check Log"
+msgstr "Лог проверки координатора"
+
+msgid "Coordinator Check Logs"
+msgstr "Логи проверок координаторов"
+
+msgid "Taproot Escrow Contract"
+msgstr "Taproot эскроу-контракт"
+
+msgid "Taproot Escrow Contracts"
+msgstr "Taproot эскроу-контракты"
+
+msgid "RoboSats Coordinator Administration"
+msgstr "Администрирование координатора RoboSats"
+
+msgid "Coordinator administration"
+msgstr "Панель управления координатора"
+
+msgid "RoboSats Coordinator Admin"
+msgstr "Админка координатора RoboSats"
+
+msgid "24h Uptime"
+msgstr "Аптайм за 24ч"
+
+msgid "Check health of selected coordinators now"
+msgstr "Проверить статус выбранных координаторов сейчас"
+
+msgid "Sync coordinators from federation.json"
+msgstr "Синхронизировать координаторов из federation.json"
+
+msgid "Waiting for maker bond"
+msgstr "Ожидание залога мейкера"
+
+msgid "Public"
+msgstr "Опубликован"
+
+msgid "Paused"
+msgstr "Приостановлен"
+
+msgid "Waiting for taker bond"
+msgstr "Ожидание залога тейкера"
+
+msgid "Cancelled"
+msgstr "Отменен"
+
+msgid "Expired"
+msgstr "Истек"
+
+msgid "Waiting for trade collateral and buyer invoice"
+msgstr "Ожидание обеспечения и инвойса покупателя"
+
+msgid "Waiting only for seller trade collateral"
+msgstr "Ожидание только обеспечения продавца"
+
+msgid "Waiting only for buyer invoice"
+msgstr "Ожидание только инвойса покупателя"
+
+msgid "Sending fiat - In chatroom"
+msgstr "Отправка фиата — в чате"
+
+msgid "Fiat sent - In chatroom"
+msgstr "Фиат отправлен — в чате"
+
+msgid "In dispute"
+msgstr "В споре"
+
+msgid "Collaboratively cancelled"
+msgstr "Отменен по согласию сторон"
+
+msgid "Sending satoshis to buyer"
+msgstr "Отправка сатоши покупателю"
+
+msgid "Successful trade"
+msgstr "Успешная сделка"
+
+msgid "Failed lightning network routing"
+msgstr "Ошибка маршрутизации Lightning"
+
+msgid "Wait for dispute resolution"
+msgstr "Ожидание вердикта по спору"
+
+msgid "Maker lost dispute"
+msgstr "Мейкер проиграл спор"
+
+msgid "Taker lost dispute"
+msgstr "Тейкер проиграл спор"
+
+msgid "Status"
+msgstr "Статус"
+
+msgid "Error"
+msgstr "Ошибка"
+
+msgid "Created"
+msgstr "Создан"
+
+msgid "Waiting for deposit"
+msgstr "Ожидание депозита"
+
+msgid "Escrow funded"
+msgstr "Эскроу пополнен"
+
+msgid "Released to buyer (cooperative)"
+msgstr "Выплачено покупателю (кооперативно)"
+
+msgid "Arbitrated by coordinator"
+msgstr "Разрешено координатором"
+
+msgid "Refunded to seller"
+msgstr "Возвращено продавцу"
+
+msgid "Russian"
+msgstr "Русский"
+
+msgid "English"
+msgstr "Английский"
+
+msgid "Spanish"
+msgstr "Испанский"
+
+msgid "German"
+msgstr "Немецкий"
+
+msgid "French"
+msgstr "Французский"

@@ -18,16 +18,18 @@ from decouple import config
 from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
+from django.utils.translation import gettext_lazy as _
 
 VERSION = settings.VERSION
 
 urlpatterns = [
+    path("i18n/", include("django.conf.urls.i18n")),
     path("coordinator/", admin.site.urls),
     path("api/", include("api.urls")),
     # path('chat/', include('chat.urls')),
     path("", include("frontend.urls")),
 ]
 
-admin.site.site_header = f"RoboSats Coordinator: {config('COORDINATOR_ALIAS', cast=str, default='NoAlias')} {config('NETWORK', cast=str, default='')} (v{VERSION['major']}.{VERSION['minor']}.{VERSION['patch']})".title()
-admin.site.index_title = "Coordinator administration"
-admin.site.site_title = "RoboSats Coordinator Admin"
+admin.site.site_header = _("RoboSats Coordinator Administration")
+admin.site.index_title = _("Coordinator administration")
+admin.site.site_title = _("RoboSats Coordinator Admin")

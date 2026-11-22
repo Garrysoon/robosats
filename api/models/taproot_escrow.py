@@ -1,16 +1,17 @@
 from django.db import models
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 
 class TaprootEscrowContract(models.Model):
     class Status(models.IntegerChoices):
-        CREATED = 0, "Created"
-        WAITING_DEPOSIT = 1, "Waiting for deposit"
-        FUNDED = 2, "Escrow funded"
-        RELEASED = 3, "Released to buyer (cooperative)"
-        DISPUTED = 4, "In dispute"
-        RESOLVED = 5, "Arbitrated by coordinator"
-        REFUNDED = 6, "Refunded to seller"
+        CREATED = 0, _("Created")
+        WAITING_DEPOSIT = 1, _("Waiting for deposit")
+        FUNDED = 2, _("Escrow funded")
+        RELEASED = 3, _("Released to buyer (cooperative)")
+        DISPUTED = 4, _("In dispute")
+        RESOLVED = 5, _("Arbitrated by coordinator")
+        REFUNDED = 6, _("Refunded to seller")
 
     order = models.OneToOneField(
         "api.Order",
@@ -58,8 +59,8 @@ class TaprootEscrowContract(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = "Taproot Escrow Contract"
-        verbose_name_plural = "Taproot Escrow Contracts"
+        verbose_name = _("Taproot Escrow Contract")
+        verbose_name_plural = _("Taproot Escrow Contracts")
         ordering = ["-created_at"]
 
     def __str__(self):
