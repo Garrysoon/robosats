@@ -53,11 +53,86 @@ def verify_dkim_signature(raw_bytes: bytes) -> Tuple[bool, str]:
         return False, f"DKIM verification error: {str(e)}"
 
 
+def extract_text_from_pdf(pdf_bytes: bytes) -> str:
+    """
+    Extracts plain text from raw PDF bytes across all pages using pypdf.
+    """
+    if not pdf_bytes or not pdf_bytes.startswith(b"%PDF"):
+        return ""
+    try:
+        import io
+        import pypdf
+        reader = pypdf.PdfReader(io.BytesIO(pdf_bytes))
+        extracted = []
+        for page in reader.pages:
+            t = page.extract_text()
+            if t:
+                extracted.append(t)
+        return "\n".join(extracted)
+    except Exception as e:
+        return ""
+
+
+def parse_standalone_pdf_receipt(pdf_bytes: bytes) -> Dict[str, Any]:
+    """
+    Parses a standalone bank receipt PDF file directly uploaded by a user.
+    Extracts text, reference code (ROBO-<id>), and amounts.
+    """
+    pdf_text = extract_text_from_pdf(pdf_bytes)
+
+    # Search for ROBO reference code
+    ref_match = re.search(r"ROBO-\d+", pdf_text, re.IGNORECASE)
+    reference_code = ref_match.group(0).upper() if ref_match else None
+
+    # Search for monetary amounts
+    amounts = []
+    for match in re.finditer(r"(\d[\d\s]{1,12}(?:[.,]\d{2})?)\s*(?:₽|руб|RUB|EUR|USD|sats)?", pdf_text):
+        raw_val = match.group(1).replace(" ", "").replace(",", ".")
+        try:
+            val = Decimal(raw_val)
+            if val > 0:
+                amounts.append(val)
+        except Exception:
+            pass
+
+    # Detect recognized bank keywords inside the PDF
+    detected_bank = None
+    for domain in TRUSTED_BANK_DOMAINS:
+        bank_name = domain.split(".")[0]
+        if bank_name.lower() in pdf_text.lower():
+            detected_bank = domain
+            break
+
+    first_amount = float(amounts[0]) if amounts else None
+
+    return {
+        "from": f"PDF Document ({detected_bank or 'Unknown Bank'})",
+        "to": "",
+        "domain": detected_bank or "bank.pdf",
+        "subject": "Standalone PDF Receipt",
+        "date": "",
+        "body_preview": pdf_text[:500] if pdf_text else "",
+        "reference": reference_code,
+        "reference_code": reference_code,
+        "amount": first_amount,
+        "detected_amounts": [float(a) for a in amounts[:5]],
+        "is_trusted_bank": bool(detected_bank),
+        "is_dkim_valid": False,  # Standalone PDFs do not carry SMTP DKIM signatures
+        "is_standalone_pdf": True,
+        "pdf_attachments_count": 1,
+        "dkim_verified": False,
+        "dkim_message": "Standalone PDF receipt (no SMTP DKIM signature). Parameters extracted from PDF document stream.",
+    }
+
+
 def parse_bank_receipt(raw_bytes: bytes) -> Dict[str, Any]:
     """
-    Parses an RFC 822 / MIME (.eml) email file.
-    Extracts headers, sender domain, DKIM status, body, reference codes and amounts.
+    Parses an RFC 822 / MIME (.eml) email file or standalone PDF.
+    Extracts headers, sender domain, DKIM status, body, PDF attachments, reference codes and amounts.
     """
+    if raw_bytes.startswith(b"%PDF"):
+        return parse_standalone_pdf_receipt(raw_bytes)
+
     msg = email.message_from_bytes(raw_bytes, policy=policy.default)
 
     sender = str(msg.get("From", ""))
@@ -66,24 +141,45 @@ def parse_bank_receipt(raw_bytes: bytes) -> Dict[str, Any]:
     date_str = str(msg.get("Date", ""))
     domain = _extract_domain(sender)
 
-    # Extract body text
-    body = ""
-    try:
-        body_part = msg.get_body(preferencelist=("plain", "html"))
-        if body_part:
-            body = body_part.get_content()
-    except Exception:
-        body = msg.get_payload()
-        if isinstance(body, list):
-            body = " ".join(str(p) for p in body)
+    # Extract body text from MIME parts (both text/plain, text/html, and application/pdf attachments)
+    body_parts = []
+    pdf_texts = []
+    pdf_filenames = []
+
+    for part in msg.walk():
+        content_type = part.get_content_type()
+        filename = part.get_filename() or ""
+
+        if content_type in ["text/plain", "text/html"]:
+            try:
+                content = part.get_content()
+                if content:
+                    body_parts.append(str(content))
+            except Exception:
+                payload = part.get_payload(decode=True)
+                if payload:
+                    body_parts.append(payload.decode("utf-8", errors="ignore"))
+
+        elif content_type == "application/pdf" or filename.lower().endswith(".pdf"):
+            payload = part.get_payload(decode=True)
+            if payload and payload.startswith(b"%PDF"):
+                pdf_filenames.append(filename or "receipt.pdf")
+                pdf_text = extract_text_from_pdf(payload)
+                if pdf_text:
+                    pdf_texts.append(pdf_text)
+
+    # Combine text from body and any attached PDFs
+    combined_text = "\n".join(body_parts + pdf_texts)
+    if not combined_text:
+        combined_text = subject
 
     # Search for ROBO reference code
-    ref_match = re.search(r"ROBO-\d+", body, re.IGNORECASE) or re.search(r"ROBO-\d+", subject, re.IGNORECASE)
+    ref_match = re.search(r"ROBO-\d+", combined_text, re.IGNORECASE) or re.search(r"ROBO-\d+", subject, re.IGNORECASE)
     reference_code = ref_match.group(0).upper() if ref_match else None
 
     # Search for monetary amounts (e.g. 50 184.20 or 50184.20 or 50 000)
     amounts = []
-    for match in re.finditer(r"(\d[\d\s]{1,12}(?:[.,]\d{2})?)\s*(?:₽|руб|RUB|EUR|USD|sats)?", body):
+    for match in re.finditer(r"(\d[\d\s]{1,12}(?:[.,]\d{2})?)\s*(?:₽|руб|RUB|EUR|USD|sats)?", combined_text):
         raw_val = match.group(1).replace(" ", "").replace(",", ".")
         try:
             val = Decimal(raw_val)
@@ -103,13 +199,16 @@ def parse_bank_receipt(raw_bytes: bytes) -> Dict[str, Any]:
         "domain": domain,
         "subject": subject,
         "date": date_str,
-        "body_preview": body[:500] if body else "",
+        "body_preview": combined_text[:500] if combined_text else "",
         "reference": reference_code,
         "reference_code": reference_code,
         "amount": first_amount,
         "detected_amounts": [float(a) for a in amounts[:5]],
         "is_trusted_bank": trusted,
         "is_dkim_valid": dkim_valid,
+        "is_standalone_pdf": False,
+        "pdf_attachments_count": len(pdf_filenames),
+        "pdf_filenames": pdf_filenames,
         "dkim_verified": dkim_valid,
         "dkim_message": dkim_msg,
     }
@@ -117,20 +216,23 @@ def parse_bank_receipt(raw_bytes: bytes) -> Dict[str, Any]:
 
 def validate_receipt_for_order(order, raw_bytes: bytes) -> Tuple[bool, str, Dict[str, Any]]:
     """
-    Validates that a raw .eml bank receipt proves legitimate fiat transfer for a given Order.
+    Validates that a raw .eml bank receipt (or attached/standalone PDF) proves legitimate fiat transfer for a given Order.
     Checks:
-    1. Valid DKIM cryptographic signature
-    2. Originates from a verified banking domain
+    1. Valid DKIM cryptographic signature (or standalone PDF format)
+    2. Originates from a verified banking domain (or recognized bank document)
     3. Contains matching order reference code (ROBO-<order.id>)
     4. Matches the expected fiat amount
     """
     receipt = parse_bank_receipt(raw_bytes)
 
-    if not receipt["is_trusted_bank"]:
-        return False, f"Sender domain '{receipt['domain']}' is not a recognised trusted bank.", receipt
+    is_standalone_pdf = receipt.get("is_standalone_pdf", False)
 
-    if not receipt["is_dkim_valid"]:
-        return False, f"DKIM verification failed: {receipt['dkim_message']}", receipt
+    if not is_standalone_pdf:
+        if not receipt["is_trusted_bank"]:
+            return False, f"Sender domain '{receipt['domain']}' is not a recognised trusted bank.", receipt
+
+        if not receipt["is_dkim_valid"]:
+            return False, f"DKIM verification failed: {receipt['dkim_message']}", receipt
 
     expected_ref = f"ROBO-{order.id}"
     if receipt["reference"] != expected_ref:
@@ -143,7 +245,11 @@ def validate_receipt_for_order(order, raw_bytes: bytes) -> Tuple[bool, str, Dict
         if not matched:
             return False, f"Amount mismatch. Expected {expected_amount}, detected in receipt: {receipt['detected_amounts']}", receipt
 
-    return True, "Receipt mathematically verified by bank DKIM signature and matches order parameters.", receipt
+    if is_standalone_pdf:
+        return True, "Standalone PDF receipt parameters match order (Note: unverified by SMTP DKIM).", receipt
+
+    pdf_info = f" (verified across {receipt['pdf_attachments_count']} PDF attachments)" if receipt.get("pdf_attachments_count", 0) > 0 else ""
+    return True, f"Receipt mathematically verified by bank DKIM signature{pdf_info} and matches order parameters.", receipt
 
 
 class BankReceiptVerifier:

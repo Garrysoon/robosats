@@ -158,17 +158,21 @@ class OrderAdmin(AdminChangeLinksMixin, admin.ModelAdmin):
     def _logs(self, obj):
         return mark_safe(render_order_logs(obj.logs))
 
-    @admin.display(description="Bank Receipt (DKIM)")
+    @admin.display(description="Bank Receipt (DKIM/PDF)")
     def dkim_receipt(self, obj):
         if not obj.is_disputed:
             return "-"
         try:
             from api.dkim_verifier import validate_receipt_for_order
             for st in [obj.taker_statement, obj.maker_statement]:
-                if st and ("DKIM-Signature:" in st or "From:" in st):
-                    valid, msg, receipt = validate_receipt_for_order(obj, st.encode("utf-8"))
+                if st and ("DKIM-Signature:" in st or "From:" in st or "%PDF" in st):
+                    raw_b = st.encode("utf-8") if isinstance(st, str) else st
+                    valid, msg, receipt = validate_receipt_for_order(obj, raw_b)
                     if valid:
-                        return mark_safe(f"<span style='color:#10b981;font-weight:bold;'>✓ {receipt.get('domain')} PASS</span>")
+                        if receipt.get("is_standalone_pdf"):
+                            return mark_safe(f"<span style='color:#3b82f6;font-weight:bold;'>📄 {receipt.get('domain')} (PDF match)</span>")
+                        pdf_icon = " +PDF" if receipt.get("pdf_attachments_count", 0) > 0 else ""
+                        return mark_safe(f"<span style='color:#10b981;font-weight:bold;'>✓ {receipt.get('domain')}{pdf_icon} PASS</span>")
                     elif receipt.get("is_trusted_bank"):
                         return mark_safe(f"<span style='color:#f59e0b;'>⚠ {receipt.get('domain')} (FAIL)</span>")
         except Exception:
