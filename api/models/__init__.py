@@ -8,6 +8,7 @@ from .notification import Notification
 from .take_order import TakeOrder
 from .coordinator_monitor import CoordinatorNode, CoordinatorCheckLog
 from .taproot_escrow import TaprootEscrowContract
+from .email_inbox import EmailInboxConfig
 
 __all__ = [
     "Currency",
@@ -21,4 +22,5 @@ __all__ = [
     "CoordinatorNode",
     "CoordinatorCheckLog",
     "TaprootEscrowContract",
+    "EmailInboxConfig",
 ]

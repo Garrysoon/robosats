@@ -44,6 +44,7 @@ def main():
         "api.tests.test_taproot_escrow",
         "api.tests.test_coordinator_monitor",
         "api.tests.test_dispute_automation",
+        "api.tests.test_email_ingestion",
     ]
 
     suite = unittest.TestSuite()

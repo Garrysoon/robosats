@@ -535,3 +535,17 @@ def auto_resolve_disputes_task():
         return f"Auto-resolved {len(results)} disputes"
     except Exception as e:
         return f"Error in auto_resolve_disputes_task: {e}"
+
+
+@shared_task(name="poll_bank_receipt_emails_task", time_limit=180)
+def poll_bank_receipt_emails_task():
+    """
+    Periodic task to poll IMAP mailboxes for incoming bank receipts,
+    verify DKIM signatures, and link to active/disputed orders.
+    """
+    try:
+        from api.email_ingestion import BankReceiptEmailWatcher
+        results = BankReceiptEmailWatcher.poll_all_inboxes()
+        return f"Processed {len(results)} inbound receipt emails"
+    except Exception as e:
+        return f"Error in poll_bank_receipt_emails_task: {e}"

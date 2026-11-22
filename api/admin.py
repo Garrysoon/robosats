@@ -20,6 +20,7 @@ from api.models import (
     CoordinatorNode,
     CoordinatorCheckLog,
     TaprootEscrowContract,
+    EmailInboxConfig,
 )
 from api.utils import render_order_logs
 from api.tasks import send_notification
@@ -824,4 +825,46 @@ class TaprootEscrowContractAdmin(admin.ModelAdmin):
         )
 
     status_badge.short_description = "Status"
+
+
+@admin.register(EmailInboxConfig)
+class EmailInboxConfigAdmin(admin.ModelAdmin):
+    list_display = (
+        "public_receipt_email",
+        "username",
+        "host",
+        "port",
+        "use_ssl",
+        "folder",
+        "is_active",
+        "last_checked_at",
+        "last_status",
+        "processed_count",
+    )
+    list_filter = ("is_active", "use_ssl")
+    search_fields = ("username", "public_receipt_email", "host")
+    actions = ["test_imap_connection", "poll_now"]
+
+    @admin.action(description="🔌 Test IMAP connection")
+    def test_imap_connection(self, request, queryset):
+        from api.email_ingestion import BankReceiptEmailWatcher
+        for inbox in queryset:
+            success, msg = BankReceiptEmailWatcher.test_connection(inbox)
+            if success:
+                self.message_user(request, f"✓ {inbox.username}: {msg}", messages.SUCCESS)
+            else:
+                self.message_user(request, f"✗ {inbox.username}: {msg}", messages.ERROR)
+
+    @admin.action(description="📥 Poll unread receipts now")
+    def poll_now(self, request, queryset):
+        from api.email_ingestion import BankReceiptEmailWatcher
+        total = 0
+        for inbox in queryset:
+            results = BankReceiptEmailWatcher.poll_inbox(inbox)
+            total += len(results)
+            self.message_user(
+                request,
+                f"Inbox {inbox.username}: processed {len(results)} new receipts.",
+                messages.INFO,
+            )
 
