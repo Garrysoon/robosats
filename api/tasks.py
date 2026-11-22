@@ -519,3 +519,19 @@ def send_notification(order_id=None, chat_message_id=None, message=None):
         notifications.lightning_failed(order)
 
     return
+
+
+@shared_task(name="auto_resolve_disputes_task", time_limit=300)
+def auto_resolve_disputes_task():
+    """
+    Periodic task to scan and auto-resolve high-confidence disputes
+    (valid bank DKIM proofs, 24h silence SLA breaches).
+    """
+    try:
+        from api.dispute_automation import DisputeAutomationService
+        results = DisputeAutomationService.scan_and_auto_resolve(
+            silence_hours=24, dkim_veto_minutes=30, dry_run=False
+        )
+        return f"Auto-resolved {len(results)} disputes"
+    except Exception as e:
+        return f"Error in auto_resolve_disputes_task: {e}"

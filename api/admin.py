@@ -99,6 +99,7 @@ class OrderAdmin(AdminChangeLinksMixin, admin.ModelAdmin):
         "t0_satoshis",
         "is_disputed",
         "dkim_receipt",
+        "arbitration_recommendation",
         "f2f_badge",
         "is_fiat_sent",
         "created_at",
@@ -174,6 +175,26 @@ class OrderAdmin(AdminChangeLinksMixin, admin.ModelAdmin):
             pass
         return "-"
 
+    @admin.display(description="AI Verdict")
+    def arbitration_recommendation(self, obj):
+        if not obj.is_disputed:
+            return mark_safe("<span style='color:#9ca3af;'>-</span>")
+        try:
+            from api.dispute_automation import DisputeRecommendationEngine
+            rec = DisputeRecommendationEngine.analyze_order(obj)
+            conf_pct = int(rec.confidence * 100)
+            if rec.action == "successful_trade":
+                return mark_safe(f"<span style='color:#10b981;font-weight:bold;' title='{rec.reason}'>🤖 {conf_pct}% Pay Buyer (DKIM)</span>")
+            elif rec.action in ["maker_wins", "taker_wins"]:
+                role = "Maker" if rec.action == "maker_wins" else "Taker"
+                return mark_safe(f"<span style='color:#3b82f6;font-weight:bold;' title='{rec.reason}'>⏱️ {conf_pct}% {role} Wins</span>")
+            elif rec.action == "return_everything":
+                return mark_safe(f"<span style='color:#8b5cf6;font-weight:bold;' title='{rec.reason}'>↩️ {conf_pct}% Return</span>")
+            else:
+                return mark_safe("<span style='color:#9ca3af;'>👤 Manual Review</span>")
+        except Exception:
+            return mark_safe("<span style='color:#9ca3af;'>-</span>")
+
     @admin.display(description="F2F Cash")
     def f2f_badge(self, obj):
         if not obj.check_is_f2f():
@@ -186,6 +207,7 @@ class OrderAdmin(AdminChangeLinksMixin, admin.ModelAdmin):
         )
 
     actions = [
+        "apply_recommended_arbitration",
         "cancel_public_order",
         "maker_wins",
         "taker_wins",
@@ -193,6 +215,35 @@ class OrderAdmin(AdminChangeLinksMixin, admin.ModelAdmin):
         "successful_trade",
         "compute_median_trade_time",
     ]
+
+    @admin.action(description="⚡ Apply recommended arbitration verdict (1-Click)")
+    def apply_recommended_arbitration(self, request, queryset):
+        """
+        Applies pre-flight AI/rule-based arbitration recommendation in 1 click.
+        """
+        from api.dispute_automation import DisputeRecommendationEngine, DisputeAutomationService
+        count = 0
+        for order in queryset:
+            if not order.is_disputed:
+                self.message_user(request, f"Order #{order.id} is not in dispute", messages.WARNING)
+                continue
+            rec = DisputeRecommendationEngine.analyze_order(order)
+            if rec.action in ["successful_trade", "maker_wins", "taker_wins", "return_everything"]:
+                username = request.user.username if hasattr(request, "user") else "admin"
+                success, msg = DisputeAutomationService.apply_resolution(
+                    order, action=rec.action, actor=f"admin_1click_{username}", reason=rec.reason
+                )
+                if success:
+                    count += 1
+                    self.message_user(request, f"Order #{order.id}: {msg}", messages.SUCCESS)
+                else:
+                    self.message_user(request, f"Order #{order.id} failed: {msg}", messages.ERROR)
+            else:
+                self.message_user(
+                    request,
+                    f"Order #{order.id} cannot be auto-resolved ({rec.reason}). Manual investigation required.",
+                    messages.WARNING,
+                )
 
     @admin.action(description="Close public order")
     def cancel_public_order(self, request, queryset):

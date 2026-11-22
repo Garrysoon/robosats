@@ -1,5 +1,28 @@
 import os
 import sys
+from unittest.mock import MagicMock
+
+# Stub any missing grpc proto modules if running outside full Docker LND build
+for mod in [
+    "api.lightning.invoices_pb2", "api.lightning.invoices_pb2_grpc",
+    "api.lightning.lightning_pb2", "api.lightning.lightning_pb2_grpc",
+    "api.lightning.router_pb2", "api.lightning.router_pb2_grpc",
+    "api.lightning.signer_pb2", "api.lightning.signer_pb2_grpc",
+    "api.lightning.verrpc_pb2", "api.lightning.verrpc_pb2_grpc",
+    "api.lightning.node_pb2", "api.lightning.node_pb2_grpc",
+    "api.lightning.hold_pb2", "api.lightning.hold_pb2_grpc",
+    "api.lightning.primitives_pb2", "api.lightning.primitives_pb2_grpc",
+]:
+    if mod not in sys.modules:
+        sys.modules[mod] = MagicMock()
+
+os.environ.setdefault("FEE", "0.002")
+os.environ.setdefault("MAX_TRADE", "5000000")
+os.environ.setdefault("MIN_TRADE", "10000")
+os.environ.setdefault("LND_CERT_BASE64", "ZHVtbXk=")
+os.environ.setdefault("LND_MACAROON_BASE64", "ZHVtbXk=")
+os.environ.setdefault("LND_GRPC_HOST", "127.0.0.1:10009")
+
 import unittest
 from unittest.mock import patch, MagicMock
 
@@ -15,11 +38,19 @@ try:
             PREIMAGE_ENCRYPTION_KEY="test_custom_preimage_fernet_key",
             MAX_TRADE=5000000,
             MIN_TRADE=10000,
+            DEFAULT_PUBLIC_ORDER_DURATION=24,
+            MIN_PUBLIC_ORDER_DURATION=0.16,
+            MAX_PUBLIC_ORDER_DURATION=24,
+            INVOICE_AND_ESCROW_DURATION=180,
+            DEFAULT_BOND_SIZE=3.0,
+            MIN_BOND_SIZE=2.0,
+            MAX_BOND_SIZE=15.0,
             LIMIT_TOTAL_FIAT_PAYMENT_MINUTES=60,
             DEV_DONATIONS_PERCENT=0.01,
             INSTALLED_APPS=[
                 "django.contrib.auth",
                 "django.contrib.contenttypes",
+                "control",
                 "api",
             ],
             DATABASES={
