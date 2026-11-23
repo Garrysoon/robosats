@@ -9,6 +9,7 @@ from django.utils.translation import gettext_lazy as _
 from django_admin_relation_links import AdminChangeLinksMixin
 from rest_framework.authtoken.admin import TokenAdmin
 from rest_framework.authtoken.models import TokenProxy
+from unfold.admin import ModelAdmin, StackedInline, TabularInline
 
 from api.logics import Logics
 from api.models import (
@@ -88,7 +89,7 @@ class LNPaymentInline(admin.StackedInline):
 
 
 @admin.register(Order)
-class OrderAdmin(AdminChangeLinksMixin, admin.ModelAdmin):
+class OrderAdmin(AdminChangeLinksMixin, ModelAdmin):
     inlines = [LNPaymentInline]
     list_display = (
         "id",
@@ -155,7 +156,148 @@ class OrderAdmin(AdminChangeLinksMixin, admin.ModelAdmin):
         "min_amount",
         "max_amount",
     ]
-    readonly_fields = ("reference", "_logs")
+    readonly_fields = ("dispute_cockpit", "reference", "_logs")
+
+    fieldsets = (
+        (
+            _("🚨 ПУЛЬТ АРБИТРАЖА СПОРА (DISPUTE COCKPIT)"),
+            {
+                "fields": ("dispute_cockpit",),
+            },
+        ),
+        (
+            _("Параметры сделки"),
+            {
+                "fields": (
+                    "status",
+                    "type",
+                    "currency",
+                    "amount",
+                    "satoshis",
+                    "payment_method",
+                    "reference",
+                    "maker",
+                    "taker",
+                ),
+            },
+        ),
+        (
+            _("Заявления сторон спора"),
+            {
+                "fields": (
+                    "is_disputed",
+                    "is_fiat_sent",
+                    "maker_statement",
+                    "taker_statement",
+                ),
+            },
+        ),
+        (
+            _("Залоги и платежи эскроу"),
+            {
+                "fields": (
+                    "maker_bond",
+                    "taker_bond",
+                    "trade_escrow",
+                    "payout",
+                    "payout_tx",
+                ),
+                "classes": ("collapse",),
+            },
+        ),
+        (
+            _("Логи аудита"),
+            {
+                "fields": ("_logs",),
+                "classes": ("collapse",),
+            },
+        ),
+    )
+
+    @admin.display(description=_("🚨 Dispute Cockpit"))
+    def dispute_cockpit(self, obj):
+        if not obj:
+            return ""
+
+        # 1. AI / Rules Recommendation Badge
+        rec_html = ""
+        try:
+            from api.dispute_automation import DisputeRecommendationEngine
+            rec = DisputeRecommendationEngine.analyze_order(obj)
+            conf_pct = int(rec.confidence * 100)
+            rec_html = f"""
+            <div style="background: #1e293b; color: #f8fafc; padding: 14px 18px; border-radius: 8px; margin-bottom: 14px; border-left: 4px solid #38bdf8;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <span style="font-size: 13px; font-weight: 700; text-transform: uppercase; color: #94a3b8;">🤖 Рекомендация Авто-Арбитража</span>
+                    <span style="background: #0284c7; color: white; padding: 2px 8px; border-radius: 9999px; font-weight: 700; font-size: 12px;">Уверенность: {conf_pct}%</span>
+                </div>
+                <div style="font-size: 15px; font-weight: 700; color: #38bdf8; margin-bottom: 4px;">⚡ Вердикт: {rec.action.upper().replace('_', ' ')}</div>
+                <div style="font-size: 13px; color: #cbd5e1; line-height: 1.4;">Обоснование: {rec.reason}</div>
+            </div>
+            """
+        except Exception:
+            rec_html = ""
+
+        # 2. Bank DKIM Receipt Card
+        receipt_html = ""
+        try:
+            from api.dkim_verifier import validate_receipt_for_order
+            for st in [obj.taker_statement, obj.maker_statement]:
+                if st and ("DKIM-Signature:" in st or "From:" in st or "%PDF" in st):
+                    raw_b = st.encode("utf-8") if isinstance(st, str) else st
+                    valid, msg, receipt = validate_receipt_for_order(obj, raw_b)
+                    if valid:
+                        pdf_txt = " +PDF Вложение" if receipt.get("pdf_attachments_count", 0) > 0 or receipt.get("is_standalone_pdf") else ""
+                        receipt_html = f"""
+                        <div style="background: #064e3b; color: #ecfdf5; padding: 14px 18px; border-radius: 8px; margin-bottom: 14px; border-left: 4px solid #10b981;">
+                            <div style="font-weight: 700; font-size: 14px; margin-bottom: 4px; color: #34d399;">✓ БАНКОВСКИЙ ЧЕК ВЕРИФИЦИРОВАН (DKIM PASS{pdf_txt})</div>
+                            <div style="font-size: 13px; line-height: 1.5;">
+                                Банк: <b>{receipt.get('bank')}</b> ({receipt.get('domain')}) | Сумма: <b>{receipt.get('amount')} {receipt.get('currency')}</b> | Код: <b>{receipt.get('reference')}</b>
+                            </div>
+                        </div>
+                        """
+                        break
+        except Exception:
+            pass
+
+        if not receipt_html:
+            receipt_html = """
+            <div style="background: #1e293b; color: #94a3b8; padding: 12px 16px; border-radius: 8px; margin-bottom: 14px; font-size: 13px; border: 1px dashed #475569;">
+                📄 Банковский чек DKIM/PDF еще не загружен сторонами спора.
+            </div>
+            """
+
+        # 3. Statements side-by-side
+        maker_st = obj.maker_statement or "— Нет заявления —"
+        taker_st = obj.taker_statement or "— Нет заявления —"
+        statements_html = f"""
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+            <div style="background: #1e293b; padding: 12px 14px; border-radius: 8px; border: 1px solid #334155;">
+                <div style="font-weight: 700; color: #38bdf8; font-size: 12px; margin-bottom: 6px; text-transform: uppercase;">Позиция Мейкера:</div>
+                <div style="font-size: 12px; color: #f1f5f9; max-height: 140px; overflow-y: auto; white-space: pre-wrap; line-height: 1.4;">{maker_st}</div>
+            </div>
+            <div style="background: #1e293b; padding: 12px 14px; border-radius: 8px; border: 1px solid #334155;">
+                <div style="font-weight: 700; color: #f472b6; font-size: 12px; margin-bottom: 6px; text-transform: uppercase;">Позиция Тейкера:</div>
+                <div style="font-size: 12px; color: #f1f5f9; max-height: 140px; overflow-y: auto; white-space: pre-wrap; line-height: 1.4;">{taker_st}</div>
+            </div>
+        </div>
+        """
+
+        cockpit_box = f"""
+        <div style="background: #0f172a; border: 1px solid #334155; border-radius: 12px; padding: 18px; margin-bottom: 12px; font-family: system-ui, -apple-system, sans-serif;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 1px solid #334155; padding-bottom: 10px;">
+                <span style="font-size: 16px; font-weight: 700; color: #f8fafc;">🚨 Кабинет арбитра: Сделка #{obj.id} ({obj.amount} {obj.currency} / {obj.satoshis} sats)</span>
+                <span style="font-size: 13px; color: #94a3b8;">Статус: <b style="color: #fbbf24;">{obj.get_status_display()}</b></span>
+            </div>
+            {rec_html}
+            {receipt_html}
+            {statements_html}
+            <div style="font-size: 12px; color: #94a3b8; padding-top: 6px;">
+                💡 <b>Быстрое разрешение:</b> выберите необходимое действие в выпадающем меню <i>«Действие»</i> списка сделок (например, <i>«⚡ Применить рекомендуемый вердикт арбитража (1 клик)»</i> или <i>«Разрешить спор: победа мейкера»</i>).
+            </div>
+        </div>
+        """
+        return mark_safe(cockpit_box)
 
     def _logs(self, obj):
         return mark_safe(render_order_logs(obj.logs))
@@ -560,7 +702,13 @@ class EscrowOrderInline(OrderInline):
 
 
 @admin.register(LNPayment)
-class LNPaymentAdmin(AdminChangeLinksMixin, admin.ModelAdmin):
+class LNPaymentAdmin(AdminChangeLinksMixin, ModelAdmin):
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
     inlines = [
         PayoutOrderInline,
         MakerBondOrderInline,
@@ -612,7 +760,13 @@ class LNPaymentAdmin(AdminChangeLinksMixin, admin.ModelAdmin):
 
 
 @admin.register(OnchainPayment)
-class OnchainPaymentAdmin(AdminChangeLinksMixin, admin.ModelAdmin):
+class OnchainPaymentAdmin(AdminChangeLinksMixin, ModelAdmin):
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
     list_display = (
         "id",
         "address",
@@ -640,7 +794,7 @@ class OnchainPaymentAdmin(AdminChangeLinksMixin, admin.ModelAdmin):
 
 
 @admin.register(Robot)
-class UserRobotAdmin(AdminChangeLinksMixin, admin.ModelAdmin):
+class UserRobotAdmin(AdminChangeLinksMixin, ModelAdmin):
     list_display = (
         "id",
         "user_link",
@@ -662,7 +816,13 @@ class UserRobotAdmin(AdminChangeLinksMixin, admin.ModelAdmin):
 
 
 @admin.register(Currency)
-class CurrencieAdmin(admin.ModelAdmin):
+class CurrencieAdmin(ModelAdmin):
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
     list_display = ("id", "currency", "exchange_rate", "timestamp")
     list_display_links = ("id", "currency")
     readonly_fields = ("currency", "exchange_rate", "timestamp")
@@ -670,7 +830,13 @@ class CurrencieAdmin(admin.ModelAdmin):
 
 
 @admin.register(MarketTick)
-class MarketTickAdmin(admin.ModelAdmin):
+class MarketTickAdmin(ModelAdmin):
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
     list_display = ("timestamp", "price", "volume", "premium", "currency", "fee")
     readonly_fields = ("timestamp", "price", "volume", "premium", "currency", "fee")
     list_filter = ["currency"]
@@ -678,7 +844,7 @@ class MarketTickAdmin(admin.ModelAdmin):
 
 
 @admin.register(CoordinatorNode)
-class CoordinatorNodeAdmin(admin.ModelAdmin):
+class CoordinatorNodeAdmin(ModelAdmin):
     list_display = (
         "alias",
         "name",
@@ -748,7 +914,12 @@ class CoordinatorNodeAdmin(admin.ModelAdmin):
 
 
 @admin.register(CoordinatorCheckLog)
-class CoordinatorCheckLogAdmin(admin.ModelAdmin):
+class CoordinatorCheckLogAdmin(ModelAdmin):
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
     list_display = (
         "checked_at",
         "coordinator",
@@ -787,7 +958,7 @@ class CoordinatorCheckLogAdmin(admin.ModelAdmin):
 
 
 @admin.register(TaprootEscrowContract)
-class TaprootEscrowContractAdmin(admin.ModelAdmin):
+class TaprootEscrowContractAdmin(ModelAdmin):
     list_display = (
         "id",
         "order",
@@ -829,7 +1000,7 @@ class TaprootEscrowContractAdmin(admin.ModelAdmin):
 
 
 @admin.register(EmailInboxConfig)
-class EmailInboxConfigAdmin(admin.ModelAdmin):
+class EmailInboxConfigAdmin(ModelAdmin):
     list_display = (
         "public_receipt_email",
         "username",

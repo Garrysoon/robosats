@@ -16,6 +16,7 @@ import textwrap
 from pathlib import Path
 
 from decouple import config
+from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
 from .celery.conf import *  # noqa
@@ -104,6 +105,9 @@ elif config("LOG_FILE", False):
 # Application definition
 
 INSTALLED_APPS = [
+    "unfold",
+    "unfold.contrib.filters",
+    "unfold.contrib.forms",
     "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -166,6 +170,106 @@ SPECTACULAR_SETTINGS = {
     "REDOC_DIST": "SIDECAR",
     "ENUM_NAME_OVERRIDES": {
         "StatusEnum": "api.models.order.Order.Status",
+    },
+}
+
+UNFOLD = {
+    "SITE_TITLE": _("RoboSats Coordinator"),
+    "SITE_HEADER": _("RoboSats Ops Cockpit"),
+    "SITE_SUBHEADER": _("Командный центр P2P Координатора"),
+    "SITE_SYMBOL": "speed",
+    "SHOW_HISTORY": True,
+    "SHOW_VIEW_ON_SITE": False,
+    "SIDEBAR": {
+        "show_search": True,
+        "show_all_applications": False,
+        "navigation": [
+            {
+                "title": _("🚨 АРБИТРАЖ И СПОРЫ"),
+                "separator": True,
+                "items": [
+                    {
+                        "title": _("Споры и сделки"),
+                        "icon": "gavel",
+                        "link": reverse_lazy("admin:api_order_changelist"),
+                    },
+                ],
+            },
+            {
+                "title": _("🏦 БАНКОВСКИЕ ЧЕКИ И ФИНАНСЫ"),
+                "separator": True,
+                "items": [
+                    {
+                        "title": _("Почтовые ящики IMAP"),
+                        "icon": "mail",
+                        "link": reverse_lazy("admin:api_emailinboxconfig_changelist"),
+                    },
+                    {
+                        "title": _("Taproot эскроу-контракты"),
+                        "icon": "account_balance",
+                        "link": reverse_lazy("admin:api_taprootescrowcontract_changelist"),
+                    },
+                ],
+            },
+            {
+                "title": _("📊 ТОРГОВЛЯ И МОНИТОРИНГ"),
+                "separator": True,
+                "items": [
+                    {
+                        "title": _("Все сделки"),
+                        "icon": "receipt_long",
+                        "link": reverse_lazy("admin:api_order_changelist"),
+                    },
+                    {
+                        "title": _("Роботы пользователей"),
+                        "icon": "smart_toy",
+                        "link": reverse_lazy("admin:api_robot_changelist"),
+                    },
+                    {
+                        "title": _("Ноды координаторов"),
+                        "icon": "hub",
+                        "link": reverse_lazy("admin:api_coordinatornode_changelist"),
+                    },
+                    {
+                        "title": _("Логи проверок сети"),
+                        "icon": "monitor_heart",
+                        "link": reverse_lazy("admin:api_coordinatorchecklog_changelist"),
+                    },
+                ],
+            },
+            {
+                "title": _("⚙️ СИСТЕМНЫЙ АУДИТ (READ-ONLY)"),
+                "separator": True,
+                "collapsible": True,
+                "items": [
+                    {
+                        "title": _("Платежи Lightning"),
+                        "icon": "bolt",
+                        "link": reverse_lazy("admin:api_lnpayment_changelist"),
+                    },
+                    {
+                        "title": _("Ончейн платежи"),
+                        "icon": "currency_bitcoin",
+                        "link": reverse_lazy("admin:api_onchainpayment_changelist"),
+                    },
+                    {
+                        "title": _("Тики курса"),
+                        "icon": "trending_up",
+                        "link": reverse_lazy("admin:api_markettick_changelist"),
+                    },
+                    {
+                        "title": _("Валюты"),
+                        "icon": "payments",
+                        "link": reverse_lazy("admin:api_currency_changelist"),
+                    },
+                    {
+                        "title": _("Пользователи и права"),
+                        "icon": "admin_panel_settings",
+                        "link": reverse_lazy("admin:auth_user_changelist"),
+                    },
+                ],
+            },
+        ],
     },
 }
 

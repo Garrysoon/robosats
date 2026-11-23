@@ -35,3 +35,5 @@ redis==8.1.0
 cryptography>=42.0.0
 dkimpy>=1.1.0
 pypdf>=5.0.0
+django-unfold>=0.110.0
+polib>=1.2.0
