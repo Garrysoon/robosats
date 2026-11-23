@@ -15,6 +15,72 @@ msgstr ""
 msgid "RoboSats Core API"
 msgstr "Основное API RoboSats"
 
+msgid "RoboSats Core API administration"
+msgstr "Управление: Основное API RoboSats"
+
+msgid "%(app_name)s administration"
+msgstr "Управление: %(app_name)s"
+
+msgid "Основное API RoboSats administration"
+msgstr "Управление: Основное API RoboSats"
+
+msgid "Order"
+msgstr "Сделка"
+
+msgid "Orders"
+msgstr "Сделки"
+
+msgid "order"
+msgstr "Сделка"
+
+msgid "orders"
+msgstr "Сделки"
+
+msgid "Robot"
+msgstr "Робот пользователя"
+
+msgid "Robots"
+msgstr "Роботы пользователей"
+
+msgid "robot"
+msgstr "Робот пользователя"
+
+msgid "robots"
+msgstr "Роботы пользователей"
+
+msgid "Currency"
+msgstr "Валюта"
+
+msgid "Currencies"
+msgstr "Валюты"
+
+msgid "currency"
+msgstr "Валюта"
+
+msgid "currencies"
+msgstr "Валюты"
+
+msgid "Cached market currency"
+msgstr "Валюта"
+
+msgid "Lightning payment"
+msgstr "Платеж Lightning"
+
+msgid "Lightning payments"
+msgstr "Платежи Lightning"
+
+msgid "Onchain payment"
+msgstr "Ончейн платеж"
+
+msgid "Onchain payments"
+msgstr "Ончейн платежи"
+
+msgid "Market tick"
+msgstr "Котировка рынка"
+
+msgid "Market ticks"
+msgstr "Котировки рынка"
+
 msgid "Email Receipt Inbox"
 msgstr "Почтовый ящик банковских чеков"
 

@@ -323,6 +323,10 @@ class Order(models.Model):
         editable=False,
     )
 
+    class Meta:
+        verbose_name = _("Order")
+        verbose_name_plural = _("Orders")
+
     def __str__(self):
         if self.has_range and self.amount is None:
             amt = str(float(self.min_amount)) + "-" + str(float(self.max_amount))

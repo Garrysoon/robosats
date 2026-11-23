@@ -5,6 +5,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.template.defaultfilters import truncatechars
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 from control.models import BalanceLog
 
@@ -103,8 +104,8 @@ class OnchainPayment(models.Model):
         return f"TX-{str(self.id)}: {self.Concepts(self.concept).label} - {self.Status(self.status).label}"
 
     class Meta:
-        verbose_name = "Onchain payment"
-        verbose_name_plural = "Onchain payments"
+        verbose_name = _("Onchain payment")
+        verbose_name_plural = _("Onchain payments")
 
     @property
     def hash(self):

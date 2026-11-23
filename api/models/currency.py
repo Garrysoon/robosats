@@ -4,6 +4,7 @@ from decimal import Decimal
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 
 class Currency(models.Model):
@@ -28,5 +29,5 @@ class Currency(models.Model):
         return self.currency_dict[str(self.currency)]
 
     class Meta:
-        verbose_name = "Cached market currency"
-        verbose_name_plural = "Currencies"
+        verbose_name = _("Currency")
+        verbose_name_plural = _("Currencies")

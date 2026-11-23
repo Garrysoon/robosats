@@ -3,6 +3,7 @@ from django.core.validators import validate_comma_separated_integer_list
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils.translation import gettext_lazy as _
 
 
 class Robot(models.Model):
@@ -118,3 +119,7 @@ class Robot(models.Model):
 
     def __str__(self):
         return self.user.username
+
+    class Meta:
+        verbose_name = _("Robot")
+        verbose_name_plural = _("Robots")

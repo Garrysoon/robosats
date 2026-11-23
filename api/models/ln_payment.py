@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.template.defaultfilters import truncatechars
+from django.utils.translation import gettext_lazy as _
 
 
 def _get_preimage_cipher():
@@ -179,8 +180,8 @@ class LNPayment(models.Model):
         return f"LN-{str(self.payment_hash)[:8]}: {self.Concepts(self.concept).label} - {self.Status(self.status).label}"
 
     class Meta:
-        verbose_name = "Lightning payment"
-        verbose_name_plural = "Lightning payments"
+        verbose_name = _("Lightning payment")
+        verbose_name_plural = _("Lightning payments")
 
     @property
     def hash(self):

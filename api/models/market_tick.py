@@ -5,6 +5,7 @@ from decouple import config
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 FEE = float(config("FEE"))
 
@@ -85,5 +86,5 @@ class MarketTick(models.Model):
         return f"Tick: {str(self.id)[:8]}"
 
     class Meta:
-        verbose_name = "Market tick"
-        verbose_name_plural = "Market ticks"
+        verbose_name = _("Market tick")
+        verbose_name_plural = _("Market ticks")
