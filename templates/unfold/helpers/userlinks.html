@@ -1,0 +1,316 @@
+{% load i18n static unfold %}
+
+{% if not is_popup %}
+    <div class="flex flex-row gap-3 items-center ml-auto">
+        <!-- Кнопка вызова контекстной справки на каждом экране -->
+        <button type="button" 
+                id="btn-screen-help" 
+                onclick="window.toggleRoboSatsHelpDrawer()" 
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
+            <span class="material-symbols-outlined text-sm font-bold">help</span>
+            <span>Справка по экрану</span>
+        </button>
+
+        {% if environment %}
+            {% include "unfold/helpers/label.html" with text=environment.0 type=environment.1 %}
+        {% endif %}
+
+        {% action_list %}
+
+        {% if nav_global_side %}
+            {{ nav_global_side }}
+        {% endif %}
+    </div>
+
+    <!-- Модальное всплывающее окно / Slide-over Drawer подробной справки -->
+    <div id="robosats-help-overlay" 
+         class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden transition-opacity duration-300"
+         onclick="window.toggleRoboSatsHelpDrawer(false)">
+    </div>
+
+    <div id="robosats-help-drawer" 
+         class="fixed top-0 right-0 h-full w-full max-w-2xl bg-slate-900 text-slate-100 shadow-2xl z-50 transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col border-l border-slate-700">
+        
+        <!-- Заголовок справки -->
+        <div class="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-950">
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-indigo-400 text-2xl">menu_book</span>
+                <div>
+                    <h2 class="text-base font-bold text-white tracking-wide">Справочный гид координатора</h2>
+                    <p id="help-drawer-subtitle" class="text-xs text-slate-400">Контекстное руководство по текущему разделу</p>
+                </div>
+            </div>
+            <button type="button" 
+                    onclick="window.toggleRoboSatsHelpDrawer(false)" 
+                    class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition">
+                <span class="material-symbols-outlined text-xl">close</span>
+            </button>
+        </div>
+
+        <!-- Навигационные вкладки разделов справки -->
+        <div class="flex border-b border-slate-800 bg-slate-900/90 px-4 gap-1 overflow-x-auto text-xs py-2">
+            <button onclick="window.switchHelpTab('current')" id="tab-btn-current" class="px-3 py-1.5 font-semibold rounded-md bg-indigo-600 text-white">Текущий экран</button>
+            <button onclick="window.switchHelpTab('cockpit')" id="tab-btn-cockpit" class="px-3 py-1.5 font-semibold rounded-md text-slate-400 hover:text-white hover:bg-slate-800">Кабинет арбитра</button>
+            <button onclick="window.switchHelpTab('orders')" id="tab-btn-orders" class="px-3 py-1.5 font-semibold rounded-md text-slate-400 hover:text-white hover:bg-slate-800">Споры и сделки</button>
+            <button onclick="window.switchHelpTab('email')" id="tab-btn-email" class="px-3 py-1.5 font-semibold rounded-md text-slate-400 hover:text-white hover:bg-slate-800">Почта IMAP</button>
+            <button onclick="window.switchHelpTab('taproot')" id="tab-btn-taproot" class="px-3 py-1.5 font-semibold rounded-md text-slate-400 hover:text-white hover:bg-slate-800">Taproot эскроу</button>
+            <button onclick="window.switchHelpTab('manual')" id="tab-btn-manual" class="px-3 py-1.5 font-semibold rounded-md text-slate-400 hover:text-white hover:bg-slate-800">Запуск и регламент</button>
+        </div>
+
+        <!-- Контентная область с прокруткой -->
+        <div class="flex-1 overflow-y-auto p-6 space-y-6 text-sm text-slate-300 leading-relaxed" id="help-drawer-body">
+            <!-- Динамически заполняется скриптом -->
+        </div>
+
+        <!-- Подвал справки -->
+        <div class="px-6 py-3 border-t border-slate-800 bg-slate-950 flex items-center justify-between text-xs text-slate-400">
+            <span>RoboSats Coordinator v0.9.4 | Security & Arbitration Suite</span>
+            <span class="text-indigo-400 font-medium">Горячая клавиша: [Esc] для закрытия</span>
+        </div>
+    </div>
+
+    <!-- Клиентский скрипт интерактивной справки -->
+    <script>
+    (function() {
+        const HELP_DATA = {
+            cockpit: `
+                <div class="space-y-4">
+                    <div class="p-4 rounded-xl bg-indigo-950/50 border border-indigo-800/50 text-indigo-200">
+                        <h3 class="font-bold text-base text-white mb-1">🚨 Кабинет арбитража спора (Dispute Cockpit)</h3>
+                        <p class="text-xs text-indigo-300">Специализированный рабочий экран для моментального принятия решений по спорам без необходимости изучать сырую базу данных.</p>
+                    </div>
+
+                    <div class="space-y-3">
+                        <h4 class="font-bold text-white text-sm border-b border-slate-800 pb-1">Разбор элементов экрана:</h4>
+                        
+                        <div class="bg-slate-800/50 p-3 rounded-lg border border-slate-700/50">
+                            <div class="font-semibold text-sky-400 text-xs uppercase tracking-wider mb-1">1. Карточка рекомендации ИИ / Rule Engine</div>
+                            <p class="text-xs">Анализирует 3 фактора: криптографический чек DKIM, время последнего ответа сторон (SLA 24h) и взаимные претензии. Выводит статус (например, <i>SUCCESSFUL TRADE</i> или <i>MAKER/TAKER WINS</i>) и шкалу уверенности (от 50% до 100%).</p>
+                        </div>
+
+                        <div class="bg-slate-800/50 p-3 rounded-lg border border-slate-700/50">
+                            <div class="font-semibold text-emerald-400 text-xs uppercase tracking-wider mb-1">2. Статус банковского чека (DKIM / PDF PASS)</div>
+                            <p class="text-xs">Показывает, пришла ли выписка с доверенного банковского домена (<code class="bg-slate-900 px-1 py-0.5 rounded text-emerald-300">tbank.ru</code>, <code class="bg-slate-900 px-1 py-0.5 rounded text-emerald-300">sberbank.ru</code>, <code class="bg-slate-900 px-1 py-0.5 rounded text-emerald-300">alfabank.ru</code>). Подпись RSA-SHA256 гарантирует, что чек не нарисован в графическом редакторе: сумма и анти-треугольный код <code class="bg-slate-900 px-1 py-0.5 rounded text-emerald-300">ROBO-...</code> подтверждены банком.</p>
+                        </div>
+
+                        <div class="bg-slate-800/50 p-3 rounded-lg border border-slate-700/50">
+                            <div class="font-semibold text-pink-400 text-xs uppercase tracking-wider mb-1">3. Окна заявлений сторон (Side-by-Side)</div>
+                            <p class="text-xs">Параллельное отображение аргументов Мейкера (создателя оффера) и Тейкера (принявшего оффер) с отметками времени подачи претензии.</p>
+                        </div>
+
+                        <div class="bg-slate-800/50 p-3 rounded-lg border border-slate-700/50">
+                            <div class="font-semibold text-amber-400 text-xs uppercase tracking-wider mb-1">4. Регламент вынесения вердикта:</div>
+                            <ul class="text-xs space-y-1 list-disc list-inside text-slate-300 mt-1">
+                                <li><b>Чек DKIM валиден:</b> если прошло 30 минут окна вето и продавец молчит — признать сделку успешной (<code class="text-amber-200">successful_trade</code>).</li>
+                                <li><b>Сторона молчит более 24 часов:</b> присудить победу активному контрагенту (<code class="text-amber-200">maker_wins</code> / <code class="text-amber-200">taker_wins</code>).</li>
+                                <li><b>Сделка не состоялась по взаимному согласию:</b> выбрать возврат всех залогов (<code class="text-amber-200">return_everything</code>).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            `,
+            orders: `
+                <div class="space-y-4">
+                    <div class="p-4 rounded-xl bg-slate-800 border border-slate-700">
+                        <h3 class="font-bold text-base text-white mb-1">📊 Реестр сделок и споров</h3>
+                        <p class="text-xs text-slate-300">Список всех ордеров координатора с фильтрацией по статусам спора, методам оплаты и фиатным валютам.</p>
+                    </div>
+
+                    <div class="space-y-3">
+                        <h4 class="font-bold text-white text-sm border-b border-slate-800 pb-1">Колонки таблицы:</h4>
+                        
+                        <div class="grid grid-cols-1 gap-2 text-xs">
+                            <div class="bg-slate-800/40 p-2.5 rounded border border-slate-700/40">
+                                <b class="text-white">ID / Type:</b> Номер сделки и направление (Покупка BTC покупателем или продажа).
+                            </div>
+                            <div class="bg-slate-800/40 p-2.5 rounded border border-slate-700/40">
+                                <b class="text-white">Status:</b> Текущий статус стейт-машины (Ожидание залога, В чате, Фиат отправлен, В споре, Завершена).
+                            </div>
+                            <div class="bg-slate-800/40 p-2.5 rounded border border-slate-700/40">
+                                <b class="text-white">Bank Receipt (DKIM/PDF):</b>
+                                <span class="text-emerald-400 font-semibold">✓ PASS</span> — цифровая подпись банка подтверждена; 
+                                <span class="text-sky-400 font-semibold">📄 PDF</span> — вложение PDF успешно проверено; 
+                                <span class="text-amber-400 font-semibold">⚠ FAIL</span> — домен банка не подтвердил подпись.
+                            </div>
+                            <div class="bg-slate-800/40 p-2.5 rounded border border-slate-700/40">
+                                <b class="text-white">AI Verdict:</b> Рекомендация движка арбитража с указанием вероятности в процентах.
+                            </div>
+                            <div class="bg-slate-800/40 p-2.5 rounded border border-slate-700/40">
+                                <b class="text-white">F2F Cash:</b> Статус наличной встречи (<code class="text-emerald-300">M:🟢 T:🟢</code> — оба участника прибыли на место встречи; <code class="text-amber-300">PIN Active</code> — сгенерирован одноразовый секретный код выдачи).
+                            </div>
+                        </div>
+
+                        <div class="bg-indigo-950/40 border border-indigo-800/40 p-3 rounded-lg text-xs text-indigo-200">
+                            💡 <b>Действие в 1 клик:</b> выделите галочкой спорный ордер, выберите в меню «Действие» пункт <i>«⚡ Применить рекомендуемый вердикт арбитража (1 клик)»</i> и нажмите «Выполнить».
+                        </div>
+                    </div>
+                </div>
+            `,
+            email: `
+                <div class="space-y-4">
+                    <div class="p-4 rounded-xl bg-slate-800 border border-slate-700">
+                        <h3 class="font-bold text-base text-white mb-1">🏦 Почтовые ящики для банковских чеков (IMAP)</h3>
+                        <p class="text-xs text-slate-300">Настройка входящих адресов, на которые трейдеры отправляют квитанции из мобильных банков (Т-Банк, Сбер, Альфа).</p>
+                    </div>
+
+                    <div class="space-y-3">
+                        <h4 class="font-bold text-white text-sm border-b border-slate-800 pb-1">Поля конфигурации:</h4>
+                        
+                        <div class="space-y-2 text-xs">
+                            <div class="bg-slate-800/40 p-2.5 rounded border border-slate-700/40">
+                                <b class="text-white">Хост IMAP:</b> Адрес почтового сервера (например, <code class="text-sky-300">imap.yandex.ru</code>, <code class="text-sky-300">imap.mail.ru</code>). Порт по умолчанию — <code class="text-sky-300">993</code> (SSL).
+                            </div>
+                            <div class="bg-slate-800/40 p-2.5 rounded border border-slate-700/40">
+                                <b class="text-white">Логин / Email:</b> Полный адрес ящика координатора (например, <code class="text-sky-300">receipts@coord.org</code>).
+                            </div>
+                            <div class="bg-slate-800/40 p-2.5 rounded border border-slate-700/40">
+                                <b class="text-white">Пароль / Токен приложения:</b> Специальный App Password, созданный в настройках безопасности почты. <i>Никогда не используйте основной пароль от учетной записи!</i>
+                            </div>
+                            <div class="bg-slate-800/40 p-2.5 rounded border border-slate-700/40">
+                                <b class="text-white">Публичный email для чеков:</b> Адрес, который демонстрируется трейдеру в интерфейсе обмена с инструкцией <i>«Отправьте квитанцию на этот адрес»</i>.
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-800/60 p-3 rounded-lg border border-slate-700 text-xs space-y-1.5">
+                            <div class="font-semibold text-white">Быстрые действия в таблице:</div>
+                            <div>• <b>🔌 Проверить IMAP-подключение:</b> проверяет сетевую доступность и корректность логина/пароля.</div>
+                            <div>• <b>📥 Опросить непрочитанные чеки сейчас:</b> выполняет внеочередную загрузку новых писем и привязку чеков к открытым сделкам.</div>
+                        </div>
+                    </div>
+                </div>
+            `,
+            taproot: `
+                <div class="space-y-4">
+                    <div class="p-4 rounded-xl bg-slate-800 border border-slate-700">
+                        <h3 class="font-bold text-base text-white mb-1">⚡ Ончейн Taproot эскроу (2-of-3 Multisig)</h3>
+                        <p class="text-xs text-slate-300">Резервный ончейн-протокол для крупных сумм, превышающих емкость каналов Lightning.</p>
+                    </div>
+
+                    <div class="space-y-2 text-xs">
+                        <div class="bg-slate-800/40 p-2.5 rounded border border-slate-700/40">
+                            <b class="text-white">Miniscript Дескриптор:</b> 
+                            <code class="block mt-1 p-1 bg-slate-950 rounded text-emerald-300 text-[11px]">tr(coordinator, multi_a(2, maker, taker, coordinator))</code>
+                            Кооперативный путь требует подписи любых двух сторон из трех. В случае спора координатор подписывает транзакцию в пользу правой стороны.
+                        </div>
+                        <div class="bg-slate-800/40 p-2.5 rounded border border-slate-700/40">
+                            <b class="text-white">RBF и таймлоки:</b> Защита от застревания средств при резком скачке комиссий мемпула Bitcoin.
+                        </div>
+                    </div>
+                </div>
+            `,
+            manual: `
+                <div class="space-y-4">
+                    <div class="p-4 rounded-xl bg-indigo-950/50 border border-indigo-800/50 text-indigo-200">
+                        <h3 class="font-bold text-base text-white mb-1">📖 Производственный регламент и запуск</h3>
+                        <p class="text-xs text-indigo-300">Пошаговое руководство по вводу координатора в промышленную эксплуатацию.</p>
+                    </div>
+
+                    <div class="space-y-2 text-xs">
+                        <div class="bg-slate-800/40 p-2.5 rounded border border-slate-700/40">
+                            <b class="text-white">1. Фоновый сбор чеков (каждые 60 сек):</b>
+                            <code class="block mt-1 p-1 bg-slate-950 rounded text-sky-300">python manage.py watch_receipt_emails --interval 60</code>
+                        </div>
+                        <div class="bg-slate-800/40 p-2.5 rounded border border-slate-700/40">
+                            <b class="text-white">2. Авто-разрешение споров по SLA (каждые 5 мин):</b>
+                            <code class="block mt-1 p-1 bg-slate-950 rounded text-sky-300">python manage.py auto_resolve_disputes --interval 300 --silence-hours 24 --dkim-veto-minutes 30</code>
+                        </div>
+                        <div class="bg-slate-800/40 p-2.5 rounded border border-slate-700/40">
+                            <b class="text-white">3. Полная документация в репозитории:</b>
+                            <p class="mt-1 text-slate-300">Подробное руководство с архитектурой, настройкой LND macaroon и Tor доступно в файле <code class="text-indigo-300">docs/coordinator_production_launch_guide.md</code>.</p>
+                        </div>
+                    </div>
+                </div>
+            `
+        };
+
+        window.toggleRoboSatsHelpDrawer = function(forceOpen) {
+            const drawer = document.getElementById('robosats-help-drawer');
+            const overlay = document.getElementById('robosats-help-overlay');
+            if (!drawer || !overlay) return;
+
+            const isCurrentlyOpen = !drawer.classList.contains('translate-x-full');
+            const shouldOpen = forceOpen !== undefined ? forceOpen : !isCurrentlyOpen;
+
+            if (shouldOpen) {
+                // Определяем текущий экран и выбираем подходящий таб
+                const path = window.location.pathname;
+                let activeTab = 'orders';
+                if (path.includes('/order/') && path.includes('/change/')) {
+                    activeTab = 'cockpit';
+                } else if (path.includes('/emailinboxconfig/')) {
+                    activeTab = 'email';
+                } else if (path.includes('/taprootescrowcontract/')) {
+                    activeTab = 'taproot';
+                } else if (path.includes('/order/')) {
+                    activeTab = 'orders';
+                } else {
+                    activeTab = 'manual';
+                }
+
+                window.switchHelpTab(activeTab);
+
+                overlay.classList.remove('hidden');
+                setTimeout(() => {
+                    overlay.classList.remove('opacity-0');
+                    drawer.classList.remove('translate-x-full');
+                }, 10);
+            } else {
+                overlay.classList.add('opacity-0');
+                drawer.classList.add('translate-x-full');
+                setTimeout(() => {
+                    overlay.classList.add('hidden');
+                }, 300);
+            }
+        };
+
+        window.switchHelpTab = function(tabName) {
+            const body = document.getElementById('help-drawer-body');
+            const subtitle = document.getElementById('help-drawer-subtitle');
+            if (!body) return;
+
+            // Сброс стилей кнопок
+            const buttons = document.querySelectorAll('#robosats-help-drawer button[id^="tab-btn-"]');
+            buttons.forEach(btn => {
+                btn.className = "px-3 py-1.5 font-semibold rounded-md text-slate-400 hover:text-white hover:bg-slate-800 transition";
+            });
+
+            // Определяем реальный таб при выборе "current"
+            let realTab = tabName;
+            if (tabName === 'current') {
+                const path = window.location.pathname;
+                if (path.includes('/order/') && path.includes('/change/')) realTab = 'cockpit';
+                else if (path.includes('/emailinboxconfig/')) realTab = 'email';
+                else if (path.includes('/taprootescrowcontract/')) realTab = 'taproot';
+                else if (path.includes('/order/')) realTab = 'orders';
+                else realTab = 'manual';
+            }
+
+            const activeBtn = document.getElementById('tab-btn-' + tabName) || document.getElementById('tab-btn-current');
+            if (activeBtn) {
+                activeBtn.className = "px-3 py-1.5 font-semibold rounded-md bg-indigo-600 text-white shadow-sm";
+            }
+
+            // Рендер контента
+            body.innerHTML = HELP_DATA[realTab] || HELP_DATA['manual'];
+
+            const subtitles = {
+                cockpit: 'Кабинет арбитража спора: разбор заявлений, чека и вердикта ИИ',
+                orders: 'Таблица сделок: статусы стейт-машины, бейджи DKIM и действия',
+                email: 'Почтовые ящики IMAP: автоматический сбор выписок банков',
+                taproot: 'Taproot 2-of-3 Escrow: ончейн депонирование средств',
+                manual: 'Полное руководство по запуску, кронам и эксплуатации'
+            };
+            if (subtitle) {
+                subtitle.textContent = subtitles[realTab] || 'Справочное руководство оператора';
+            }
+        };
+
+        // Обработка клавиши Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                window.toggleRoboSatsHelpDrawer(false);
+            }
+        });
+    })();
+    </script>
+{% endif %}

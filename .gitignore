@@ -38,6 +38,7 @@ htmlcov
 
 # Complexity
 output/*.html
+!templates/**
 output/*/index.html
 
 # Sphinx
@@ -653,14 +654,20 @@ frontend/coverage/
 
 # frontend statics
 *.html
+!templates/**
 frontend/templates/frontend/*.html
+!templates/**
 frontend/*.html
+!templates/**
 desktopApp/static
 desktopApp/*.html
+!templates/**
 web/static
 web/*.html
+!templates/**
 nodeapp/static
 nodeapp/*.html
+!templates/**
 nodeapp/ssl
 
 # Protocol Buffers
