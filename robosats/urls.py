@@ -26,8 +26,8 @@ VERSION = settings.VERSION
 
 urlpatterns = [
     path("i18n/", include("django.conf.urls.i18n")),
-    path("coordinator/docs/<str:doc_id>/", coordinator_docs_view, name="coordinator_docs"),
-    path("coordinator/docs/", coordinator_docs_view, name="coordinator_docs_default"),
+    path("coordinator/docs/<str:doc_id>/", admin.site.admin_view(coordinator_docs_view), name="coordinator_docs"),
+    path("coordinator/docs/", admin.site.admin_view(coordinator_docs_view), name="coordinator_docs_default"),
     path("coordinator/", admin.site.urls),
     path("api/", include("api.urls")),
     # path('chat/', include('chat.urls')),

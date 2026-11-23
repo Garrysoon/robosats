@@ -4,6 +4,7 @@ from pathlib import Path
 import markdown
 
 from django.conf import settings
+from django.contrib import admin
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render
 from django.utils.safestring import mark_safe
@@ -66,13 +67,14 @@ def coordinator_docs_view(request, doc_id="launch"):
             extensions=["tables", "fenced_code", "toc"],
         )
 
+    admin_context = admin.site.each_context(request)
     context = {
+        **admin_context,
         "title": doc_info["title"],
         "doc_id": doc_id,
         "docs_map": DOCS_MAP,
         "content": mark_safe(content),
-        "site_header": _("RoboSats Ops Cockpit"),
-        "site_title": _("RoboSats Coordinator"),
+        "is_nav_sidebar_enabled": True,
         "has_permission": True,
     }
     return render(request, "admin/coordinator_docs.html", context)

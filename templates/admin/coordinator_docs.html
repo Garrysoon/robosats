@@ -1,180 +1,348 @@
-{% extends "admin/base.html" %}
+{% extends "admin/base_site.html" %}
 {% load i18n static %}
 
 {% block title %}{{ title }} | {{ site_title }}{% endblock %}
 
 {% block content %}
-<div class="px-2 py-4 max-w-5xl mx-auto space-y-6">
+<div class="docs-container" style="max-width: 1200px; margin: 0 auto; padding: 10px 0 40px 0;">
 
-    <!-- Верхний блок переключения документов -->
-    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl bg-slate-900 border border-slate-800 shadow-lg">
-        <div class="flex items-center gap-3">
-            <span class="material-symbols-outlined text-3xl text-indigo-400">library_books</span>
+    <!-- Шапка документа -->
+    <div class="docs-header-card" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; padding: 20px 24px; border-radius: 12px; margin-bottom: 20px;">
+        <div style="display: flex; align-items: center; gap: 14px;">
+            <div class="docs-icon-badge" style="width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                <span class="material-symbols-outlined" style="font-size: 26px;">library_books</span>
+            </div>
             <div>
-                <h1 class="text-xl font-bold text-white tracking-tight">{{ title }}</h1>
-                <p class="text-xs text-slate-400 mt-0.5">Официальная база знаний и регламенты оператора координатора</p>
+                <h1 class="docs-header-title" style="margin: 0; font-size: 20px; font-weight: 800; line-height: 1.3;">{{ title }}</h1>
+                <p class="docs-header-subtitle" style="margin: 4px 0 0 0; font-size: 13px;">Официальная база знаний, регламенты и руководства оператора RoboSats</p>
             </div>
         </div>
 
-        <div class="flex items-center gap-2">
-            <button onclick="window.print()" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition cursor-pointer">
-                <span class="material-symbols-outlined text-sm">print</span>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <button onclick="window.print()" class="docs-btn-secondary" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; font-size: 13px; font-weight: 600; border-radius: 8px; cursor: pointer; border: none; transition: all 0.2s;">
+                <span class="material-symbols-outlined" style="font-size: 16px;">print</span>
                 <span>Печать / PDF</span>
             </button>
-            <a href="/coordinator/" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition">
-                <span class="material-symbols-outlined text-sm">arrow_back</span>
+            <a href="/coordinator/" class="docs-btn-primary" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; font-size: 13px; font-weight: 700; border-radius: 8px; text-decoration: none; transition: all 0.2s;">
+                <span class="material-symbols-outlined" style="font-size: 16px;">arrow_back</span>
                 <span>В панель</span>
             </a>
         </div>
     </div>
 
-    <!-- Вкладки доступных документов -->
-    <div class="flex gap-2 border-b border-slate-800 pb-2 overflow-x-auto text-xs font-semibold">
+    <!-- Вкладки навигации по документам -->
+    <div class="docs-tabs-nav" style="display: flex; gap: 8px; padding-bottom: 16px; margin-bottom: 24px; overflow-x: auto;">
         <a href="{% url 'coordinator_docs' 'launch' %}" 
-           class="inline-flex items-center gap-2 px-4 py-2 rounded-lg transition {% if doc_id == 'launch' %}bg-indigo-600 text-white shadow-sm{% else %}bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800 border border-slate-800{% endif %}">
-            <span class="material-symbols-outlined text-sm">rocket_launch</span>
+           class="docs-tab-link {% if doc_id == 'launch' %}active{% endif %}"
+           style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 700; text-decoration: none; transition: all 0.15s; white-space: nowrap;">
+            <span class="material-symbols-outlined" style="font-size: 18px;">rocket_launch</span>
             <span>Инструкция по запуску</span>
         </a>
         <a href="{% url 'coordinator_docs' 'disputes' %}" 
-           class="inline-flex items-center gap-2 px-4 py-2 rounded-lg transition {% if doc_id == 'disputes' %}bg-indigo-600 text-white shadow-sm{% else %}bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800 border border-slate-800{% endif %}">
-            <span class="material-symbols-outlined text-sm">gavel</span>
+           class="docs-tab-link {% if doc_id == 'disputes' %}active{% endif %}"
+           style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 700; text-decoration: none; transition: all 0.15s; white-space: nowrap;">
+            <span class="material-symbols-outlined" style="font-size: 18px;">gavel</span>
             <span>Регламент арбитража</span>
         </a>
         <a href="{% url 'coordinator_docs' 'i18n' %}" 
-           class="inline-flex items-center gap-2 px-4 py-2 rounded-lg transition {% if doc_id == 'i18n' %}bg-indigo-600 text-white shadow-sm{% else %}bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800 border border-slate-800{% endif %}">
-            <span class="material-symbols-outlined text-sm">translate</span>
+           class="docs-tab-link {% if doc_id == 'i18n' %}active{% endif %}"
+           style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 700; text-decoration: none; transition: all 0.15s; white-space: nowrap;">
+            <span class="material-symbols-outlined" style="font-size: 18px;">translate</span>
             <span>Локализация и i18n</span>
         </a>
     </div>
 
-    <!-- Контентная область с отрендеренным Markdown -->
-    <div class="p-8 rounded-xl bg-slate-900 border border-slate-800 shadow-xl doc-content">
-        {{ content }}
+    <!-- Основная область статьи -->
+    <div class="docs-content-wrapper" style="border-radius: 12px; padding: 36px 44px;">
+        <article class="doc-content">
+            {{ content }}
+        </article>
     </div>
+
 </div>
 
 <style>
-/* Стили для статьи документации */
+/* ==========================================================================
+   КОМПЛЕКСНЫЕ СТИЛИ БАЗЫ ЗНАНИЙ (С ПОЛНОЙ ПОДДЕРЖКОЙ ТЕМ И ВЫСОКИМ КОНТРАСТОМ)
+   ========================================================================== */
+
+/* 1. ПО УМОЛЧАНИЮ (ТЕМНАЯ ТЕМА - DARK COCKPIT THEME) */
+:root, html.dark {
+    --doc-bg-card: #0f172a;
+    --doc-bg-body: #0b0f19;
+    --doc-border: #1e293b;
+    --doc-border-strong: #334155;
+    --doc-text: #e2e8f0;
+    --doc-text-muted: #94a3b8;
+    --doc-text-heading: #ffffff;
+    --doc-text-accent: #38bdf8;
+    --doc-code-bg: #020617;
+    --doc-code-border: #1e293b;
+    --doc-table-header: #020617;
+    --doc-table-even: #111827;
+    --doc-tab-inactive-bg: #1e293b;
+    --doc-tab-inactive-text: #94a3b8;
+    --doc-tab-inactive-border: #334155;
+    --doc-icon-badge-bg: rgba(99, 102, 241, 0.15);
+    --doc-icon-badge-color: #818cf8;
+    --doc-btn-sec-bg: #1e293b;
+    --doc-btn-sec-text: #f1f5f9;
+    --doc-btn-sec-border: #334155;
+}
+
+/* 2. СВЕТЛАЯ ТЕМА (LIGHT THEME FALLBACK) */
+html:not(.dark) {
+    --doc-bg-card: #f8fafc;
+    --doc-bg-body: #ffffff;
+    --doc-border: #e2e8f0;
+    --doc-border-strong: #cbd5e1;
+    --doc-text: #1e293b;
+    --doc-text-muted: #64748b;
+    --doc-text-heading: #0f172a;
+    --doc-text-accent: #0284c7;
+    --doc-code-bg: #f1f5f9;
+    --doc-code-border: #cbd5e1;
+    --doc-table-header: #f8fafc;
+    --doc-table-even: #f8fafc;
+    --doc-tab-inactive-bg: #f1f5f9;
+    --doc-tab-inactive-text: #475569;
+    --doc-tab-inactive-border: #cbd5e1;
+    --doc-icon-badge-bg: #e0e7ff;
+    --doc-icon-badge-color: #4338ca;
+    --doc-btn-sec-bg: #f1f5f9;
+    --doc-btn-sec-text: #0f172a;
+    --doc-btn-sec-border: #cbd5e1;
+}
+
+/* Шапка документа */
+.docs-header-card {
+    background: var(--doc-bg-card) !important;
+    border: 1px solid var(--doc-border) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+.docs-header-title {
+    color: var(--doc-text-heading) !important;
+}
+.docs-header-subtitle {
+    color: var(--doc-text-muted) !important;
+}
+.docs-icon-badge {
+    background: var(--doc-icon-badge-bg) !important;
+    color: var(--doc-icon-badge-color) !important;
+}
+.docs-btn-secondary {
+    background: var(--doc-btn-sec-bg) !important;
+    color: var(--doc-btn-sec-text) !important;
+    border: 1px solid var(--doc-btn-sec-border) !important;
+}
+.docs-btn-secondary:hover {
+    filter: brightness(1.15);
+}
+.docs-btn-primary {
+    background: #4f46e5 !important;
+    color: #ffffff !important;
+    border: 1px solid #4338ca !important;
+    box-shadow: 0 2px 8px rgba(79, 70, 229, 0.35);
+}
+.docs-btn-primary:hover {
+    background: #4338ca !important;
+}
+
+/* Вкладки навигации */
+.docs-tabs-nav {
+    border-bottom: 1px solid var(--doc-border) !important;
+}
+.docs-tab-link {
+    background: var(--doc-tab-inactive-bg) !important;
+    color: var(--doc-tab-inactive-text) !important;
+    border: 1px solid var(--doc-tab-inactive-border) !important;
+}
+.docs-tab-link:hover {
+    color: var(--doc-text-heading) !important;
+    border-color: var(--doc-border-strong) !important;
+}
+.docs-tab-link.active {
+    background: #4f46e5 !important;
+    color: #ffffff !important;
+    border-color: #4338ca !important;
+    box-shadow: 0 2px 8px rgba(79, 70, 229, 0.4) !important;
+}
+
+/* Карточка со статьей документации */
+.docs-content-wrapper {
+    background: var(--doc-bg-body) !important;
+    border: 1px solid var(--doc-border) !important;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+}
+
+/* Типографика статьи */
 .doc-content {
-    color: #cbd5e1;
-    font-size: 14px;
-    line-height: 1.7;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: var(--doc-text) !important;
+    font-size: 14.5px;
+    line-height: 1.75;
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 .doc-content h1 {
-    font-size: 24px;
-    font-weight: 800;
-    color: #ffffff;
-    margin-top: 0;
-    margin-bottom: 20px;
-    padding-bottom: 12px;
-    border-bottom: 2px solid #334155;
+    font-size: 26px !important;
+    font-weight: 800 !important;
+    color: var(--doc-text-heading) !important;
+    margin-top: 0 !important;
+    margin-bottom: 20px !important;
+    padding-bottom: 14px !important;
+    border-bottom: 2px solid var(--doc-border-strong) !important;
+    line-height: 1.3 !important;
 }
 .doc-content h2 {
-    font-size: 18px;
-    font-weight: 700;
-    color: #f1f5f9;
-    margin-top: 32px;
-    margin-bottom: 14px;
-    padding-bottom: 6px;
-    border-bottom: 1px solid #1e293b;
+    font-size: 19px !important;
+    font-weight: 700 !important;
+    color: var(--doc-text-heading) !important;
+    margin-top: 38px !important;
+    margin-bottom: 16px !important;
+    padding-bottom: 8px !important;
+    border-bottom: 1px solid var(--doc-border) !important;
 }
 .doc-content h3 {
-    font-size: 15px;
-    font-weight: 700;
-    color: #93c5fd;
-    margin-top: 24px;
-    margin-bottom: 10px;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    color: var(--doc-text-accent) !important;
+    margin-top: 28px !important;
+    margin-bottom: 12px !important;
+}
+.doc-content h4 {
+    font-size: 14.5px !important;
+    font-weight: 700 !important;
+    color: var(--doc-text-heading) !important;
+    margin-top: 20px !important;
+    margin-bottom: 8px !important;
 }
 .doc-content p {
-    margin-top: 0;
-    margin-bottom: 14px;
+    margin-top: 0 !important;
+    margin-bottom: 16px !important;
+    color: var(--doc-text) !important;
+}
+.doc-content strong, .doc-content b {
+    color: var(--doc-text-heading) !important;
+    font-weight: 700 !important;
 }
 .doc-content ul, .doc-content ol {
-    margin-top: 0;
-    margin-bottom: 16px;
-    padding-left: 24px;
+    margin-top: 0 !important;
+    margin-bottom: 20px !important;
+    padding-left: 28px !important;
 }
 .doc-content li {
-    margin-bottom: 6px;
+    margin-bottom: 8px !important;
+    color: var(--doc-text) !important;
 }
+.doc-content a {
+    color: #38bdf8 !important;
+    text-decoration: underline !important;
+}
+.doc-content a:hover {
+    color: #7dd3fc !important;
+}
+
+/* Код и листинги */
 .doc-content code {
-    background-color: #020617;
-    color: #38bdf8;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 12.5px;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    border: 1px solid #1e293b;
+    background-color: var(--doc-code-bg) !important;
+    color: #38bdf8 !important;
+    padding: 3px 7px !important;
+    border-radius: 5px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+    border: 1px solid var(--doc-code-border) !important;
+}
+html:not(.dark) .doc-content code {
+    color: #0369a1 !important;
 }
 .doc-content pre {
-    background-color: #020617;
-    border: 1px solid #1e293b;
-    border-radius: 8px;
-    padding: 16px;
-    overflow-x: auto;
-    margin-top: 10px;
-    margin-bottom: 20px;
+    background-color: #020617 !important;
+    border: 1px solid #1e293b !important;
+    border-radius: 10px !important;
+    padding: 18px 22px !important;
+    overflow-x: auto !important;
+    margin: 16px 0 24px 0 !important;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 .doc-content pre code {
-    background: transparent;
-    padding: 0;
-    border: none;
-    color: #e2e8f0;
-    font-size: 13px;
-    line-height: 1.5;
+    background: transparent !important;
+    padding: 0 !important;
+    border: none !important;
+    color: #f1f5f9 !important;
+    font-size: 13.5px !important;
+    line-height: 1.65 !important;
+    font-weight: 400 !important;
 }
+
+/* Таблицы */
 .doc-content table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 14px;
-    margin-bottom: 24px;
-    font-size: 13px;
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin: 20px 0 28px 0 !important;
+    font-size: 13.5px !important;
+    border: 1px solid var(--doc-border) !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
 }
 .doc-content th {
-    background-color: #020617;
-    color: #f8fafc;
-    font-weight: 700;
-    text-align: left;
-    padding: 10px 14px;
-    border: 1px solid #334155;
+    background-color: var(--doc-table-header) !important;
+    color: var(--doc-text-heading) !important;
+    font-weight: 700 !important;
+    text-align: left !important;
+    padding: 12px 16px !important;
+    border: 1px solid var(--doc-border-strong) !important;
 }
 .doc-content td {
-    padding: 8px 14px;
-    border: 1px solid #1e293b;
+    padding: 10px 16px !important;
+    border: 1px solid var(--doc-border) !important;
+    color: var(--doc-text) !important;
 }
-.doc-content tr:nth-child(even) {
-    background-color: #090d16;
+.doc-content tr:nth-child(even) td {
+    background-color: var(--doc-table-even) !important;
 }
+
+/* Цитаты и Алерты */
 .doc-content blockquote {
-    margin: 16px 0;
-    padding: 12px 18px;
-    border-left: 4px solid #4f46e5;
-    background-color: rgba(79, 70, 229, 0.1);
-    border-radius: 0 8px 8px 0;
-    color: #c7d2fe;
+    margin: 20px 0 !important;
+    padding: 14px 20px !important;
+    border-left: 4px solid #6366f1 !important;
+    background-color: rgba(99, 102, 241, 0.12) !important;
+    border-radius: 0 8px 8px 0 !important;
+    color: var(--doc-text-heading) !important;
 }
 .doc-alert {
-    padding: 12px 16px;
-    border-radius: 8px;
-    margin: 16px 0;
-    font-size: 13px;
-    line-height: 1.5;
+    padding: 14px 20px !important;
+    border-radius: 8px !important;
+    margin: 20px 0 !important;
+    font-size: 13.5px !important;
+    line-height: 1.6 !important;
 }
 .doc-alert-note {
-    background-color: rgba(59, 130, 246, 0.15);
-    border-left: 4px solid #3b82f6;
-    color: #bfdbfe;
+    background-color: rgba(30, 58, 138, 0.35) !important;
+    border-left: 4px solid #3b82f6 !important;
+    color: #bfdbfe !important;
+}
+html:not(.dark) .doc-alert-note {
+    background-color: #eff6ff !important;
+    color: #1e40af !important;
 }
 .doc-alert-important {
-    background-color: rgba(245, 158, 11, 0.15);
-    border-left: 4px solid #f59e0b;
-    color: #fde68a;
+    background-color: rgba(120, 53, 15, 0.35) !important;
+    border-left: 4px solid #f59e0b !important;
+    color: #fde68a !important;
+}
+html:not(.dark) .doc-alert-important {
+    background-color: #fffbeb !important;
+    color: #92400e !important;
 }
 .doc-alert-warning {
-    background-color: rgba(239, 68, 68, 0.15);
-    border-left: 4px solid #ef4444;
-    color: #fecaca;
+    background-color: rgba(127, 29, 29, 0.4) !important;
+    border-left: 4px solid #ef4444 !important;
+    color: #fecaca !important;
+}
+html:not(.dark) .doc-alert-warning {
+    background-color: #fef2f2 !important;
+    color: #991b1b !important;
 }
 </style>
 {% endblock %}

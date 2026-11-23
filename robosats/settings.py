@@ -174,6 +174,7 @@ SPECTACULAR_SETTINGS = {
 }
 
 UNFOLD = {
+    "THEME": "dark",
     "SITE_TITLE": _("RoboSats Coordinator"),
     "SITE_HEADER": _("RoboSats Ops Cockpit"),
     "SITE_SUBHEADER": _("Командный центр P2P Координатора"),
