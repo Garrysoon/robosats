@@ -226,10 +226,22 @@ msgstr "Групповые результаты"
 msgid "Group result"
 msgstr "Групповой результат"
 
+msgid "group results"
+msgstr "Групповые результаты"
+
+msgid "group result"
+msgstr "Групповой результат"
+
 msgid "Task results"
 msgstr "Результаты задач"
 
 msgid "Task result"
+msgstr "Результат задачи"
+
+msgid "task results"
+msgstr "Результаты задач"
+
+msgid "task result"
 msgstr "Результат задачи"
 
 msgid "Periodic Tasks"
@@ -241,10 +253,22 @@ msgstr "Периодические задачи"
 msgid "Periodic task"
 msgstr "Периодическая задача"
 
+msgid "periodic tasks"
+msgstr "Периодические задачи"
+
+msgid "periodic task"
+msgstr "Периодическая задача"
+
 msgid "Crontabs"
 msgstr "Расписания Cron"
 
 msgid "Crontab"
+msgstr "Расписание Cron"
+
+msgid "crontabs"
+msgstr "Расписания Cron"
+
+msgid "crontab"
 msgstr "Расписание Cron"
 
 msgid "Intervals"
@@ -253,16 +277,34 @@ msgstr "Интервалы выполнения"
 msgid "Interval"
 msgstr "Интервал выполнения"
 
+msgid "intervals"
+msgstr "Интервалы выполнения"
+
+msgid "interval"
+msgstr "Интервал выполнения"
+
 msgid "Solar events"
 msgstr "Солнечные события"
 
 msgid "Solar event"
 msgstr "Солнечное событие"
 
+msgid "solar events"
+msgstr "Солнечные события"
+
+msgid "solar event"
+msgstr "Солнечное событие"
+
 msgid "Clocked"
-msgstr "Точное расписание"
+msgstr "Точное время"
+
+msgid "clocked"
+msgstr "Точное время"
 
 msgid "Clocked tasks"
+msgstr "Задачи по точному времени"
+
+msgid "clocked tasks"
 msgstr "Задачи по точному времени"
 
 msgid "Chat"

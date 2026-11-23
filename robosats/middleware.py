@@ -231,3 +231,27 @@ class TokenAuthMiddleware(BaseMiddleware):
 
 #         response = self.get_response(request)
 #         return response
+
+
+class CoordinatorLocaleMiddleware:
+    """
+    Enforces the coordinator ops cockpit default language (Russian) for all
+    coordinator panel routes unless the operator explicitly sets a language preference cookie.
+    Prevents browsers with English OS headers (Accept-Language: en-US,en) from
+    accidentally forcing the Russian coordinator into English.
+    """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        if request.path.startswith("/coordinator/"):
+            from django.conf import settings
+            from django.utils import translation
+
+            if not request.COOKIES.get(settings.LANGUAGE_COOKIE_NAME):
+                translation.activate(settings.LANGUAGE_CODE)
+                request.LANGUAGE_CODE = settings.LANGUAGE_CODE
+        response = self.get_response(request)
+        return response
+

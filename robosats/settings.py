@@ -301,6 +301,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
+    "robosats.middleware.CoordinatorLocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     # CsrfViewMiddleware is active; DRF API views are individually exempt via
     # APIView.as_view() which calls csrf_exempt internally.  The middleware is
