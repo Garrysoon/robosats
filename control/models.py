@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 from api.lightning.node import LNNode
 
@@ -71,6 +72,10 @@ class AccountingDay(models.Model):
         max_digits=15, decimal_places=3, default=0, null=False, blank=False
     )
 
+    class Meta:
+        verbose_name = _("Accounting day")
+        verbose_name_plural = _("Accounting days")
+
 
 class BalanceLog(models.Model):
     def get_total():
@@ -128,7 +133,13 @@ class BalanceLog(models.Model):
 
     class Meta:
         get_latest_by = "time"
+        verbose_name = _("Balance log")
+        verbose_name_plural = _("Balance logs")
 
 
 class Dispute(models.Model):
+    class Meta:
+        verbose_name = _("Dispute")
+        verbose_name_plural = _("Disputes")
+
     pass

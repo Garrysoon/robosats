@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 from api.models import Order
 
@@ -52,10 +53,16 @@ class ChatRoom(models.Model):
     def __str__(self):
         return f"Chat:{str(self.id)}"
 
+    class Meta:
+        verbose_name = _("Chat room")
+        verbose_name_plural = _("Chat rooms")
+
 
 class Message(models.Model):
     class Meta:
         get_latest_by = "index"
+        verbose_name = _("Message")
+        verbose_name_plural = _("Messages")
 
     # id = models.PositiveBigIntegerField(primary_key=True, default=uuid.uuid4, editable=False)
     order = models.ForeignKey(

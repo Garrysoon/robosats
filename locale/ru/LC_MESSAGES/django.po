@@ -24,6 +24,283 @@ msgstr "Управление: %(app_name)s"
 msgid "Основное API RoboSats administration"
 msgstr "Управление: Основное API RoboSats"
 
+msgid "RoboSats Coordinator Administration"
+msgstr "Администрирование координатора RoboSats"
+
+msgid "Coordinator administration"
+msgstr "Панель управления координатора"
+
+msgid "RoboSats Coordinator Admin"
+msgstr "Админка координатора RoboSats"
+
+msgid "RoboSats Coordinator"
+msgstr "Координатор RoboSats"
+
+msgid "RoboSats Ops Cockpit"
+msgstr "Командный центр RoboSats"
+
+msgid "Site administration"
+msgstr "Панель управления"
+
+msgid "Dashboard"
+msgstr "Панель управления"
+
+msgid "Home"
+msgstr "Главная"
+
+msgid "Search apps and models..."
+msgstr "Поиск приложений и моделей..."
+
+msgid "Search apps and models"
+msgstr "Поиск приложений и моделей..."
+
+msgid "Type to search"
+msgstr "Введите для поиска..."
+
+msgid "Type to search..."
+msgstr "Введите для поиска..."
+
+msgid "No results found"
+msgstr "Ничего не найдено"
+
+msgid "This page yielded into no results."
+msgstr "По вашему запросу ничего не найдено."
+
+msgid "Reset filters"
+msgstr "Сбросить фильтры"
+
+msgid "View on site"
+msgstr "Открыть на сайте"
+
+msgid "Log out"
+msgstr "Выйти"
+
+msgid "Change password"
+msgstr "Сменить пароль"
+
+msgid "Password change"
+msgstr "Смена пароля"
+
+msgid "Recent actions"
+msgstr "Недавние действия"
+
+msgid "My actions"
+msgstr "Мои действия"
+
+msgid "None available"
+msgstr "Нет записей"
+
+msgid "History"
+msgstr "История"
+
+msgid "General"
+msgstr "Общие"
+
+msgid "Filter"
+msgstr "Фильтр"
+
+msgid "Filters"
+msgstr "Фильтры"
+
+msgid "By"
+msgstr "По"
+
+msgid "All"
+msgstr "Все"
+
+msgid "Yes"
+msgstr "Да"
+
+msgid "No"
+msgstr "Нет"
+
+msgid "Unknown"
+msgstr "Неизвестно"
+
+msgid "Are you sure?"
+msgstr "Вы уверены?"
+
+msgid "Delete"
+msgstr "Удалить"
+
+msgid "Save"
+msgstr "Сохранить"
+
+msgid "Save and add another"
+msgstr "Сохранить и добавить другой"
+
+msgid "Save and continue editing"
+msgstr "Сохранить и продолжить редактирование"
+
+msgid "Add"
+msgstr "Добавить"
+
+msgid "Change"
+msgstr "Изменить"
+
+msgid "Select %(verbose_name)s to change"
+msgstr "Выберите объект «%(verbose_name)s» для изменения"
+
+msgid "Add %(name)s"
+msgstr "Добавить «%(name)s»"
+
+msgid "Change %(name)s"
+msgstr "Изменить «%(name)s»"
+
+msgid "Delete %(name)s"
+msgstr "Удалить «%(name)s»"
+
+msgid "Welcome back to"
+msgstr "Добро пожаловать в"
+
+msgid "Log in"
+msgstr "Войти"
+
+msgid "Username"
+msgstr "Имя пользователя"
+
+msgid "Password"
+msgstr "Пароль"
+
+msgid "Forgotten your password or username?"
+msgstr "Забыли пароль или имя пользователя?"
+
+msgid "Please correct the error below."
+msgstr "Пожалуйста, исправьте ошибку ниже."
+
+msgid ""
+"Please enter the correct username and password for a staff account. Note "
+"that both fields may be case-sensitive."
+msgstr ""
+"Пожалуйста, введите корректные имя пользователя и пароль учётной записи "
+"персонала. Оба поля могут быть чувствительны к регистру."
+
+msgid "Authentication and Authorization"
+msgstr "Аутентификация и пользователи"
+
+msgid "Users"
+msgstr "Пользователи"
+
+msgid "User"
+msgstr "Пользователь"
+
+msgid "users"
+msgstr "Пользователи"
+
+msgid "user"
+msgstr "Пользователь"
+
+msgid "Groups"
+msgstr "Группы"
+
+msgid "Group"
+msgstr "Группа"
+
+msgid "groups"
+msgstr "Группы"
+
+msgid "group"
+msgstr "Группа"
+
+msgid "Auth Token"
+msgstr "Токены аутентификации"
+
+msgid "Tokens"
+msgstr "Токены API"
+
+msgid "Token"
+msgstr "Токен API"
+
+msgid "tokens"
+msgstr "Токены API"
+
+msgid "token"
+msgstr "Токен API"
+
+msgid "Celery Results"
+msgstr "Результаты фоновых задач (Celery)"
+
+msgid "Group results"
+msgstr "Групповые результаты"
+
+msgid "Group result"
+msgstr "Групповой результат"
+
+msgid "Task results"
+msgstr "Результаты задач"
+
+msgid "Task result"
+msgstr "Результат задачи"
+
+msgid "Periodic Tasks"
+msgstr "Периодические задачи"
+
+msgid "Periodic tasks"
+msgstr "Периодические задачи"
+
+msgid "Periodic task"
+msgstr "Периодическая задача"
+
+msgid "Crontabs"
+msgstr "Расписания Cron"
+
+msgid "Crontab"
+msgstr "Расписание Cron"
+
+msgid "Intervals"
+msgstr "Интервалы выполнения"
+
+msgid "Interval"
+msgstr "Интервал выполнения"
+
+msgid "Solar events"
+msgstr "Солнечные события"
+
+msgid "Solar event"
+msgstr "Солнечное событие"
+
+msgid "Clocked"
+msgstr "Точное расписание"
+
+msgid "Clocked tasks"
+msgstr "Задачи по точному времени"
+
+msgid "Chat"
+msgstr "Чат сделок"
+
+msgid "Chat rooms"
+msgstr "Комнаты чата"
+
+msgid "Chat room"
+msgstr "Комната чата"
+
+msgid "Messages"
+msgstr "Сообщения чата"
+
+msgid "Message"
+msgstr "Сообщение чата"
+
+msgid "Control"
+msgstr "Финансовый контроль и аудит"
+
+msgid "Accounting days"
+msgstr "Дни бухгалтерского учета"
+
+msgid "Accounting day"
+msgstr "День бухгалтерского учета"
+
+msgid "Balance logs"
+msgstr "Логи баланса"
+
+msgid "Balance log"
+msgstr "Лог баланса"
+
+msgid "Disputes"
+msgstr "Споры (архив)"
+
+msgid "Dispute"
+msgstr "Спор"
+
 msgid "Order"
 msgstr "Сделка"
 
@@ -209,15 +486,6 @@ msgstr "Taproot эскроу-контракт"
 
 msgid "Taproot Escrow Contracts"
 msgstr "Taproot эскроу-контракты"
-
-msgid "RoboSats Coordinator Administration"
-msgstr "Администрирование координатора RoboSats"
-
-msgid "Coordinator administration"
-msgstr "Панель управления координатора"
-
-msgid "RoboSats Coordinator Admin"
-msgstr "Админка координатора RoboSats"
 
 msgid "24h Uptime"
 msgstr "Аптайм за 24ч"

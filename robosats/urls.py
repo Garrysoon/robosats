@@ -34,6 +34,6 @@ urlpatterns = [
     path("", include("frontend.urls")),
 ]
 
-admin.site.site_header = _("RoboSats Coordinator Administration")
-admin.site.index_title = _("Coordinator administration")
-admin.site.site_title = _("RoboSats Coordinator Admin")
+admin.site.site_header = _("RoboSats Ops Cockpit")
+admin.site.index_title = _("Панель управления координатора")
+admin.site.site_title = _("RoboSats Coordinator")

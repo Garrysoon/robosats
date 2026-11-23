@@ -55,6 +55,7 @@
         <!-- Навигационные вкладки разделов справки -->
         <div style="display: flex; background-color: #090d16; border-bottom: 1px solid #1e293b; padding: 10px 18px; gap: 6px; overflow-x: auto;">
             <button type="button" onclick="window.switchHelpTab('current')" id="tab-btn-current" style="padding: 6px 12px; font-size: 12px; font-weight: 700; border-radius: 6px; background-color: #4f46e5; color: #ffffff; border: none; cursor: pointer;">Текущий экран</button>
+            <button type="button" onclick="window.switchHelpTab('dashboard')" id="tab-btn-dashboard" style="padding: 6px 12px; font-size: 12px; font-weight: 600; border-radius: 6px; background-color: #1e293b; color: #94a3b8; border: none; cursor: pointer;">Командный центр</button>
             <button type="button" onclick="window.switchHelpTab('cockpit')" id="tab-btn-cockpit" style="padding: 6px 12px; font-size: 12px; font-weight: 600; border-radius: 6px; background-color: #1e293b; color: #94a3b8; border: none; cursor: pointer;">Кабинет арбитра</button>
             <button type="button" onclick="window.switchHelpTab('orders')" id="tab-btn-orders" style="padding: 6px 12px; font-size: 12px; font-weight: 600; border-radius: 6px; background-color: #1e293b; color: #94a3b8; border: none; cursor: pointer;">Споры и сделки</button>
             <button type="button" onclick="window.switchHelpTab('email')" id="tab-btn-email" style="padding: 6px 12px; font-size: 12px; font-weight: 600; border-radius: 6px; background-color: #1e293b; color: #94a3b8; border: none; cursor: pointer;">Почта IMAP</button>
@@ -79,6 +80,44 @@
     <script>
     (function() {
         const HELP_DATA = {
+            dashboard: `
+                <div style="display: flex; flex-direction: column; gap: 16px;">
+                    <div style="background: rgba(30, 27, 75, 0.7); border: 1px solid #4338ca; border-radius: 10px; padding: 16px;">
+                        <div style="font-weight: 700; font-size: 15px; color: #ffffff; margin-bottom: 4px;">🚀 Командный центр координатора RoboSats (Ops Cockpit)</div>
+                        <p style="font-size: 12px; color: #cbd5e1; margin: 0; line-height: 1.5;">Главная панель управления оператора суверенного P2P координатора. Обеспечивает сквозной мониторинг и арбитраж сделок, прием выписок банковских чеков и ончейн Taproot-эскроу.</p>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <div style="font-weight: 700; color: #ffffff; border-bottom: 1px solid #334155; padding-bottom: 6px; font-size: 14px;">Структура навигации и разделы:</div>
+
+                        <div style="background: #1e293b; padding: 12px 14px; border-radius: 8px; border-left: 4px solid #ef4444;">
+                            <b style="color: #ffffff; font-size: 13px;">🚨 АРБИТРАЖ И СПОРЫ:</b>
+                            <p style="margin: 4px 0 0 0; color: #94a3b8; font-size: 12px;">Мониторинг проблемных сделок. Автоматический расчет вероятностей победы на основе криптографических доказательств и вынесение вердикта в 1 клик.</p>
+                        </div>
+
+                        <div style="background: #1e293b; padding: 12px 14px; border-radius: 8px; border-left: 4px solid #3b82f6;">
+                            <b style="color: #ffffff; font-size: 13px;">🏦 БАНКОВСКИЕ ЧЕКИ И ФИНАНСЫ:</b>
+                            <p style="margin: 4px 0 0 0; color: #94a3b8; font-size: 12px;">Подключение почтовых ящиков IMAP для автоматической выгрузки выписок и валидация цифровых подписей банков (DKIM/PDF). Ончейн Taproot мультисиг-контракты.</p>
+                        </div>
+
+                        <div style="background: #1e293b; padding: 12px 14px; border-radius: 8px; border-left: 4px solid #10b981;">
+                            <b style="color: #ffffff; font-size: 13px;">📊 ТОРГОВЛЯ И МОНИТОРИНГ:</b>
+                            <p style="margin: 4px 0 0 0; color: #94a3b8; font-size: 12px;">Полный список сделок, анонимные роботы пользователей, статус подключений федерации координаторов и пинги сети.</p>
+                        </div>
+
+                        <div style="background: #1e293b; padding: 12px 14px; border-radius: 8px; border-left: 4px solid #8b5cf6;">
+                            <b style="color: #ffffff; font-size: 13px;">📚 БАЗА ЗНАНИЙ И ДОКУМЕНТАЦИЯ:</b>
+                            <p style="margin: 4px 0 0 0; color: #94a3b8; font-size: 12px;">Интерактивные руководства по быстрому запуску, настройке LND/Tor, регламенту разрешения споров и локализации.</p>
+                        </div>
+                    </div>
+
+                    <div style="background: #1e293b; padding: 14px; border-radius: 8px; border: 1px solid #334155; font-size: 12px; display: flex; flex-direction: column; gap: 6px;">
+                        <b style="color: #ffffff;">⚡ Горячие клавиши панели:</b>
+                        <div>• <code style="background: #020617; padding: 2px 6px; border-radius: 4px; color: #38bdf8;">Ctrl + K</code> или <code style="background: #020617; padding: 2px 6px; border-radius: 4px; color: #38bdf8;">Cmd + K</code> — Быстрый сквозной поиск по моделям и объектам.</div>
+                        <div>• <code style="background: #020617; padding: 2px 6px; border-radius: 4px; color: #38bdf8;">Esc</code> — Мгновенное закрытие текущего окна или справки.</div>
+                    </div>
+                </div>
+            `,
             cockpit: `
                 <div style="display: flex; flex-direction: column; gap: 16px;">
                     <div style="background: rgba(30, 27, 75, 0.7); border: 1px solid #4338ca; border-radius: 10px; padding: 16px;">
@@ -297,6 +336,8 @@
                     activeTab = 'orders';
                 } else if (path.includes('/coordinator/api')) {
                     activeTab = 'api_index';
+                } else if (path === '/coordinator/' || path === '/coordinator') {
+                    activeTab = 'dashboard';
                 } else {
                     activeTab = 'manual';
                 }
@@ -332,6 +373,7 @@
                 else if (path.includes('/taprootescrowcontract/')) realTab = 'taproot';
                 else if (path.includes('/order/')) realTab = 'orders';
                 else if (path.includes('/coordinator/api')) realTab = 'api_index';
+                else if (path === '/coordinator/' || path === '/coordinator') realTab = 'dashboard';
                 else realTab = 'manual';
             }
 
@@ -345,6 +387,7 @@
             body.innerHTML = HELP_DATA[realTab] || HELP_DATA['manual'];
 
             const subtitles = {
+                dashboard: 'Командный центр координатора: обзор разделов, функций и горячих клавиш',
                 cockpit: 'Кабинет арбитража спора: разбор заявлений, чека и вердикта ИИ',
                 orders: 'Таблица сделок: статусы стейт-машины, бейджи DKIM и действия',
                 email: 'Почтовые ящики IMAP: автоматический сбор выписок банков',
