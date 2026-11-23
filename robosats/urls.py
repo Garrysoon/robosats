@@ -20,10 +20,14 @@ from django.contrib import admin
 from django.urls import include, path
 from django.utils.translation import gettext_lazy as _
 
+from api.views_docs import coordinator_docs_view
+
 VERSION = settings.VERSION
 
 urlpatterns = [
     path("i18n/", include("django.conf.urls.i18n")),
+    path("coordinator/docs/<str:doc_id>/", coordinator_docs_view, name="coordinator_docs"),
+    path("coordinator/docs/", coordinator_docs_view, name="coordinator_docs_default"),
     path("coordinator/", admin.site.urls),
     path("api/", include("api.urls")),
     # path('chat/', include('chat.urls')),

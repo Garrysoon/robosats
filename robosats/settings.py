@@ -238,6 +238,27 @@ UNFOLD = {
                 ],
             },
             {
+                "title": _("📚 БАЗА ЗНАНИЙ И ДОКУМЕНТАЦИЯ"),
+                "separator": True,
+                "items": [
+                    {
+                        "title": _("Инструкция по запуску"),
+                        "icon": "rocket_launch",
+                        "link": reverse_lazy("coordinator_docs_default"),
+                    },
+                    {
+                        "title": _("Регламент арбитража споров"),
+                        "icon": "gavel",
+                        "link": reverse_lazy("coordinator_docs", kwargs={"doc_id": "disputes"}),
+                    },
+                    {
+                        "title": _("Руководство по локализации"),
+                        "icon": "translate",
+                        "link": reverse_lazy("coordinator_docs", kwargs={"doc_id": "i18n"}),
+                    },
+                ],
+            },
+            {
                 "title": _("⚙️ СИСТЕМНЫЙ АУДИТ (READ-ONLY)"),
                 "separator": True,
                 "collapsible": True,

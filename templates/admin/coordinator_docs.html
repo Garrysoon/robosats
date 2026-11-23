@@ -1,0 +1,180 @@
+{% extends "admin/base.html" %}
+{% load i18n static %}
+
+{% block title %}{{ title }} | {{ site_title }}{% endblock %}
+
+{% block content %}
+<div class="px-2 py-4 max-w-5xl mx-auto space-y-6">
+
+    <!-- Верхний блок переключения документов -->
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl bg-slate-900 border border-slate-800 shadow-lg">
+        <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-3xl text-indigo-400">library_books</span>
+            <div>
+                <h1 class="text-xl font-bold text-white tracking-tight">{{ title }}</h1>
+                <p class="text-xs text-slate-400 mt-0.5">Официальная база знаний и регламенты оператора координатора</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <button onclick="window.print()" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition cursor-pointer">
+                <span class="material-symbols-outlined text-sm">print</span>
+                <span>Печать / PDF</span>
+            </button>
+            <a href="/coordinator/" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition">
+                <span class="material-symbols-outlined text-sm">arrow_back</span>
+                <span>В панель</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Вкладки доступных документов -->
+    <div class="flex gap-2 border-b border-slate-800 pb-2 overflow-x-auto text-xs font-semibold">
+        <a href="{% url 'coordinator_docs' 'launch' %}" 
+           class="inline-flex items-center gap-2 px-4 py-2 rounded-lg transition {% if doc_id == 'launch' %}bg-indigo-600 text-white shadow-sm{% else %}bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800 border border-slate-800{% endif %}">
+            <span class="material-symbols-outlined text-sm">rocket_launch</span>
+            <span>Инструкция по запуску</span>
+        </a>
+        <a href="{% url 'coordinator_docs' 'disputes' %}" 
+           class="inline-flex items-center gap-2 px-4 py-2 rounded-lg transition {% if doc_id == 'disputes' %}bg-indigo-600 text-white shadow-sm{% else %}bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800 border border-slate-800{% endif %}">
+            <span class="material-symbols-outlined text-sm">gavel</span>
+            <span>Регламент арбитража</span>
+        </a>
+        <a href="{% url 'coordinator_docs' 'i18n' %}" 
+           class="inline-flex items-center gap-2 px-4 py-2 rounded-lg transition {% if doc_id == 'i18n' %}bg-indigo-600 text-white shadow-sm{% else %}bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800 border border-slate-800{% endif %}">
+            <span class="material-symbols-outlined text-sm">translate</span>
+            <span>Локализация и i18n</span>
+        </a>
+    </div>
+
+    <!-- Контентная область с отрендеренным Markdown -->
+    <div class="p-8 rounded-xl bg-slate-900 border border-slate-800 shadow-xl doc-content">
+        {{ content }}
+    </div>
+</div>
+
+<style>
+/* Стили для статьи документации */
+.doc-content {
+    color: #cbd5e1;
+    font-size: 14px;
+    line-height: 1.7;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+.doc-content h1 {
+    font-size: 24px;
+    font-weight: 800;
+    color: #ffffff;
+    margin-top: 0;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #334155;
+}
+.doc-content h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #f1f5f9;
+    margin-top: 32px;
+    margin-bottom: 14px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #1e293b;
+}
+.doc-content h3 {
+    font-size: 15px;
+    font-weight: 700;
+    color: #93c5fd;
+    margin-top: 24px;
+    margin-bottom: 10px;
+}
+.doc-content p {
+    margin-top: 0;
+    margin-bottom: 14px;
+}
+.doc-content ul, .doc-content ol {
+    margin-top: 0;
+    margin-bottom: 16px;
+    padding-left: 24px;
+}
+.doc-content li {
+    margin-bottom: 6px;
+}
+.doc-content code {
+    background-color: #020617;
+    color: #38bdf8;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12.5px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    border: 1px solid #1e293b;
+}
+.doc-content pre {
+    background-color: #020617;
+    border: 1px solid #1e293b;
+    border-radius: 8px;
+    padding: 16px;
+    overflow-x: auto;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+.doc-content pre code {
+    background: transparent;
+    padding: 0;
+    border: none;
+    color: #e2e8f0;
+    font-size: 13px;
+    line-height: 1.5;
+}
+.doc-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 14px;
+    margin-bottom: 24px;
+    font-size: 13px;
+}
+.doc-content th {
+    background-color: #020617;
+    color: #f8fafc;
+    font-weight: 700;
+    text-align: left;
+    padding: 10px 14px;
+    border: 1px solid #334155;
+}
+.doc-content td {
+    padding: 8px 14px;
+    border: 1px solid #1e293b;
+}
+.doc-content tr:nth-child(even) {
+    background-color: #090d16;
+}
+.doc-content blockquote {
+    margin: 16px 0;
+    padding: 12px 18px;
+    border-left: 4px solid #4f46e5;
+    background-color: rgba(79, 70, 229, 0.1);
+    border-radius: 0 8px 8px 0;
+    color: #c7d2fe;
+}
+.doc-alert {
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin: 16px 0;
+    font-size: 13px;
+    line-height: 1.5;
+}
+.doc-alert-note {
+    background-color: rgba(59, 130, 246, 0.15);
+    border-left: 4px solid #3b82f6;
+    color: #bfdbfe;
+}
+.doc-alert-important {
+    background-color: rgba(245, 158, 11, 0.15);
+    border-left: 4px solid #f59e0b;
+    color: #fde68a;
+}
+.doc-alert-warning {
+    background-color: rgba(239, 68, 68, 0.15);
+    border-left: 4px solid #ef4444;
+    color: #fecaca;
+}
+</style>
+{% endblock %}
