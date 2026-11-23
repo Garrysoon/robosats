@@ -4,6 +4,7 @@ from django.contrib import admin, messages
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import Group, User
 from django.db.models import F
+from django.urls import reverse
 from django.utils.html import mark_safe
 from django.utils.translation import gettext_lazy as _
 from django_admin_relation_links import AdminChangeLinksMixin
@@ -92,28 +93,16 @@ class LNPaymentInline(admin.StackedInline):
 class OrderAdmin(AdminChangeLinksMixin, ModelAdmin):
     inlines = [LNPaymentInline]
     list_display = (
-        "id",
-        "type",
-        "maker_link",
-        "taker_link",
-        "status",
-        "amt",
-        "currency_link",
-        "t0_satoshis",
-        "is_disputed",
-        "dkim_receipt",
-        "arbitration_recommendation",
-        "f2f_badge",
-        "is_fiat_sent",
-        "created_at",
-        "expires_at",
-        "payout_tx_link",
-        "payout_link",
-        "maker_bond_link",
-        "taker_bond_link",
-        "trade_escrow_link",
+        "order_badge",
+        "parties_display",
+        "amount_display",
+        "status_badge",
+        "evidence_display",
+        "verdict_display",
+        "quick_actions",
     )
-    list_display_links = ("id", "type")
+    list_display_links = ("order_badge",)
+    ordering = ("-is_disputed", "-id")
     change_links = (
         "maker",
         "taker",
@@ -213,6 +202,212 @@ class OrderAdmin(AdminChangeLinksMixin, ModelAdmin):
             },
         ),
     )
+
+    @admin.display(description=_("Сделка"), ordering="id")
+    def order_badge(self, obj):
+        change_url = reverse("admin:api_order_change", args=[obj.id])
+        type_style = (
+            "background:#064e3b;color:#34d399;border:1px solid #059669;"
+            if obj.type == 0
+            else "background:#1e3a5f;color:#60a5fa;border:1px solid #2563eb;"
+        )
+        type_label = _("ПОКУПКА") if obj.type == 0 else _("ПРОДАЖА")
+        created_str = obj.created_at.strftime("%d.%m %H:%M") if obj.created_at else ""
+        return mark_safe(
+            f'<div style="font-size:12px;line-height:1.3;">'
+            f'  <div style="display:flex;align-items:center;gap:6px;">'
+            f'    <a href="{change_url}" style="font-weight:700;font-size:13px;color:#c084fc;text-decoration:none;">#{obj.id}</a>'
+            f'    <span style="padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700;{type_style}">{type_label}</span>'
+            f'  </div>'
+            f'  <div style="color:#64748b;font-size:11px;margin-top:3px;white-space:nowrap;">{created_str}</div>'
+            f'</div>'
+        )
+
+    @admin.display(description=_("Стороны (Покупатель / Продавец)"))
+    def parties_display(self, obj):
+        maker_is_buyer = Logics.is_buyer(obj, obj.maker) if obj.maker else True
+        if maker_is_buyer:
+            buyer = obj.maker
+            buyer_role = "Мейкер"
+            seller = obj.taker
+            seller_role = "Тейкер"
+        else:
+            buyer = obj.taker
+            buyer_role = "Тейкер"
+            seller = obj.maker
+            seller_role = "Мейкер"
+
+        if buyer:
+            buyer_url = reverse("admin:api_robot_change", args=[buyer.id])
+            buyer_html = f'<a href="{buyer_url}" style="color:#f8fafc;font-weight:600;text-decoration:none;">{buyer.username}</a> <span style="color:#64748b;font-size:10px;">({buyer_role})</span>'
+        else:
+            buyer_html = '<span style="color:#64748b;">— Ожидает —</span>'
+
+        if seller:
+            seller_url = reverse("admin:api_robot_change", args=[seller.id])
+            seller_html = f'<a href="{seller_url}" style="color:#f8fafc;font-weight:600;text-decoration:none;">{seller.username}</a> <span style="color:#64748b;font-size:10px;">({seller_role})</span>'
+        else:
+            seller_html = '<span style="color:#64748b;">— Ожидает —</span>'
+
+        return mark_safe(
+            f'<div style="font-size:12px;line-height:1.4;">'
+            f'  <div style="display:flex;align-items:center;gap:4px;white-space:nowrap;">'
+            f'    <span style="color:#10b981;font-weight:700;">🟢 Покупатель:</span> {buyer_html}'
+            f'  </div>'
+            f'  <div style="display:flex;align-items:center;gap:4px;white-space:nowrap;margin-top:2px;">'
+            f'    <span style="color:#f43f5e;font-weight:700;">🔴 Продавец:</span> {seller_html}'
+            f'  </div>'
+            f'</div>'
+        )
+
+    @admin.display(description=_("Сумма и объем"), ordering="amount")
+    def amount_display(self, obj):
+        curr = str(obj.currency) if obj.currency else ""
+        try:
+            amt_val = f"{float(obj.amount):,.1f}".replace(",", " ").replace(".", ",")
+        except Exception:
+            amt_val = str(obj.amount)
+
+        sats_html = ""
+        sats = obj.satoshis or obj.t0_satoshis
+        if sats:
+            try:
+                sats_val = f"{int(sats):,}".replace(",", " ")
+            except Exception:
+                sats_val = str(sats)
+            sats_html = f'<div style="color:#fbbf24;font-size:11px;font-weight:600;margin-top:1px;white-space:nowrap;">⚡ {sats_val} sat</div>'
+
+        method_html = ""
+        if obj.payment_method:
+            method_html = f'<div style="color:#94a3b8;font-size:10px;margin-top:1px;white-space:nowrap;">💳 {obj.payment_method}</div>'
+
+        return mark_safe(
+            f'<div style="font-size:12px;line-height:1.3;">'
+            f'  <div style="font-weight:700;font-size:13px;color:#f8fafc;white-space:nowrap;">{amt_val} {curr}</div>'
+            f'  {sats_html}'
+            f'  {method_html}'
+            f'</div>'
+        )
+
+    @admin.display(description=_("Статус и фиат"), ordering="status")
+    def status_badge(self, obj):
+        if obj.is_disputed:
+            st_html = '<span style="display:inline-block;padding:2px 8px;border-radius:6px;background:#7f1d1d;color:#fca5a5;font-weight:700;font-size:11px;border:1px solid #ef4444;white-space:nowrap;">🚨 В СПОРЕ</span>'
+        else:
+            st_name = obj.get_status_display()
+            st_html = f'<span style="display:inline-block;padding:2px 8px;border-radius:6px;background:#1e293b;color:#cbd5e1;font-weight:600;font-size:11px;border:1px solid #334155;white-space:nowrap;">{st_name}</span>'
+
+        fiat_html = (
+            '<div style="color:#34d399;font-size:11px;font-weight:600;margin-top:2px;white-space:nowrap;">💸 Фиат отправлен</div>'
+            if obj.is_fiat_sent
+            else '<div style="color:#64748b;font-size:11px;margin-top:2px;white-space:nowrap;">⏳ Ожидание фиата</div>'
+        )
+
+        f2f_html = ""
+        if obj.check_is_f2f():
+            f2f_html = '<div style="color:#f59e0b;font-size:11px;font-weight:600;margin-top:1px;white-space:nowrap;">🤝 F2F (Наличные)</div>'
+
+        return mark_safe(
+            f'<div style="font-size:12px;line-height:1.3;">'
+            f'  {st_html}'
+            f'  {fiat_html}'
+            f'  {f2f_html}'
+            f'</div>'
+        )
+
+    @admin.display(description=_("Банковский чек (DKIM/PDF)"))
+    def evidence_display(self, obj):
+        if not obj.is_disputed:
+            return mark_safe("<span style='color:#64748b;font-size:11px;'>—</span>")
+        try:
+            from api.dkim_verifier import validate_receipt_for_order
+            for st in [obj.taker_statement, obj.maker_statement]:
+                if st and ("DKIM-Signature:" in st or "From:" in st or "%PDF" in st):
+                    raw_b = st.encode("utf-8") if isinstance(st, str) else st
+                    valid, msg, receipt = validate_receipt_for_order(obj, raw_b)
+                    if valid:
+                        pdf_icon = (
+                            " +PDF"
+                            if receipt.get("pdf_attachments_count", 0) > 0 or receipt.get("is_standalone_pdf")
+                            else ""
+                        )
+                        return mark_safe(
+                            f'<div style="font-size:12px;line-height:1.3;">'
+                            f'  <div style="display:inline-block;padding:2px 8px;border-radius:6px;background:#064e3b;color:#6ee7b7;font-weight:600;font-size:11px;border:1px solid #059669;white-space:nowrap;">✓ {receipt.get("domain")}{pdf_icon} PASS</div>'
+                            f'  <div style="color:#94a3b8;font-size:10px;margin-top:2px;white-space:nowrap;">Чек: {receipt.get("amount")} {receipt.get("currency")}</div>'
+                            f'</div>'
+                        )
+                    elif receipt.get("is_trusted_bank"):
+                        return mark_safe(
+                            f'<div style="display:inline-block;padding:2px 8px;border-radius:6px;background:#451a03;color:#fdba74;font-size:11px;border:1px solid #d97706;white-space:nowrap;">⚠ {receipt.get("domain")} (FAIL)</div>'
+                        )
+        except Exception:
+            pass
+
+        if obj.check_is_f2f():
+            pin_state = "PIN активен" if obj.f2f_release_secret_hash else "Ожидание PIN"
+            both = " | Оба прибыли" if (obj.f2f_arrived_maker and obj.f2f_arrived_taker) else ""
+            return mark_safe(
+                f'<div style="display:inline-block;padding:2px 8px;border-radius:6px;background:#172554;color:#93c5fd;font-size:11px;border:1px solid #2563eb;white-space:nowrap;">🤝 F2F ({pin_state}{both})</div>'
+            )
+
+        return mark_safe("<span style='color:#64748b;font-size:11px;'>— Чек не загружен</span>")
+
+    @admin.display(description=_("Вердикт авто-арбитража"))
+    def verdict_display(self, obj):
+        if not obj.is_disputed:
+            return mark_safe("<span style='color:#64748b;font-size:11px;'>—</span>")
+        try:
+            from api.dispute_automation import DisputeRecommendationEngine
+            rec = DisputeRecommendationEngine.analyze_order(obj)
+            conf_pct = int(rec.confidence * 100)
+            if rec.action == "successful_trade":
+                return mark_safe(
+                    f'<div style="font-size:12px;line-height:1.3;">'
+                    f'  <div style="display:inline-block;padding:3px 8px;border-radius:6px;background:#064e3b;color:#34d399;font-weight:700;font-size:11px;border:1px solid #10b981;white-space:nowrap;" title="{rec.reason}">🤖 {conf_pct}% Выплата покупателю</div>'
+                    f'  <div style="color:#94a3b8;font-size:10px;margin-top:2px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{rec.reason}">{rec.reason}</div>'
+                    f'</div>'
+                )
+            elif rec.action in ["maker_wins", "taker_wins"]:
+                role = "мейкера" if rec.action == "maker_wins" else "тейкера"
+                return mark_safe(
+                    f'<div style="font-size:12px;line-height:1.3;">'
+                    f'  <div style="display:inline-block;padding:3px 8px;border-radius:6px;background:#1e3a5f;color:#60a5fa;font-weight:700;font-size:11px;border:1px solid #3b82f6;white-space:nowrap;" title="{rec.reason}">⏱️ {conf_pct}% Победа {role}</div>'
+                    f'  <div style="color:#94a3b8;font-size:10px;margin-top:2px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{rec.reason}">{rec.reason}</div>'
+                    f'</div>'
+                )
+            elif rec.action == "return_everything":
+                return mark_safe(
+                    f'<div style="font-size:12px;line-height:1.3;">'
+                    f'  <div style="display:inline-block;padding:3px 8px;border-radius:6px;background:#3b0764;color:#c084fc;font-weight:700;font-size:11px;border:1px solid #a855f7;white-space:nowrap;" title="{rec.reason}">↩️ {conf_pct}% Возврат средств</div>'
+                    f'  <div style="color:#94a3b8;font-size:10px;margin-top:2px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{rec.reason}">{rec.reason}</div>'
+                    f'</div>'
+                )
+            else:
+                return mark_safe(
+                    f'<div style="font-size:12px;line-height:1.3;">'
+                    f'  <div style="display:inline-block;padding:3px 8px;border-radius:6px;background:#1e293b;color:#cbd5e1;font-weight:600;font-size:11px;border:1px solid #475569;white-space:nowrap;" title="{rec.reason}">👤 Ручное рассмотрение</div>'
+                    f'  <div style="color:#94a3b8;font-size:10px;margin-top:2px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{rec.reason}">{rec.reason}</div>'
+                    f'</div>'
+                )
+        except Exception:
+            return mark_safe("<span style='color:#64748b;font-size:11px;'>—</span>")
+
+    @admin.display(description=_("Решение"))
+    def quick_actions(self, obj):
+        change_url = reverse("admin:api_order_change", args=[obj.id])
+        if obj.is_disputed:
+            return mark_safe(
+                f'<a href="{change_url}" style="display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border-radius:6px;background:#7e22ce;color:#ffffff;font-size:12px;font-weight:700;text-decoration:none;white-space:nowrap;box-shadow:0 1px 2px rgba(0,0,0,0.3);transition:background 0.2s;" onmouseover="this.style.background=\'#9333ea\'" onmouseout="this.style.background=\'#7e22ce\'">'
+                f'  🚨 Пульт спора →'
+                f'</a>'
+            )
+        else:
+            return mark_safe(
+                f'<a href="{change_url}" style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:6px;background:#1e293b;color:#94a3b8;font-size:11px;font-weight:600;text-decoration:none;border:1px solid #334155;white-space:nowrap;transition:color 0.2s;" onmouseover="this.style.color=\'#f8fafc\'" onmouseout="this.style.color=\'#94a3b8\'">'
+                f'  Карточка →'
+                f'</a>'
+            )
 
     @admin.display(description=_("🚨 Dispute Cockpit"))
     def dispute_cockpit(self, obj):

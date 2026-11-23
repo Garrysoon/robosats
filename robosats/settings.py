@@ -17,6 +17,7 @@ from pathlib import Path
 
 from decouple import config
 from django.urls import reverse_lazy
+from django.utils.functional import lazy
 from django.utils.translation import gettext_lazy as _
 
 from .celery.conf import *  # noqa
@@ -192,7 +193,10 @@ UNFOLD = {
                     {
                         "title": _("Споры и сделки"),
                         "icon": "gavel",
-                        "link": reverse_lazy("admin:api_order_changelist"),
+                        "link": lazy(
+                            lambda: reverse_lazy("admin:api_order_changelist") + "?is_disputed__exact=1",
+                            str,
+                        )(),
                     },
                 ],
             },

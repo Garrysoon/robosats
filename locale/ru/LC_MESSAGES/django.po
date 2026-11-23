@@ -355,6 +355,42 @@ msgstr "Сделка"
 msgid "orders"
 msgstr "Сделки"
 
+msgid "Сделка"
+msgstr "Сделка"
+
+msgid "Стороны (Покупатель / Продавец)"
+msgstr "Стороны (Покупатель / Продавец)"
+
+msgid "Сумма и объем"
+msgstr "Сумма и объем"
+
+msgid "Статус и фиат"
+msgstr "Статус и фиат"
+
+msgid "Вердикт авто-арбитража"
+msgstr "Вердикт авто-арбитража"
+
+msgid "Решение"
+msgstr "Решение"
+
+msgid "ПОКУПКА"
+msgstr "ПОКУПКА"
+
+msgid "ПРОДАЖА"
+msgstr "ПРОДАЖА"
+
+msgid "Покупатель"
+msgstr "Покупатель"
+
+msgid "Продавец"
+msgstr "Продавец"
+
+msgid "Мейкер"
+msgstr "Мейкер"
+
+msgid "Тейкер"
+msgstr "Тейкер"
+
 msgid "Robot"
 msgstr "Робот пользователя"
 
