@@ -304,11 +304,14 @@ def build_pdf():
     elements.append(Spacer(1, 12))
 
     # SECTION 4
-    elements.append(Paragraph("4. Резервное копирование и безопасность", h1_style))
+    elements.append(Paragraph("4. Автоматическое резервное копирование и безопасность", h1_style))
     elements.append(Paragraph(
-        "• <b>Файл базы данных:</b> Все сделки, настройки и споры хранятся в <code>db.sqlite3</code> (или PostgreSQL при боевом развертывании). Регулярно делайте копию этого файла.<br/>"
-        "• <b>Файл ключей .env:</b> Хранит секретный ключ шифрования преобразов (preimage) и токены авторизации LND. Держите его в секрете.<br/>"
-        "• <b>Приватность Tor:</b> Для публикации координатора наружу без белого IP включите в .env параметр <code>USE_TOR=True</code>.",
+        "Для координатора настроена автоматическая система горячего резервного копирования:<br/>"
+        "• <b>Горячий бэкап в 1 клик:</b> Скрипт <code>backup_now.bat</code> (или <code>python backup_coordinator.py</code>) "
+        "создает целостный снимок базы данных SQLite через Online Backup API без остановки сделок.<br/>"
+        "• <b>Что входит в бэкап:</b> База <code>db.sqlite3</code>, ключи шифрования <code>.env</code>, а также приватные ключи Tor (<code>hs_ed25519_secret_key</code>).<br/>"
+        "• <b>Авто-расписание в Windows:</b> Запустите <code>setup_autobackup.bat</code> — архивы будут создаваться в папке <code>backups/</code> автоматически по расписанию с ротацией 14 дней.<br/>"
+        "• <b>Резервирование Lightning (Umbrel LND):</b> Для каналов используется <code>channel.backup</code> (SCB). Не копируйте рабочую <code>channel.db</code> вручную во избежание штрафных транзакций.",
         body_style
     ))
     elements.append(Spacer(1, 14))
