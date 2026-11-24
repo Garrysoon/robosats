@@ -1,0 +1,24 @@
+manifestVersion: 1
+id: robosats-coordinator
+name: RoboSats Coordinator
+tagline: P2P Bitcoin & Lightning Exchange Coordinator with Ops Cockpit
+version: "0.9.15"
+port: 8000
+description: >-
+  Запускайте собственный независимый P2P Lightning координатор RoboSats
+  с прямым подключением к ноде Umbrel LND для мгновенных расчетов и залогов.
+  Включает удобную панель оператора (Ops Cockpit) для арбитража споров,
+  автоматическую валидацию банковских чеков по DKIM и Taproot-эскроу.
+developer: RoboSats Federation Community
+website: https://learn.robosats.com/
+repo: https://github.com/RoboSats/robosats
+support: https://t.me/robosats
+category: Bitcoin & Lightning
+dependencies:
+  - lightning
+path: ""
+defaultUsername: "admin"
+defaultPassword: "admin_password_change_me"
+torOnly: false
+submitter: RoboSats
+submission: https://github.com/getumbrel/umbrel-apps

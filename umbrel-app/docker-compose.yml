@@ -1,0 +1,60 @@
+version: "3.7"
+
+services:
+  app_proxy:
+    environment:
+      APP_HOST: robosats_web
+      APP_PORT: 8000
+
+  web:
+    image: robosats/robosats:latest
+    container_name: robosats_coordinator
+    restart: on-failure
+    stop_grace_period: 30s
+    environment:
+      - DEVELOPMENT=False
+      - COORDINATOR_ALIAS=Umbrel RoboSats Node
+      - LANGUAGE_CODE=ru
+      - NETWORK=mainnet
+      - LNVENDOR=LND
+      - LND_GRPC_HOST=$APP_LIGHTNING_NODE_IP:$APP_LIGHTNING_NODE_GRPC_PORT
+      - LND_DIR=/lnd
+      - MACAROON_PATH=data/chain/bitcoin/mainnet/admin.macaroon
+      - USE_TOR=True
+      - TOR_PROXY=$TOR_PROXY_IP:$TOR_PROXY_PORT
+      - POSTGRES_DB=robosats
+      - POSTGRES_USER=robosats
+      - POSTGRES_PASSWORD=robosats_umbrel_secret
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - REDIS_URL=redis://redis:6379/1
+      - ESCROW_USERNAME=admin
+      - MIN_TRADE=20000
+      - MAX_TRADE=5000000
+      - FEE=0.002
+      - DEFAULT_BOND_SIZE=3.0
+      - FIAT_EXCHANGE_DURATION=24
+    volumes:
+      - $APP_LIGHTNING_NODE_DATA_DIR:/lnd:ro
+      - ${APP_DATA_DIR}/data:/data
+    depends_on:
+      - db
+      - redis
+
+  db:
+    image: postgres:15-alpine
+    container_name: robosats_coordinator_db
+    restart: on-failure
+    environment:
+      - POSTGRES_DB=robosats
+      - POSTGRES_USER=robosats
+      - POSTGRES_PASSWORD=robosats_umbrel_secret
+    volumes:
+      - ${APP_DATA_DIR}/data/postgres:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: robosats_coordinator_redis
+    restart: on-failure
+    volumes:
+      - ${APP_DATA_DIR}/data/redis:/data

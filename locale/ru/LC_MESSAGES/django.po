@@ -93,14 +93,140 @@ msgstr "Нет записей"
 msgid "History"
 msgstr "История"
 
-msgid "General"
-msgstr "Общие"
+msgid "Auth Token"
+msgstr "Токены аутентификации"
+
+msgid "Tokens"
+msgstr "Токены API"
+
+msgid "Token"
+msgstr "Токен API"
+
+msgid "Add Token"
+msgstr "Добавить токен"
+
+msgid "Add token"
+msgstr "Добавить токен"
+
+msgid "Authentication and Authorization"
+msgstr "Аутентификация и пользователи"
+
+msgid "Users"
+msgstr "Пользователи"
+
+msgid "User"
+msgstr "Пользователь"
+
+msgid "Groups"
+msgstr "Группы"
+
+msgid "Group"
+msgstr "Группа"
+
+msgid "Celery Results"
+msgstr "Результаты фоновых задач (Celery)"
+
+msgid "Group results"
+msgstr "Групповые результаты"
+
+msgid "Task results"
+msgstr "Результаты задач"
+
+msgid "Periodic Tasks"
+msgstr "Периодические задачи"
+
+msgid "Clocked"
+msgstr "Точное время"
+
+msgid "Crontabs"
+msgstr "Расписания Cron"
+
+msgid "Intervals"
+msgstr "Интервалы выполнения"
+
+msgid "Solar"
+msgstr "Солнечные события"
+
+msgid "Solar events"
+msgstr "Солнечные события"
+
+msgid "Periodic task"
+msgstr "Периодическая задача"
+
+msgid "Periodic tasks"
+msgstr "Периодические задачи"
+
+msgid "Chat"
+msgstr "Чат сделок"
+
+msgid "Chat rooms"
+msgstr "Комнаты чата"
+
+msgid "Chat room"
+msgstr "Комната чата"
+
+msgid "Messages"
+msgstr "Сообщения чата"
+
+msgid "Message"
+msgstr "Сообщение чата"
+
+msgid "Control"
+msgstr "Финансовый контроль и аудит"
+
+msgid "Type"
+msgstr "Тип"
+
+msgid "Maker"
+msgstr "Мейкер"
+
+msgid "Taker"
+msgstr "Тейкер"
+
+msgid "Amt"
+msgstr "Сумма"
+
+msgid "Currency"
+msgstr "Валюта"
+
+msgid "TO satoshis"
+msgstr "В сатоши"
+
+msgid "Is disputed"
+msgstr "В споре"
+
+msgid "Select %s to change"
+msgstr "Выберите %s для изменения"
 
 msgid "Filter"
 msgstr "Фильтр"
 
 msgid "Filters"
 msgstr "Фильтры"
+
+msgid "Action"
+msgstr "Действие"
+
+msgid "Actions"
+msgstr "Действия"
+
+msgid "Save"
+msgstr "Сохранить"
+
+msgid "Delete"
+msgstr "Удалить"
+
+msgid "Are you sure?"
+msgstr "Вы уверены?"
+
+msgid "Yes, I'm sure"
+msgstr "Да, я уверен"
+
+msgid "No, take me back"
+msgstr "Нет, вернуться назад"
+
+msgid "General"
+msgstr "Общие"
 
 msgid "By"
 msgstr "По"
@@ -116,15 +242,6 @@ msgstr "Нет"
 
 msgid "Unknown"
 msgstr "Неизвестно"
-
-msgid "Are you sure?"
-msgstr "Вы уверены?"
-
-msgid "Delete"
-msgstr "Удалить"
-
-msgid "Save"
-msgstr "Сохранить"
 
 msgid "Save and add another"
 msgstr "Сохранить и добавить другой"
@@ -175,26 +292,11 @@ msgstr ""
 "Пожалуйста, введите корректные имя пользователя и пароль учётной записи "
 "персонала. Оба поля могут быть чувствительны к регистру."
 
-msgid "Authentication and Authorization"
-msgstr "Аутентификация и пользователи"
-
-msgid "Users"
-msgstr "Пользователи"
-
-msgid "User"
-msgstr "Пользователь"
-
 msgid "users"
 msgstr "Пользователи"
 
 msgid "user"
 msgstr "Пользователь"
-
-msgid "Groups"
-msgstr "Группы"
-
-msgid "Group"
-msgstr "Группа"
 
 msgid "groups"
 msgstr "Группы"
@@ -202,26 +304,11 @@ msgstr "Группы"
 msgid "group"
 msgstr "Группа"
 
-msgid "Auth Token"
-msgstr "Токены аутентификации"
-
-msgid "Tokens"
-msgstr "Токены API"
-
-msgid "Token"
-msgstr "Токен API"
-
 msgid "tokens"
 msgstr "Токены API"
 
 msgid "token"
 msgstr "Токен API"
-
-msgid "Celery Results"
-msgstr "Результаты фоновых задач (Celery)"
-
-msgid "Group results"
-msgstr "Групповые результаты"
 
 msgid "Group result"
 msgstr "Групповой результат"
@@ -232,9 +319,6 @@ msgstr "Групповые результаты"
 msgid "group result"
 msgstr "Групповой результат"
 
-msgid "Task results"
-msgstr "Результаты задач"
-
 msgid "Task result"
 msgstr "Результат задачи"
 
@@ -244,23 +328,11 @@ msgstr "Результаты задач"
 msgid "task result"
 msgstr "Результат задачи"
 
-msgid "Periodic Tasks"
-msgstr "Периодические задачи"
-
-msgid "Periodic tasks"
-msgstr "Периодические задачи"
-
-msgid "Periodic task"
-msgstr "Периодическая задача"
-
 msgid "periodic tasks"
 msgstr "Периодические задачи"
 
 msgid "periodic task"
 msgstr "Периодическая задача"
-
-msgid "Crontabs"
-msgstr "Расписания Cron"
 
 msgid "Crontab"
 msgstr "Расписание Cron"
@@ -271,9 +343,6 @@ msgstr "Расписания Cron"
 msgid "crontab"
 msgstr "Расписание Cron"
 
-msgid "Intervals"
-msgstr "Интервалы выполнения"
-
 msgid "Interval"
 msgstr "Интервал выполнения"
 
@@ -282,9 +351,6 @@ msgstr "Интервалы выполнения"
 
 msgid "interval"
 msgstr "Интервал выполнения"
-
-msgid "Solar events"
-msgstr "Солнечные события"
 
 msgid "Solar event"
 msgstr "Солнечное событие"
@@ -295,9 +361,6 @@ msgstr "Солнечные события"
 msgid "solar event"
 msgstr "Солнечное событие"
 
-msgid "Clocked"
-msgstr "Точное время"
-
 msgid "clocked"
 msgstr "Точное время"
 
@@ -306,24 +369,6 @@ msgstr "Задачи по точному времени"
 
 msgid "clocked tasks"
 msgstr "Задачи по точному времени"
-
-msgid "Chat"
-msgstr "Чат сделок"
-
-msgid "Chat rooms"
-msgstr "Комнаты чата"
-
-msgid "Chat room"
-msgstr "Комната чата"
-
-msgid "Messages"
-msgstr "Сообщения чата"
-
-msgid "Message"
-msgstr "Сообщение чата"
-
-msgid "Control"
-msgstr "Финансовый контроль и аудит"
 
 msgid "Accounting days"
 msgstr "Дни бухгалтерского учета"
@@ -435,9 +480,6 @@ msgstr "Робот пользователя"
 
 msgid "robots"
 msgstr "Роботы пользователей"
-
-msgid "Currency"
-msgstr "Валюта"
 
 msgid "Currencies"
 msgstr "Валюты"
