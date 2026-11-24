@@ -163,6 +163,9 @@ cover/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
+backups/
+standby/
+*.zip
 
 # Flask stuff:
 instance/
