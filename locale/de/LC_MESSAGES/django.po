@@ -87,6 +87,41 @@ msgstr "Streitbeilegungsordnung"
 msgid "Руководство по локализации"
 msgstr "Lokalisierungsleitfaden"
 
+msgid "Руководство по запуску и эксплуатации (Production Launch Guide)"
+msgstr "Leitfaden für Inbetriebnahme und Betrieb (Production Launch Guide)"
+
+msgid "Регламент арбитража споров (Dispute Manual)"
+msgstr "Schlichtungsordnung für Streitfälle (Dispute Manual)"
+
+msgid "Руководство по локализации (i18n Guide)"
+msgstr "Lokalisierungsleitfaden (i18n Guide)"
+
+msgid "Официальная база знаний, регламенты и руководства оператора RoboSats"
+msgstr ""
+"Offizielle Wissensdatenbank, Richtlinien und Betreiberhandbücher für "
+"RoboSats"
+
+msgid "Печать / PDF"
+msgstr "Drucken / PDF"
+
+msgid "В панель"
+msgstr "Zurück zur Konsole"
+
+msgid "Регламент арбитража"
+msgstr "Schlichtungsordnung"
+
+msgid "Локализация и i18n"
+msgstr "Lokalisierung und i18n"
+
+msgid "Примечание"
+msgstr "Hinweis"
+
+msgid "Важно"
+msgstr "Wichtig"
+
+msgid "Предупреждение"
+msgstr "Warnung"
+
 msgid "⚙️ СИСТЕМНЫЙ АУДИТ (READ-ONLY)"
 msgstr "⚙️ SYSTEMPRÜFUNG (SCHREIBGESCHÜTZT)"
 

@@ -87,6 +87,39 @@ msgstr "爭議仲裁守則"
 msgid "Руководство по локализации"
 msgstr "本地化指南"
 
+msgid "Руководство по запуску и эксплуатации (Production Launch Guide)"
+msgstr "生產環境啟動與運營指南 (Production Launch Guide)"
+
+msgid "Регламент арбитража споров (Dispute Manual)"
+msgstr "爭議仲裁手冊 (Dispute Manual)"
+
+msgid "Руководство по локализации (i18n Guide)"
+msgstr "國際化與本地化指南 (i18n Guide)"
+
+msgid "Официальная база знаний, регламенты и руководства оператора RoboSats"
+msgstr "RoboSats 官方知識庫、仲裁法規與運營者指南"
+
+msgid "Печать / PDF"
+msgstr "列印 / 匯出 PDF"
+
+msgid "В панель"
+msgstr "返回後台"
+
+msgid "Регламент арбитража"
+msgstr "仲裁守則"
+
+msgid "Локализация и i18n"
+msgstr "本地化與多語言 (i18n)"
+
+msgid "Примечание"
+msgstr "注意事項"
+
+msgid "Важно"
+msgstr "重要提示"
+
+msgid "Предупреждение"
+msgstr "安全警告"
+
 msgid "⚙️ СИСТЕМНЫЙ АУДИТ (READ-ONLY)"
 msgstr "⚙️ 系統審計 (唯讀)"
 

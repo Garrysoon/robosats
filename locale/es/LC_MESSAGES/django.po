@@ -87,6 +87,40 @@ msgstr "Reglamento de arbitraje"
 msgid "Руководство по локализации"
 msgstr "Guía de localización"
 
+msgid "Руководство по запуску и эксплуатации (Production Launch Guide)"
+msgstr "Guía de puesta en marcha y operación (Production Launch Guide)"
+
+msgid "Регламент арбитража споров (Dispute Manual)"
+msgstr "Manual de resolución de disputas (Dispute Manual)"
+
+msgid "Руководство по локализации (i18n Guide)"
+msgstr "Guía de internacionalización y localización (i18n Guide)"
+
+msgid "Официальная база знаний, регламенты и руководства оператора RoboSats"
+msgstr ""
+"Base de conocimiento oficial, normativas y guías de operador de RoboSats"
+
+msgid "Печать / PDF"
+msgstr "Imprimir / PDF"
+
+msgid "В панель"
+msgstr "Al panel"
+
+msgid "Регламент арбитража"
+msgstr "Reglamento de arbitraje"
+
+msgid "Локализация и i18n"
+msgstr "Localización e i18n"
+
+msgid "Примечание"
+msgstr "Nota"
+
+msgid "Важно"
+msgstr "Importante"
+
+msgid "Предупреждение"
+msgstr "Advertencia"
+
 msgid "⚙️ СИСТЕМНЫЙ АУДИТ (READ-ONLY)"
 msgstr "⚙️ AUDITORÍA DEL SISTEMA (SOLO LECTURA)"
 

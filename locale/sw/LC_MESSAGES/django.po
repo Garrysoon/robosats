@@ -87,6 +87,40 @@ msgstr "Kanuni za usuluhishi wa migogoro"
 msgid "Руководство по локализации"
 msgstr "Mwongozo wa ujanibishaji"
 
+msgid "Руководство по запуску и эксплуатации (Production Launch Guide)"
+msgstr "Mwongozo wa Kuzindua na Uendeshaji (Production Launch Guide)"
+
+msgid "Регламент арбитража споров (Dispute Manual)"
+msgstr "Mwongozo wa Usuluhishi wa Migogoro (Dispute Manual)"
+
+msgid "Руководство по локализации (i18n Guide)"
+msgstr "Mwongozo wa Ujanibishaji (i18n Guide)"
+
+msgid "Официальная база знаний, регламенты и руководства оператора RoboSats"
+msgstr ""
+"Hifadhidata rasmi ya maarifa, kanuni na miongozo ya mwendeshaji wa RoboSats"
+
+msgid "Печать / PDF"
+msgstr "Chapisha / PDF"
+
+msgid "В панель"
+msgstr "Rudi kwenye dashibodi"
+
+msgid "Регламент арбитража"
+msgstr "Kanuni za usuluhishi"
+
+msgid "Локализация и i18n"
+msgstr "Ujanibishaji na i18n"
+
+msgid "Примечание"
+msgstr "Kumbuka"
+
+msgid "Важно"
+msgstr "Muhimu"
+
+msgid "Предупреждение"
+msgstr "Tahadhari"
+
 msgid "⚙️ СИСТЕМНЫЙ АУДИТ (READ-ONLY)"
 msgstr "⚙️ UKAGUZI WA MFUMO (KUSOMA TU)"
 
