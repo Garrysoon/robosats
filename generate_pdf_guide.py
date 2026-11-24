@@ -282,25 +282,30 @@ def build_pdf():
     elements.append(Spacer(1, 12))
 
     # SECTION 5
-    elements.append(Paragraph("5. Автобэкапы и резервирование (Восстановление за 2 минуты)", h1_style))
+    elements.append(Paragraph("5. Горячая замена и автобэкапы (Варианты А и Б)", h1_style))
     elements.append(Paragraph(
-        "Вся система спроектирована так, чтобы потеря любого «железа» не остановила работу биржи:",
+        "Система поддерживает два режима горячего резервирования при выключении или сбое основного ПК:",
         body_style
     ))
 
     backup_table_data = [
         [
-            Paragraph("<b>Что бэкапится</b>", body_style),
-            Paragraph("<b>Как настроено</b>", body_style),
-            Paragraph("<b>Что делать при сбое компьютера</b>", body_style),
+            Paragraph("<b>Режим горячей замены</b>", body_style),
+            Paragraph("<b>Как настроить и запустить</b>", body_style),
+            Paragraph("<b>Поведение при сбое</b>", body_style),
         ],
         [
-            Paragraph("• База сделок (<code>db.sqlite3</code>)<br/>• Настройки (<code>.env</code>)<br/>• Ключ Tor (<code>secret_key</code>)", body_style),
-            Paragraph("<b>Автоматически каждые 6 часов</b> через Планировщик Windows в папку <code>backups/</code>.<br/>Ручной запуск: <b>backup_now.bat</b>.", body_style),
-            Paragraph("Берете последний <code>robosats_backup_*.zip</code>, копируете на любой другой ноутбук или Umbrel и запускаете <code>start_coordinator.bat</code>. <b>Тот же .onion адрес и все сделки оживают за 2 минуты!</b>", body_style),
+            Paragraph("<b>Вариант А: Горячий резерв в 1 клик</b><br/>(Рекомендуется)", body_style),
+            Paragraph("1. На основном ПК запустите <code>export_standby.bat</code>.<br/>2. Скопируйте архив на ноутбук и запустите <code>deploy_standby.bat</code>.", body_style),
+            Paragraph("Если основной ПК выключен — кликните <code>start_coordinator.bat</code> на ноутбуке. <b>Тот же .onion адрес оживает за 30 секунд!</b>", body_style),
+        ],
+        [
+            Paragraph("<b>Вариант Б: Авто-сторож (Watchdog)</b><br/>(Полный автомат)", body_style),
+            Paragraph("На резервном ПК запустите <code>start_watchdog.bat</code> и укажите IP основного ПК (сторож опрашивает <code>/api/v1/health/</code>).", body_style),
+            Paragraph("Если основной ПК не отвечает 3 раза подряд — <b>сторож сам автоматически поднимает сервер</b> на резервной машине.", body_style),
         ],
     ]
-    t_backup = Table(backup_table_data, colWidths=[150, 155, 190])
+    t_backup = Table(backup_table_data, colWidths=[140, 185, 170])
     t_backup.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#E2E8F0")),
         ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor("#CBD5E0")),
@@ -308,7 +313,7 @@ def build_pdf():
         ('PADDING', (0, 0), (-1, -1), 4),
     ]))
     elements.append(t_backup)
-    elements.append(Spacer(1, 10))
+    elements.append(Spacer(1, 8))
 
     # Golden Lightning Rule
     lnd_warn = [

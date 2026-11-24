@@ -17,14 +17,27 @@ Including another URLconf
 from decouple import config
 from django.conf import settings
 from django.contrib import admin
+from django.http import JsonResponse
 from django.urls import include, path
 from django.utils.translation import gettext_lazy as _
+from django.views.decorators.csrf import csrf_exempt
 
 from api.views_docs import coordinator_docs_view
 
 VERSION = settings.VERSION
 
+@csrf_exempt
+def coordinator_health_view(request):
+    return JsonResponse({
+        "status": "ok",
+        "role": "coordinator",
+        "alias": getattr(settings, "COORDINATOR_ALIAS", "RoboSats Coordinator"),
+        "version": getattr(settings, "VERSION", "0.9.15"),
+    })
+
 urlpatterns = [
+    path("api/v1/health/", coordinator_health_view, name="coordinator_health"),
+    path("coordinator/health/", coordinator_health_view, name="coordinator_health_alt"),
     path("i18n/", include("django.conf.urls.i18n")),
     path("coordinator/docs/<str:doc_id>/", admin.site.admin_view(coordinator_docs_view), name="coordinator_docs"),
     path("coordinator/docs/", admin.site.admin_view(coordinator_docs_view), name="coordinator_docs_default"),
