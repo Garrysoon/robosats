@@ -2,6 +2,32 @@
 
 {% if not is_popup %}
     <div class="flex flex-row gap-3 items-center ml-auto">
+        <!-- Выпадающий список выбора языка (Language Switcher) -->
+        {% get_current_language as CURRENT_LANGUAGE %}
+        <form action="{% url 'set_language' %}" method="post" id="header-language-form" style="margin: 0; display: inline-flex; align-items: center;">
+            {% csrf_token %}
+            <input name="next" type="hidden" value="{{ request.get_full_path }}">
+            <div style="position: relative; display: inline-flex; align-items: center;">
+                <span style="position: absolute; left: 10px; pointer-events: none; font-size: 14px; z-index: 2;">🌐</span>
+                <select name="language" 
+                        id="global-language-selector"
+                        onchange="this.form.submit()" 
+                        title="Выберите язык / Choose language"
+                        style="appearance: none; -webkit-appearance: none; background-color: #1e293b; color: #f8fafc; border: 1px solid #475569; border-radius: 8px; padding: 6px 30px 6px 32px; font-size: 13px; font-weight: 600; cursor: pointer; outline: none; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.2);"
+                        onmouseover="this.style.borderColor='#818cf8'; this.style.backgroundColor='#334155';"
+                        onmouseout="this.style.borderColor='#475569'; this.style.backgroundColor='#1e293b';">
+                    <option value="ru" {% if CURRENT_LANGUAGE == 'ru' %}selected{% endif %}>🇷🇺 Русский</option>
+                    <option value="en" {% if CURRENT_LANGUAGE == 'en' %}selected{% endif %}>🇬🇧 English</option>
+                    <option value="es" {% if CURRENT_LANGUAGE == 'es' %}selected{% endif %}>🇪🇸 Español</option>
+                    <option value="de" {% if CURRENT_LANGUAGE == 'de' %}selected{% endif %}>🇩🇪 Deutsch</option>
+                    <option value="sw" {% if CURRENT_LANGUAGE == 'sw' %}selected{% endif %}>🇰🇪 Kiswahili</option>
+                    <option value="zh-hant" {% if CURRENT_LANGUAGE == 'zh-hant' %}selected{% endif %}>🇭🇰 繁體中文 (Cantonese)</option>
+                    <option value="zh-hans" {% if CURRENT_LANGUAGE == 'zh-hans' %}selected{% endif %}>🇨🇳 简体中文</option>
+                </select>
+                <span style="position: absolute; right: 10px; pointer-events: none; font-size: 10px; color: #94a3b8;">▼</span>
+            </div>
+        </form>
+
         <!-- Кнопка вызова контекстной справки на каждом экране -->
         <button type="button" 
                 id="btn-screen-help" 
