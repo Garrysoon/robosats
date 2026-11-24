@@ -5,7 +5,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import Group, User
 from django.db.models import F
 from django.urls import reverse
-from django.utils.html import mark_safe
+from django.utils.html import escape, mark_safe
 from django.utils.translation import gettext_lazy as _
 from django_admin_relation_links import AdminChangeLinksMixin
 from rest_framework.authtoken.admin import TokenAdmin
@@ -24,6 +24,7 @@ from api.models import (
     CoordinatorCheckLog,
     TaprootEscrowContract,
     EmailInboxConfig,
+    DisputeMessage,
 )
 from api.utils import render_order_logs
 from api.tasks import send_notification
@@ -89,9 +90,17 @@ class LNPaymentInline(admin.StackedInline):
     extra = 0
 
 
+class DisputeMessageInline(TabularInline):
+    model = DisputeMessage
+    extra = 0
+    fields = ("party", "sender_type", "sender_user", "text", "created_at", "is_read")
+    readonly_fields = ("created_at",)
+    show_change_link = True
+
+
 @admin.register(Order)
 class OrderAdmin(AdminChangeLinksMixin, ModelAdmin):
-    inlines = [LNPaymentInline]
+    inlines = [LNPaymentInline, DisputeMessageInline]
     list_display = (
         "order_badge",
         "parties_display",
@@ -462,19 +471,106 @@ class OrderAdmin(AdminChangeLinksMixin, ModelAdmin):
             </div>
             """
 
-        # 3. Statements side-by-side
-        maker_st = obj.maker_statement or "— Нет заявления —"
-        taker_st = obj.taker_statement or "— Нет заявления —"
-        statements_html = f"""
+        # 3. Two isolated channels side-by-side
+        maker_msgs = list(
+            obj.dispute_messages.filter(party=DisputeMessage.Party.MAKER).order_by("created_at")
+        )
+        taker_msgs = list(
+            obj.dispute_messages.filter(party=DisputeMessage.Party.TAKER).order_by("created_at")
+        )
+
+        maker_is_buyer = Logics.is_buyer(obj, obj.maker) if obj.maker else True
+        maker_role = "Покупатель" if maker_is_buyer else "Продавец"
+        taker_role = "Продавец" if maker_is_buyer else "Покупатель"
+
+        def render_channel(party_code, party_name, user_obj, role_title, initial_statement, msgs, accent_color, badge_bg):
+            username = user_obj.username if user_obj else "—"
+            items_html = []
+            if initial_statement:
+                items_html.append(
+                    f'<div style="background: #1e293b; border-left: 3px solid {accent_color}; padding: 8px 10px; border-radius: 6px; font-size: 12px; margin-bottom: 6px;">'
+                    f'  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">'
+                    f'    <span style="font-weight: 700; color: {accent_color}; font-size: 11px;">📝 Первичное заявление ({role_title})</span>'
+                    f'    <span style="color: #64748b; font-size: 10px;">В споре</span>'
+                    f'  </div>'
+                    f'  <div style="color: #f1f5f9; white-space: pre-wrap; line-height: 1.4; word-break: break-word;">{escape(initial_statement)}</div>'
+                    f'</div>'
+                )
+            for m in msgs:
+                is_coord = (m.sender_type == DisputeMessage.SenderType.COORDINATOR)
+                bubble_bg = "#1e3a5f" if is_coord else "#1e293b"
+                border_style = "border-right: 3px solid #38bdf8;" if is_coord else f"border-left: 3px solid {accent_color};"
+                sender_label = "⚖️ Арбитр" if is_coord else f"👤 {role_title}"
+                sender_color = "#38bdf8" if is_coord else accent_color
+                time_str = m.created_at.strftime("%d.%m %H:%M")
+                items_html.append(
+                    f'<div style="background: {bubble_bg}; {border_style} padding: 8px 10px; border-radius: 6px; font-size: 12px; margin-bottom: 6px;">'
+                    f'  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">'
+                    f'    <span style="font-weight: 700; color: {sender_color}; font-size: 11px;">{sender_label}</span>'
+                    f'    <span style="color: #64748b; font-size: 10px;">{time_str}</span>'
+                    f'  </div>'
+                    f'  <div style="color: #f1f5f9; white-space: pre-wrap; line-height: 1.4; word-break: break-word;">{escape(m.text)}</div>'
+                    f'</div>'
+                )
+
+            if not items_html:
+                items_html.append(
+                    '<div style="color: #64748b; font-size: 12px; font-style: italic; padding: 12px; text-align: center;">'
+                    '— Нет сообщений в канале —'
+                    '</div>'
+                )
+
+            chat_history = "".join(items_html)
+            action_url = f"/coordinator/api/order/{obj.id}/send_dispute_message/"
+
+            return (
+                f'<div style="background: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 14px; display: flex; flex-direction: column;">'
+                f'  <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; padding-bottom: 8px; margin-bottom: 10px;">'
+                f'    <div style="display: flex; align-items: center; gap: 6px;">'
+                f'      <span style="font-weight: 700; color: {accent_color}; font-size: 13px;">🔒 КАНАЛ: {party_name.upper()}</span>'
+                f'      <span style="font-size: 11px; color: #cbd5e1; font-weight: 600;">{username}</span>'
+                f'      <span style="font-size: 10px; color: #94a3b8;">({role_title})</span>'
+                f'    </div>'
+                f'    <span style="font-size: 10px; background: {badge_bg}; color: white; padding: 2px 6px; border-radius: 4px; font-weight: 600;">Изолирован</span>'
+                f'  </div>'
+                f'  <div style="flex-grow: 1; max-height: 240px; min-height: 80px; overflow-y: auto; margin-bottom: 10px; padding-right: 4px;">'
+                f'    {chat_history}'
+                f'  </div>'
+                f'  <form method="POST" action="{action_url}" style="display: flex; flex-direction: column; gap: 6px;">'
+                f'    <input type="hidden" name="party" value="{party_code}">'
+                f'    <textarea name="message_text" rows="2" placeholder="Запрос к {party_name} (например: запросить квитанцию или подтверждение)..." style="width: 100%; box-sizing: border-box; background: #1e293b; color: #f8fafc; border: 1px solid #475569; border-radius: 6px; padding: 8px; font-size: 12px; resize: vertical; outline: none;"></textarea>'
+                f'    <button type="submit" style="align-self: flex-end; background: {accent_color}; color: white; font-weight: 600; font-size: 11px; padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; display: flex; align-items: center; gap: 4px;">'
+                f'      💬 Отправить {party_name}'
+                f'    </button>'
+                f'  </form>'
+                f'</div>'
+            )
+
+        maker_channel = render_channel(
+            party_code=DisputeMessage.Party.MAKER,
+            party_name="Мейкеру",
+            user_obj=obj.maker,
+            role_title=maker_role,
+            initial_statement=obj.maker_statement,
+            msgs=maker_msgs,
+            accent_color="#38bdf8",
+            badge_bg="#0369a1",
+        )
+        taker_channel = render_channel(
+            party_code=DisputeMessage.Party.TAKER,
+            party_name="Тейкеру",
+            user_obj=obj.taker,
+            role_title=taker_role,
+            initial_statement=obj.taker_statement,
+            msgs=taker_msgs,
+            accent_color="#f472b6",
+            badge_bg="#be185d",
+        )
+
+        channels_html = f"""
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
-            <div style="background: #1e293b; padding: 12px 14px; border-radius: 8px; border: 1px solid #334155;">
-                <div style="font-weight: 700; color: #38bdf8; font-size: 12px; margin-bottom: 6px; text-transform: uppercase;">Позиция Мейкера:</div>
-                <div style="font-size: 12px; color: #f1f5f9; max-height: 140px; overflow-y: auto; white-space: pre-wrap; line-height: 1.4;">{maker_st}</div>
-            </div>
-            <div style="background: #1e293b; padding: 12px 14px; border-radius: 8px; border: 1px solid #334155;">
-                <div style="font-weight: 700; color: #f472b6; font-size: 12px; margin-bottom: 6px; text-transform: uppercase;">Позиция Тейкера:</div>
-                <div style="font-size: 12px; color: #f1f5f9; max-height: 140px; overflow-y: auto; white-space: pre-wrap; line-height: 1.4;">{taker_st}</div>
-            </div>
+            {maker_channel}
+            {taker_channel}
         </div>
         """
 
@@ -486,7 +582,7 @@ class OrderAdmin(AdminChangeLinksMixin, ModelAdmin):
             </div>
             {rec_html}
             {receipt_html}
-            {statements_html}
+            {channels_html}
             <div style="font-size: 12px; color: #94a3b8; padding-top: 6px;">
                 💡 <b>Быстрое разрешение:</b> выберите необходимое действие в выпадающем меню <i>«Действие»</i> списка сделок (например, <i>«⚡ Применить рекомендуемый вердикт арбитража (1 клик)»</i> или <i>«Разрешить спор: победа мейкера»</i>).
             </div>
@@ -548,6 +644,56 @@ class OrderAdmin(AdminChangeLinksMixin, ModelAdmin):
             f"<span style='padding:2px 8px; border-radius:10px; background:#f59e0b20; "
             f"color:#d97706; font-weight:600;'>🤝 F2F ({pin_state}{both})</span>"
         )
+
+    def get_urls(self):
+        from django.urls import path
+
+        urls = super().get_urls()
+        custom_urls = [
+            path(
+                "<path:object_id>/send_dispute_message/",
+                self.admin_site.admin_view(self.send_dispute_message_view),
+                name="order_send_dispute_message",
+            ),
+        ]
+        return custom_urls + urls
+
+    def send_dispute_message_view(self, request, object_id):
+        from django.http import HttpResponseForbidden
+        from django.shortcuts import get_object_or_404, redirect
+
+        if request.method != "POST":
+            return redirect(f"/coordinator/api/order/{object_id}/change/")
+        if not (request.user.is_authenticated and request.user.is_staff):
+            return HttpResponseForbidden("Access denied")
+
+        order = get_object_or_404(Order, pk=object_id)
+        party = request.POST.get("party", "").strip()
+        message_text = request.POST.get("message_text", "").strip()
+        if not message_text:
+            self.message_user(request, "Текст сообщения не может быть пустым.", messages.WARNING)
+            return redirect(f"/coordinator/api/order/{object_id}/change/")
+        if party not in [DisputeMessage.Party.MAKER, DisputeMessage.Party.TAKER]:
+            self.message_user(request, "Некорректный получатель.", messages.ERROR)
+            return redirect(f"/coordinator/api/order/{object_id}/change/")
+
+        DisputeMessage.objects.create(
+            order=order,
+            party=party,
+            sender_type=DisputeMessage.SenderType.COORDINATOR,
+            sender_user=request.user,
+            text=message_text,
+        )
+        party_title = "Мейкеру" if party == DisputeMessage.Party.MAKER else "Тейкеру"
+        order.log(f"Арбитр отправил запрос {party_title}: {message_text[:40]}")
+        try:
+            from api.tasks import send_notification
+
+            send_notification.delay(order_id=order.id, message="dispute_new_message")
+        except Exception:
+            pass
+        self.message_user(request, f"✓ Запрос успешно отправлен {party_title}!", messages.SUCCESS)
+        return redirect(f"/coordinator/api/order/{object_id}/change/")
 
     actions = [
         "apply_recommended_arbitration",
@@ -1234,4 +1380,27 @@ class EmailInboxConfigAdmin(ModelAdmin):
                 f"Inbox {inbox.username}: processed {len(results)} new receipts.",
                 messages.INFO,
             )
+
+
+@admin.register(DisputeMessage)
+class DisputeMessageAdmin(AdminChangeLinksMixin, ModelAdmin):
+    list_display = (
+        "id",
+        "order_link",
+        "party",
+        "sender_type",
+        "sender_user",
+        "text_snippet",
+        "created_at",
+        "is_read",
+    )
+    change_links = ["order", "sender_user"]
+    list_filter = ("party", "sender_type", "is_read")
+    search_fields = ("order__id", "text", "sender_user__username")
+    ordering = ["-created_at"]
+
+    @admin.display(description=_("Текст сообщения"))
+    def text_snippet(self, obj):
+        return (obj.text[:60] + "...") if len(obj.text) > 60 else obj.text
+
 

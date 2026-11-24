@@ -462,17 +462,40 @@ class OrderView(viewsets.ViewSet):
             else:
                 data["chat_last_index"] = messages.latest().index
 
-        # 9) If status is 'DIS' and all HTLCS are in LOCKED
-        elif order.status == Order.Status.DIS:
-            # add whether the dispute statement has been received
-            if data["is_maker"]:
+        # 9) If status is 'DIS' or 'WFR' (dispute resolution)
+        elif order.status in [Order.Status.DIS, Order.Status.WFR]:
+            from api.models import DisputeMessage
+
+            if data.get("is_maker"):
                 data["statement_submitted"] = (
                     order.maker_statement is not None and order.maker_statement != ""
                 )
-            elif data["is_taker"]:
+                data["dispute_messages"] = [
+                    {
+                        "id": m.id,
+                        "sender_type": m.sender_type,
+                        "text": m.text,
+                        "created_at": m.created_at.isoformat(),
+                    }
+                    for m in order.dispute_messages.filter(
+                        party=DisputeMessage.Party.MAKER
+                    )
+                ]
+            elif data.get("is_taker"):
                 data["statement_submitted"] = (
                     order.taker_statement is not None and order.taker_statement != ""
                 )
+                data["dispute_messages"] = [
+                    {
+                        "id": m.id,
+                        "sender_type": m.sender_type,
+                        "text": m.text,
+                        "created_at": m.created_at.isoformat(),
+                    }
+                    for m in order.dispute_messages.filter(
+                        party=DisputeMessage.Party.TAKER
+                    )
+                ]
 
         # 9) If status is 'Failed routing', reply with retry amounts, time of next retry and ask for invoice at third.
         elif (
@@ -681,6 +704,53 @@ class OrderView(viewsets.ViewSet):
             valid, context = Logics.dispute_statement(order, request.user, statement)
             if not valid:
                 return Response(context, status.HTTP_400_BAD_REQUEST)
+
+            from api.models import DisputeMessage
+
+            party = (
+                DisputeMessage.Party.MAKER
+                if request.user == order.maker
+                else DisputeMessage.Party.TAKER
+            )
+            DisputeMessage.objects.create(
+                order=order,
+                party=party,
+                sender_type=DisputeMessage.SenderType.PEER,
+                sender_user=request.user,
+                text=statement,
+            )
+
+        elif action == "send_dispute_message":
+            from api.models import DisputeMessage
+
+            msg_text = statement or request.data.get("message")
+            if not msg_text or len(msg_text.strip()) == 0:
+                return Response(
+                    {"error": "Message text cannot be empty"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            if request.user == order.maker:
+                party = DisputeMessage.Party.MAKER
+            elif request.user == order.taker:
+                party = DisputeMessage.Party.TAKER
+            else:
+                return Response(
+                    {"error": "Only dispute parties can send messages"},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+
+            msg = DisputeMessage.objects.create(
+                order=order,
+                party=party,
+                sender_type=DisputeMessage.SenderType.PEER,
+                sender_user=request.user,
+                text=msg_text.strip(),
+            )
+            order.log(f"Dispute message from {party}: {msg_text[:40]}")
+            return Response(
+                {"status": "sent", "id": msg.id, "created_at": msg.created_at}
+            )
 
         # 7) If action is rate_user
         elif action == "rate_user" and rating:

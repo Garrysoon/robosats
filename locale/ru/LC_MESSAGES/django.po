@@ -355,6 +355,39 @@ msgstr "Сделка"
 msgid "orders"
 msgstr "Сделки"
 
+msgid "Dispute message"
+msgstr "Сообщение спора"
+
+msgid "Dispute messages"
+msgstr "Сообщения споров"
+
+msgid "dispute message"
+msgstr "сообщение спора"
+
+msgid "dispute messages"
+msgstr "сообщения споров"
+
+msgid "Сообщение спора"
+msgstr "Сообщение спора"
+
+msgid "Сообщения споров"
+msgstr "Сообщения споров"
+
+msgid "Канал участника"
+msgstr "Канал участника"
+
+msgid "Тип отправителя"
+msgstr "Тип отправителя"
+
+msgid "Текст сообщения"
+msgstr "Текст сообщения"
+
+msgid "Время отправки"
+msgstr "Время отправки"
+
+msgid "Прочитано"
+msgstr "Прочитано"
+
 msgid "Сделка"
 msgstr "Сделка"
 
