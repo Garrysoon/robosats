@@ -1,0 +1,436 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: RoboSats Coordinator 0.9.15\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-24 00:00+0000\n"
+"PO-Revision-Date: 2026-11-24 00:00+0000\n"
+"Last-Translator: Antigravity Localization Engine <admin@robosats.local>\n"
+"Language-Team: Spanish <es@li.org>\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "RoboSats Core API"
+msgstr "API Central de RoboSats"
+
+msgid "RoboSats Core API administration"
+msgstr "Administración de API Central de RoboSats"
+
+msgid "%(app_name)s administration"
+msgstr "Administración de %(app_name)s"
+
+msgid "RoboSats Coordinator Administration"
+msgstr "Administración del Coordinador RoboSats"
+
+msgid "Coordinator administration"
+msgstr "Panel de administración del coordinador"
+
+msgid "RoboSats Coordinator Admin"
+msgstr "Administración del Coordinador RoboSats"
+
+msgid "RoboSats Coordinator"
+msgstr "Coordinador RoboSats"
+
+msgid "RoboSats Ops Cockpit"
+msgstr "Centro de Operaciones RoboSats"
+
+msgid "Site administration"
+msgstr "Administración del sitio"
+
+msgid "Dashboard"
+msgstr "Panel de control"
+
+msgid "Home"
+msgstr "Inicio"
+
+msgid "Search apps and models..."
+msgstr "Buscar aplicaciones y modelos..."
+
+msgid "Search apps and models"
+msgstr "Buscar aplicaciones y modelos"
+
+msgid "Type to search"
+msgstr "Escriba para buscar..."
+
+msgid "Type to search..."
+msgstr "Escriba para buscar..."
+
+msgid "No results found"
+msgstr "No se encontraron resultados"
+
+msgid "This page yielded into no results."
+msgstr "Esta página no arrojó resultados."
+
+msgid "Reset filters"
+msgstr "Restablecer filtros"
+
+msgid "View on site"
+msgstr "Ver en el sitio"
+
+msgid "Log out"
+msgstr "Cerrar sesión"
+
+msgid "Change password"
+msgstr "Cambiar contraseña"
+
+msgid "Password change"
+msgstr "Cambio de contraseña"
+
+msgid "Recent actions"
+msgstr "Acciones recientes"
+
+msgid "My actions"
+msgstr "Mis acciones"
+
+msgid "None available"
+msgstr "Ninguno disponible"
+
+msgid "History"
+msgstr "Historial"
+
+msgid "Auth Token"
+msgstr "Tokens de autenticación"
+
+msgid "Tokens"
+msgstr "Tokens API"
+
+msgid "Token"
+msgstr "Token API"
+
+msgid "Add Token"
+msgstr "Agregar token"
+
+msgid "Add token"
+msgstr "Agregar token"
+
+msgid "Authentication and Authorization"
+msgstr "Autenticación y Autorización"
+
+msgid "Users"
+msgstr "Usuarios"
+
+msgid "User"
+msgstr "Usuario"
+
+msgid "Groups"
+msgstr "Grupos"
+
+msgid "Group"
+msgstr "Grupo"
+
+msgid "Celery Results"
+msgstr "Resultados de Celery"
+
+msgid "Group results"
+msgstr "Resultados de grupo"
+
+msgid "Task results"
+msgstr "Resultados de tareas"
+
+msgid "Periodic Tasks"
+msgstr "Tareas periódicas"
+
+msgid "Clocked"
+msgstr "Programado (Clocked)"
+
+msgid "Crontabs"
+msgstr "Crontabs"
+
+msgid "Intervals"
+msgstr "Intervalos"
+
+msgid "Solar"
+msgstr "Eventos solares"
+
+msgid "Solar events"
+msgstr "Eventos solares"
+
+msgid "Periodic task"
+msgstr "Tarea periódica"
+
+msgid "Periodic tasks"
+msgstr "Tareas periódicas"
+
+msgid "Chat"
+msgstr "Chat y salas"
+
+msgid "Chat rooms"
+msgstr "Salas de chat"
+
+msgid "Chat room"
+msgstr "Sala de chat"
+
+msgid "Messages"
+msgstr "Mensajes"
+
+msgid "Message"
+msgstr "Mensaje"
+
+msgid "Control"
+msgstr "Control del Coordinador"
+
+msgid "Accounting days"
+msgstr "Días contables"
+
+msgid "Balance logs"
+msgstr "Registros de saldo"
+
+msgid "Disputes"
+msgstr "Disputas"
+
+msgid "Dispute"
+msgstr "Disputa"
+
+msgid "Type"
+msgstr "Tipo"
+
+msgid "Maker"
+msgstr "Creador (Maker)"
+
+msgid "Taker"
+msgstr "Tomador (Taker)"
+
+msgid "Amt"
+msgstr "Monto"
+
+msgid "Currency"
+msgstr "Moneda"
+
+msgid "Currencies"
+msgstr "Monedas"
+
+msgid "TO satoshis"
+msgstr "En satoshis"
+
+msgid "Is disputed"
+msgstr "En disputa"
+
+msgid "Order"
+msgstr "Orden"
+
+msgid "Orders"
+msgstr "Órdenes"
+
+msgid "Status"
+msgstr "Estado"
+
+msgid "Filter"
+msgstr "Filtro"
+
+msgid "Filters"
+msgstr "Filtros"
+
+msgid "Action"
+msgstr "Acción"
+
+msgid "Actions"
+msgstr "Acciones"
+
+msgid "Save"
+msgstr "Guardar"
+
+msgid "Delete"
+msgstr "Eliminar"
+
+msgid "Are you sure?"
+msgstr "¿Está seguro?"
+
+msgid "Yes, I'm sure"
+msgstr "Sí, estoy seguro"
+
+msgid "No, take me back"
+msgstr "No, regresar"
+
+msgid "Yes"
+msgstr "Sí"
+
+msgid "No"
+msgstr "No"
+
+msgid "Unknown"
+msgstr "Desconocido"
+
+msgid "General"
+msgstr "General"
+
+msgid "Add"
+msgstr "Agregar"
+
+msgid "Change"
+msgstr "Modificar"
+
+msgid "Welcome back to"
+msgstr "Bienvenido de nuevo a"
+
+msgid "Log in"
+msgstr "Iniciar sesión"
+
+msgid "Username"
+msgstr "Nombre de usuario"
+
+msgid "Password"
+msgstr "Contraseña"
+
+msgid "Dispute message"
+msgstr "Mensaje de disputa"
+
+msgid "Dispute messages"
+msgstr "Mensajes de disputa"
+
+msgid "Канал участника"
+msgstr "Canal de la parte"
+
+msgid "Тип отправителя"
+msgstr "Tipo de remitente"
+
+msgid "Текст сообщения"
+msgstr "Texto del mensaje"
+
+msgid "Время отправки"
+msgstr "Hora de envío"
+
+msgid "Прочитано"
+msgstr "Leído"
+
+msgid "Стороны (Покупатель / Продавец)"
+msgstr "Partes (Comprador / Vendedor)"
+
+msgid "Сумма и объем"
+msgstr "Monto y volumen"
+
+msgid "Статус и фиат"
+msgstr "Estado y fiat"
+
+msgid "Вердикт авто-арбитража"
+msgstr "Veredicto de autoarbitraje"
+
+msgid "Решение"
+msgstr "Resolución"
+
+msgid "ПОКУПКА"
+msgstr "COMPRA"
+
+msgid "ПРОДАЖА"
+msgstr "VENTA"
+
+msgid "Покупатель"
+msgstr "Comprador"
+
+msgid "Продавец"
+msgstr "Vendedor"
+
+msgid "Robot"
+msgstr "Robot de usuario"
+
+msgid "Robots"
+msgstr "Robots de usuario"
+
+msgid "Lightning payment"
+msgstr "Pago Lightning"
+
+msgid "Lightning payments"
+msgstr "Pagos Lightning"
+
+msgid "Onchain payment"
+msgstr "Pago on-chain"
+
+msgid "Onchain payments"
+msgstr "Pagos on-chain"
+
+msgid "Email Receipt Inbox"
+msgstr "Buzón de comprobantes bancarios"
+
+msgid "Email Receipt Inboxes"
+msgstr "Buzones de comprobantes bancarios"
+
+msgid "Bank Receipt (DKIM/PDF)"
+msgstr "Comprobante bancario (DKIM/PDF)"
+
+msgid "AI Verdict"
+msgstr "Veredicto IA / Reglas"
+
+msgid "F2F Cash"
+msgstr "Efectivo cara a cara (F2F)"
+
+msgid "Close public order"
+msgstr "Cerrar oferta pública"
+
+msgid "Solve dispute: maker wins"
+msgstr "Resolver disputa: gana creador (maker)"
+
+msgid "Solve dispute: taker wins"
+msgstr "Resolver disputa: gana tomador (taker)"
+
+msgid "Solve dispute: return everything"
+msgstr "Resolver disputa: devolver todas las garantías"
+
+msgid "Solve dispute: successful trade"
+msgstr "Resolver disputa: intercambio exitoso"
+
+msgid "Taproot Escrow Contract"
+msgstr "Contrato de custodia Taproot"
+
+msgid "Taproot Escrow Contracts"
+msgstr "Contratos de custodia Taproot"
+
+msgid "Waiting for maker bond"
+msgstr "Esperando garantía del creador"
+
+msgid "Public"
+msgstr "Público"
+
+msgid "Paused"
+msgstr "Pausado"
+
+msgid "Waiting for taker bond"
+msgstr "Esperando garantía del tomador"
+
+msgid "Cancelled"
+msgstr "Cancelado"
+
+msgid "Expired"
+msgstr "Expirado"
+
+msgid "In dispute"
+msgstr "En disputa"
+
+msgid "Collaboratively cancelled"
+msgstr "Cancelado de mutuo acuerdo"
+
+msgid "Sending satoshis to buyer"
+msgstr "Enviando satoshis al comprador"
+
+msgid "Successful trade"
+msgstr "Intercambio exitoso"
+
+msgid "Maker lost dispute"
+msgstr "El creador perdió la disputa"
+
+msgid "Taker lost dispute"
+msgstr "El tomador perdió la disputa"
+
+msgid "Russian"
+msgstr "Ruso"
+
+msgid "English"
+msgstr "Inglés"
+
+msgid "Spanish"
+msgstr "Español"
+
+msgid "German"
+msgstr "Alemán"
+
+msgid "French"
+msgstr "Francés"
+
+msgid "Swahili"
+msgstr "Suajili"
+
+msgid "Traditional Chinese (Cantonese)"
+msgstr "Chino tradicional (Cantonés)"
+
+msgid "Simplified Chinese"
+msgstr "Chino simplificado"

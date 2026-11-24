@@ -1,0 +1,436 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: RoboSats Coordinator 0.9.15\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-24 00:00+0000\n"
+"PO-Revision-Date: 2026-11-24 00:00+0000\n"
+"Last-Translator: Antigravity Localization Engine <admin@robosats.local>\n"
+"Language-Team: Swahili <sw@li.org>\n"
+"Language: sw\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "RoboSats Core API"
+msgstr "RoboSats API Kuu"
+
+msgid "RoboSats Core API administration"
+msgstr "Usimamizi wa RoboSats API Kuu"
+
+msgid "%(app_name)s administration"
+msgstr "Usimamizi: %(app_name)s"
+
+msgid "RoboSats Coordinator Administration"
+msgstr "Usimamizi wa Mratibu wa RoboSats"
+
+msgid "Coordinator administration"
+msgstr "Dashibodi ya usimamizi wa mratibu"
+
+msgid "RoboSats Coordinator Admin"
+msgstr "Mratibu wa RoboSats Admin"
+
+msgid "RoboSats Coordinator"
+msgstr "Mratibu wa RoboSats"
+
+msgid "RoboSats Ops Cockpit"
+msgstr "Kituo cha Uendeshaji cha RoboSats"
+
+msgid "Site administration"
+msgstr "Usimamizi wa tovuti"
+
+msgid "Dashboard"
+msgstr "Dashibodi"
+
+msgid "Home"
+msgstr "Mwanzo"
+
+msgid "Search apps and models..."
+msgstr "Tafuta programu na mifano..."
+
+msgid "Search apps and models"
+msgstr "Tafuta programu na mifano"
+
+msgid "Type to search"
+msgstr "Andika kutafuta..."
+
+msgid "Type to search..."
+msgstr "Andika kutafuta..."
+
+msgid "No results found"
+msgstr "Hakuna matokeo yaliyopatikana"
+
+msgid "This page yielded into no results."
+msgstr "Ukurasa huu hauna matokeo yoyote."
+
+msgid "Reset filters"
+msgstr "Weka upya vichungi"
+
+msgid "View on site"
+msgstr "Tazama kwenye tovuti"
+
+msgid "Log out"
+msgstr "Ondoka"
+
+msgid "Change password"
+msgstr "Badilisha nenosiri"
+
+msgid "Password change"
+msgstr "Mabadiliko ya nenosiri"
+
+msgid "Recent actions"
+msgstr "Vitendo vya hivi karibuni"
+
+msgid "My actions"
+msgstr "Vitendo vyangu"
+
+msgid "None available"
+msgstr "Hakuna zilizopo"
+
+msgid "History"
+msgstr "Historia"
+
+msgid "Auth Token"
+msgstr "Tokeni za Uthibitishaji"
+
+msgid "Tokens"
+msgstr "Tokeni za API"
+
+msgid "Token"
+msgstr "Tokeni ya API"
+
+msgid "Add Token"
+msgstr "Ongeza tokeni"
+
+msgid "Add token"
+msgstr "Ongeza tokeni"
+
+msgid "Authentication and Authorization"
+msgstr "Uthibitishaji na Idhini"
+
+msgid "Users"
+msgstr "Watumiaji"
+
+msgid "User"
+msgstr "Mtumiaji"
+
+msgid "Groups"
+msgstr "Vikundi"
+
+msgid "Group"
+msgstr "Kikundi"
+
+msgid "Celery Results"
+msgstr "Matokeo ya Celery"
+
+msgid "Group results"
+msgstr "Matokeo ya kikundi"
+
+msgid "Task results"
+msgstr "Matokeo ya kazi"
+
+msgid "Periodic Tasks"
+msgstr "Kazi za mara kwa mara"
+
+msgid "Clocked"
+msgstr "Kwa wakati (Clocked)"
+
+msgid "Crontabs"
+msgstr "Crontabs"
+
+msgid "Intervals"
+msgstr "Vipindi"
+
+msgid "Solar"
+msgstr "Matukio ya jua"
+
+msgid "Solar events"
+msgstr "Matukio ya jua"
+
+msgid "Periodic task"
+msgstr "Kazi ya mara kwa mara"
+
+msgid "Periodic tasks"
+msgstr "Kazi za mara kwa mara"
+
+msgid "Chat"
+msgstr "Gumzo na vyumba"
+
+msgid "Chat rooms"
+msgstr "Vyumba vya gumzo"
+
+msgid "Chat room"
+msgstr "Chumba cha gumzo"
+
+msgid "Messages"
+msgstr "Ujumbe"
+
+msgid "Message"
+msgstr "Ujumbe"
+
+msgid "Control"
+msgstr "Udhibiti wa Mratibu"
+
+msgid "Accounting days"
+msgstr "Siku za uhasibu"
+
+msgid "Balance logs"
+msgstr "Kumbukumbu za salio"
+
+msgid "Disputes"
+msgstr "Migogoro"
+
+msgid "Dispute"
+msgstr "Mzozo"
+
+msgid "Type"
+msgstr "Aina"
+
+msgid "Maker"
+msgstr "Mtengenezaji (Maker)"
+
+msgid "Taker"
+msgstr "Mpokeaji (Taker)"
+
+msgid "Amt"
+msgstr "Kiasi"
+
+msgid "Currency"
+msgstr "Sarafu"
+
+msgid "Currencies"
+msgstr "Sarafu"
+
+msgid "TO satoshis"
+msgstr "Kwa satoshis"
+
+msgid "Is disputed"
+msgstr "Kwenye mzozo"
+
+msgid "Order"
+msgstr "Agizo"
+
+msgid "Orders"
+msgstr "Maagizo"
+
+msgid "Status"
+msgstr "Hali"
+
+msgid "Filter"
+msgstr "Kichungi"
+
+msgid "Filters"
+msgstr "Vichungi"
+
+msgid "Action"
+msgstr "Kitendo"
+
+msgid "Actions"
+msgstr "Vitendo"
+
+msgid "Save"
+msgstr "Hifadhi"
+
+msgid "Delete"
+msgstr "Futa"
+
+msgid "Are you sure?"
+msgstr "Una uhakika?"
+
+msgid "Yes, I'm sure"
+msgstr "Ndio, nina uhakika"
+
+msgid "No, take me back"
+msgstr "Hapana, nirudishe nyuma"
+
+msgid "Yes"
+msgstr "Ndiyo"
+
+msgid "No"
+msgstr "Hapana"
+
+msgid "Unknown"
+msgstr "Haijulikani"
+
+msgid "General"
+msgstr "Jumla"
+
+msgid "Add"
+msgstr "Ongeza"
+
+msgid "Change"
+msgstr "Badilisha"
+
+msgid "Welcome back to"
+msgstr "Karibu tena kwa"
+
+msgid "Log in"
+msgstr "Ingia"
+
+msgid "Username"
+msgstr "Jina la mtumiaji"
+
+msgid "Password"
+msgstr "Nenosiri"
+
+msgid "Dispute message"
+msgstr "Ujumbe wa mzozo"
+
+msgid "Dispute messages"
+msgstr "Ujumbe wa migogoro"
+
+msgid "Канал участника"
+msgstr "Kituo cha mshiriki"
+
+msgid "Тип отправителя"
+msgstr "Aina ya mtumaji"
+
+msgid "Текст сообщения"
+msgstr "Maandishi ya ujumbe"
+
+msgid "Время отправки"
+msgstr "Wakati wa kutuma"
+
+msgid "Прочитано"
+msgstr "Imesomwa"
+
+msgid "Стороны (Покупатель / Продавец)"
+msgstr "Pande (Mnunuzi / Muuzaji)"
+
+msgid "Сумма и объем"
+msgstr "Kiasi na ujazo"
+
+msgid "Статус и фиат"
+msgstr "Hali na fiat"
+
+msgid "Вердикт авто-арбитража"
+msgstr "Uamuzi wa usuluhishi otomatiki"
+
+msgid "Решение"
+msgstr "Uamuzi"
+
+msgid "ПОКУПКА"
+msgstr "NUNUA"
+
+msgid "ПРОДАЖА"
+msgstr "UZA"
+
+msgid "Покупатель"
+msgstr "Mnunuzi"
+
+msgid "Продавец"
+msgstr "Muuzaji"
+
+msgid "Robot"
+msgstr "Roboti ya mtumiaji"
+
+msgid "Robots"
+msgstr "Roboti za watumiaji"
+
+msgid "Lightning payment"
+msgstr "Malipo ya Lightning"
+
+msgid "Lightning payments"
+msgstr "Malipo ya Lightning"
+
+msgid "Onchain payment"
+msgstr "Malipo ya on-chain"
+
+msgid "Onchain payments"
+msgstr "Malipo ya on-chain"
+
+msgid "Email Receipt Inbox"
+msgstr "Kikasha cha risiti za benki"
+
+msgid "Email Receipt Inboxes"
+msgstr "Vikasha vya risiti za benki"
+
+msgid "Bank Receipt (DKIM/PDF)"
+msgstr "Stakabadhi ya benki (DKIM/PDF)"
+
+msgid "AI Verdict"
+msgstr "Uamuzi wa AI / Kanuni"
+
+msgid "F2F Cash"
+msgstr "Pesa taslimu (F2F)"
+
+msgid "Close public order"
+msgstr "Funga agizo la umma"
+
+msgid "Solve dispute: maker wins"
+msgstr "Tatua mzozo: maker ashinda"
+
+msgid "Solve dispute: taker wins"
+msgstr "Tatua mzozo: taker ashinda"
+
+msgid "Solve dispute: return everything"
+msgstr "Tatua mzozo: rudisha dhamana zote"
+
+msgid "Solve dispute: successful trade"
+msgstr "Tatua mzozo: biashara imekamilika"
+
+msgid "Taproot Escrow Contract"
+msgstr "Mkataba wa amana ya Taproot"
+
+msgid "Taproot Escrow Contracts"
+msgstr "Mikataba ya amana ya Taproot"
+
+msgid "Waiting for maker bond"
+msgstr "Inasubiri dhamana ya maker"
+
+msgid "Public"
+msgstr "Ya umma"
+
+msgid "Paused"
+msgstr "Imesitishwa"
+
+msgid "Waiting for taker bond"
+msgstr "Inasubiri dhamana ya taker"
+
+msgid "Cancelled"
+msgstr "Imeghairiwa"
+
+msgid "Expired"
+msgstr "Imeisha muda"
+
+msgid "In dispute"
+msgstr "Kwenye mzozo"
+
+msgid "Collaboratively cancelled"
+msgstr "Imeghairiwa kwa makubaliano"
+
+msgid "Sending satoshis to buyer"
+msgstr "Kutuma satoshis kwa mnunuzi"
+
+msgid "Successful trade"
+msgstr "Biashara imekamilika"
+
+msgid "Maker lost dispute"
+msgstr "Maker ameshindwa mzozo"
+
+msgid "Taker lost dispute"
+msgstr "Taker ameshindwa mzozo"
+
+msgid "Russian"
+msgstr "Kirusi"
+
+msgid "English"
+msgstr "Kiingereza"
+
+msgid "Spanish"
+msgstr "Kihispania"
+
+msgid "German"
+msgstr "Kijerumani"
+
+msgid "French"
+msgstr "Kifaransa"
+
+msgid "Swahili"
+msgstr "Kiswahili"
+
+msgid "Traditional Chinese (Cantonese)"
+msgstr "Kichina cha Jadi (Kikantoni)"
+
+msgid "Simplified Chinese"
+msgstr "Kichina Kilichorahisishwa"

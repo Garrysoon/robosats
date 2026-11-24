@@ -1,0 +1,436 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: RoboSats Coordinator 0.9.15\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-24 00:00+0000\n"
+"PO-Revision-Date: 2026-11-24 00:00+0000\n"
+"Last-Translator: Antigravity Localization Engine <admin@robosats.local>\n"
+"Language-Team: Traditional Chinese (Cantonese) <zh_Hant@li.org>\n"
+"Language: zh_Hant\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "RoboSats Core API"
+msgstr "RoboSats 核心 API"
+
+msgid "RoboSats Core API administration"
+msgstr "RoboSats 核心 API 管理"
+
+msgid "%(app_name)s administration"
+msgstr "%(app_name)s 管理"
+
+msgid "RoboSats Coordinator Administration"
+msgstr "RoboSats 協調者管理"
+
+msgid "Coordinator administration"
+msgstr "協調者管理面板"
+
+msgid "RoboSats Coordinator Admin"
+msgstr "RoboSats 協調者後台"
+
+msgid "RoboSats Coordinator"
+msgstr "RoboSats 協調者"
+
+msgid "RoboSats Ops Cockpit"
+msgstr "RoboSats 運營指揮中心"
+
+msgid "Site administration"
+msgstr "網站管理"
+
+msgid "Dashboard"
+msgstr "儀表板"
+
+msgid "Home"
+msgstr "首頁"
+
+msgid "Search apps and models..."
+msgstr "搜尋應用與模型..."
+
+msgid "Search apps and models"
+msgstr "搜尋應用與模型"
+
+msgid "Type to search"
+msgstr "輸入以搜尋..."
+
+msgid "Type to search..."
+msgstr "輸入以搜尋..."
+
+msgid "No results found"
+msgstr "查無結果"
+
+msgid "This page yielded into no results."
+msgstr "此頁面沒有任何結果。"
+
+msgid "Reset filters"
+msgstr "重設篩選"
+
+msgid "View on site"
+msgstr "在網站上查看"
+
+msgid "Log out"
+msgstr "登出"
+
+msgid "Change password"
+msgstr "修改密碼"
+
+msgid "Password change"
+msgstr "密碼變更"
+
+msgid "Recent actions"
+msgstr "近期操作"
+
+msgid "My actions"
+msgstr "我的操作"
+
+msgid "None available"
+msgstr "無可用記錄"
+
+msgid "History"
+msgstr "歷史記錄"
+
+msgid "Auth Token"
+msgstr "認證權杖"
+
+msgid "Tokens"
+msgstr "API 權杖"
+
+msgid "Token"
+msgstr "API 權杖"
+
+msgid "Add Token"
+msgstr "新增權杖"
+
+msgid "Add token"
+msgstr "新增權杖"
+
+msgid "Authentication and Authorization"
+msgstr "身份認證與權限授權"
+
+msgid "Users"
+msgstr "用戶列表"
+
+msgid "User"
+msgstr "用戶"
+
+msgid "Groups"
+msgstr "用戶組"
+
+msgid "Group"
+msgstr "組"
+
+msgid "Celery Results"
+msgstr "Celery 任務結果"
+
+msgid "Group results"
+msgstr "組任務結果"
+
+msgid "Task results"
+msgstr "任務結果"
+
+msgid "Periodic Tasks"
+msgstr "定時排程任務"
+
+msgid "Clocked"
+msgstr "定時任務 (Clocked)"
+
+msgid "Crontabs"
+msgstr "Crontab 排程"
+
+msgid "Intervals"
+msgstr "間隔頻率"
+
+msgid "Solar"
+msgstr "太陽曆事件"
+
+msgid "Solar events"
+msgstr "太陽曆事件"
+
+msgid "Periodic task"
+msgstr "定時任務"
+
+msgid "Periodic tasks"
+msgstr "定時任務列表"
+
+msgid "Chat"
+msgstr "聊天與房間"
+
+msgid "Chat rooms"
+msgstr "聊天室"
+
+msgid "Chat room"
+msgstr "聊天室"
+
+msgid "Messages"
+msgstr "訊息記錄"
+
+msgid "Message"
+msgstr "訊息"
+
+msgid "Control"
+msgstr "協調者控制審計"
+
+msgid "Accounting days"
+msgstr "會計結算日"
+
+msgid "Balance logs"
+msgstr "餘額變動日誌"
+
+msgid "Disputes"
+msgstr "爭議案存檔"
+
+msgid "Dispute"
+msgstr "爭議"
+
+msgid "Type"
+msgstr "類型"
+
+msgid "Maker"
+msgstr "掛單方 (Maker)"
+
+msgid "Taker"
+msgstr "吃單方 (Taker)"
+
+msgid "Amt"
+msgstr "金額"
+
+msgid "Currency"
+msgstr "法幣幣種"
+
+msgid "Currencies"
+msgstr "幣種列表"
+
+msgid "TO satoshis"
+msgstr "折合聰數"
+
+msgid "Is disputed"
+msgstr "處於爭議"
+
+msgid "Order"
+msgstr "交易訂單"
+
+msgid "Orders"
+msgstr "訂單列表"
+
+msgid "Status"
+msgstr "狀態"
+
+msgid "Filter"
+msgstr "篩選器"
+
+msgid "Filters"
+msgstr "篩選條件"
+
+msgid "Action"
+msgstr "操作"
+
+msgid "Actions"
+msgstr "批次操作"
+
+msgid "Save"
+msgstr "儲存"
+
+msgid "Delete"
+msgstr "刪除"
+
+msgid "Are you sure?"
+msgstr "您確定嗎？"
+
+msgid "Yes, I'm sure"
+msgstr "是，我確定"
+
+msgid "No, take me back"
+msgstr "否，返回"
+
+msgid "Yes"
+msgstr "是"
+
+msgid "No"
+msgstr "否"
+
+msgid "Unknown"
+msgstr "未知"
+
+msgid "General"
+msgstr "常規設定"
+
+msgid "Add"
+msgstr "新增"
+
+msgid "Change"
+msgstr "修改"
+
+msgid "Welcome back to"
+msgstr "歡迎回到"
+
+msgid "Log in"
+msgstr "登入"
+
+msgid "Username"
+msgstr "用戶名稱"
+
+msgid "Password"
+msgstr "密碼"
+
+msgid "Dispute message"
+msgstr "爭議通訊訊息"
+
+msgid "Dispute messages"
+msgstr "爭議通訊記錄"
+
+msgid "Канал участника"
+msgstr "參與者專用通道"
+
+msgid "Тип отправителя"
+msgstr "發送方身份"
+
+msgid "Текст сообщения"
+msgstr "訊息內容"
+
+msgid "Время отправки"
+msgstr "發送時間"
+
+msgid "Прочитано"
+msgstr "已讀"
+
+msgid "Стороны (Покупатель / Продавец)"
+msgstr "交易雙方 (買方 / 賣方)"
+
+msgid "Сумма и объем"
+msgstr "金額與交易量"
+
+msgid "Статус и фиат"
+msgstr "狀態與法幣結算"
+
+msgid "Вердикт авто-арбитража"
+msgstr "自動仲裁裁決"
+
+msgid "Решение"
+msgstr "裁決處理"
+
+msgid "ПОКУПКА"
+msgstr "買入 (BUY)"
+
+msgid "ПРОДАЖА"
+msgstr "賣出 (SELL)"
+
+msgid "Покупатель"
+msgstr "買方"
+
+msgid "Продавец"
+msgstr "賣方"
+
+msgid "Robot"
+msgstr "用戶機器人身分"
+
+msgid "Robots"
+msgstr "用戶機器人名錄"
+
+msgid "Lightning payment"
+msgstr "閃電網絡支付"
+
+msgid "Lightning payments"
+msgstr "閃電網絡支付記錄"
+
+msgid "Onchain payment"
+msgstr "鏈上主網支付"
+
+msgid "Onchain payments"
+msgstr "鏈上主網支付記錄"
+
+msgid "Email Receipt Inbox"
+msgstr "銀行收據專用信箱"
+
+msgid "Email Receipt Inboxes"
+msgstr "銀行收據信箱列表"
+
+msgid "Bank Receipt (DKIM/PDF)"
+msgstr "銀行憑證 (DKIM/PDF)"
+
+msgid "AI Verdict"
+msgstr "智慧仲裁判定"
+
+msgid "F2F Cash"
+msgstr "面對面現金交易 (F2F)"
+
+msgid "Close public order"
+msgstr "關閉公開委託單"
+
+msgid "Solve dispute: maker wins"
+msgstr "解決爭議：判定掛單方 (Maker) 勝訴"
+
+msgid "Solve dispute: taker wins"
+msgstr "解決爭議：判定吃單方 (Taker) 勝訴"
+
+msgid "Solve dispute: return everything"
+msgstr "解決爭議：全額退還雙方保證金"
+
+msgid "Solve dispute: successful trade"
+msgstr "解決爭議：判定交易履約成功"
+
+msgid "Taproot Escrow Contract"
+msgstr "Taproot 託管合約"
+
+msgid "Taproot Escrow Contracts"
+msgstr "Taproot 託管合約列表"
+
+msgid "Waiting for maker bond"
+msgstr "等待掛單方繳納保證金"
+
+msgid "Public"
+msgstr "已發布公開"
+
+msgid "Paused"
+msgstr "已暫停"
+
+msgid "Waiting for taker bond"
+msgstr "等待吃單方繳納保證金"
+
+msgid "Cancelled"
+msgstr "已取消"
+
+msgid "Expired"
+msgstr "已超時過期"
+
+msgid "In dispute"
+msgstr "爭議審查中"
+
+msgid "Collaboratively cancelled"
+msgstr "雙方協商一致取消"
+
+msgid "Sending satoshis to buyer"
+msgstr "正在向買方釋放比特幣"
+
+msgid "Successful trade"
+msgstr "交易圓滿成功"
+
+msgid "Maker lost dispute"
+msgstr "掛單方判負"
+
+msgid "Taker lost dispute"
+msgstr "吃單方判負"
+
+msgid "Russian"
+msgstr "俄語"
+
+msgid "English"
+msgstr "英語"
+
+msgid "Spanish"
+msgstr "西班牙語"
+
+msgid "German"
+msgstr "德語"
+
+msgid "French"
+msgstr "法語"
+
+msgid "Swahili"
+msgstr "斯瓦希里語"
+
+msgid "Traditional Chinese (Cantonese)"
+msgstr "繁體中文 / 粵語"
+
+msgid "Simplified Chinese"
+msgstr "簡體中文"

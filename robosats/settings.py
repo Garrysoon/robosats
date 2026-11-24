@@ -182,6 +182,16 @@ UNFOLD = {
     "SITE_SYMBOL": "speed",
     "SHOW_HISTORY": True,
     "SHOW_VIEW_ON_SITE": False,
+    "SHOW_LANGUAGES": True,
+    "LANGUAGE_FLAGS": {
+        "ru": "🇷🇺",
+        "en": "🇬🇧",
+        "es": "🇪🇸",
+        "de": "🇩🇪",
+        "sw": "🇰🇪",
+        "zh-hant": "🇭🇰",
+        "zh-hans": "🇨🇳",
+    },
     "SIDEBAR": {
         "show_search": True,
         "show_all_applications": False,
@@ -378,11 +388,13 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = config("LANGUAGE_CODE", cast=str, default="ru")
 
 LANGUAGES = [
-    ("ru", _("Russian")),
+    ("ru", _("Русский (Russian)")),
     ("en", _("English")),
-    ("es", _("Spanish")),
-    ("de", _("German")),
-    ("fr", _("French")),
+    ("es", _("Español (Spanish)")),
+    ("de", _("Deutsch (German)")),
+    ("sw", _("Kiswahili (Swahili)")),
+    ("zh-hant", _("繁體中文 / 粵語 (Traditional Chinese / Cantonese)")),
+    ("zh-hans", _("简体中文 (Simplified Chinese)")),
 ]
 
 LOCALE_PATHS = [
