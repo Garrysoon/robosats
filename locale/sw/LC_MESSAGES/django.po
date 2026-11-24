@@ -36,6 +36,87 @@ msgstr "Mratibu wa RoboSats"
 msgid "RoboSats Ops Cockpit"
 msgstr "Kituo cha Uendeshaji cha RoboSats"
 
+msgid "Панель управления координатора"
+msgstr "Dashibodi ya usimamizi wa mratibu"
+
+msgid "Командный центр P2P Координатора"
+msgstr "Kituo cha Uendeshaji cha Mratibu wa P2P"
+
+msgid "Справка по экрану"
+msgstr "Usaidizi wa skrini"
+
+msgid "🚨 АРБИТРАЖ И СПОРЫ"
+msgstr "🚨 USULUHISHI NA MIGOGORO"
+
+msgid "Споры и сделки"
+msgstr "Migogoro na miamala"
+
+msgid "🏦 БАНКОВСКИЕ ЧЕКИ И ФИНАНСЫ"
+msgstr "🏦 RISITI ZA BENKI NA FEDHA"
+
+msgid "Почтовые ящики IMAP"
+msgstr "Vikasha vya barua pepe vya IMAP"
+
+msgid "Taproot эскроу-контракты"
+msgstr "Mikataba ya amana ya Taproot"
+
+msgid "📊 ТОРГОВЛЯ И МОНИТОРИНГ"
+msgstr "📊 BIASHARA NA UFUATILIAJI"
+
+msgid "Все сделки"
+msgstr "Miamala yote"
+
+msgid "Роботы пользователей"
+msgstr "Roboti za watumiaji"
+
+msgid "Ноды координаторов"
+msgstr "Nodi za waratibu"
+
+msgid "Логи проверок сети"
+msgstr "Kumbukumbu za ukaguzi wa mtandao"
+
+msgid "📚 БАЗА ЗНАНИЙ И ДОКУМЕНТАЦИЯ"
+msgstr "📚 MSINGI WA MAARIFA NA NYARAKA"
+
+msgid "Инструкция по запуску"
+msgstr "Mwongozo wa kuanza"
+
+msgid "Регламент арбитража споров"
+msgstr "Kanuni za usuluhishi wa migogoro"
+
+msgid "Руководство по локализации"
+msgstr "Mwongozo wa ujanibishaji"
+
+msgid "⚙️ СИСТЕМНЫЙ АУДИТ (READ-ONLY)"
+msgstr "⚙️ UKAGUZI WA MFUMO (KUSOMA TU)"
+
+msgid "Платежи Lightning"
+msgstr "Malipo ya Lightning"
+
+msgid "Ончейн платежи"
+msgstr "Malipo ya on-chain"
+
+msgid "Тики курса"
+msgstr "Mienendo ya bei"
+
+msgid "Валюты"
+msgstr "Sarafu"
+
+msgid "Пользователи и права"
+msgstr "Watumiaji na ruhusa"
+
+msgid "group results"
+msgstr "Matokeo ya vikundi"
+
+msgid "task results"
+msgstr "Matokeo ya kazi"
+
+msgid "group result"
+msgstr "Matokeo ya kikundi"
+
+msgid "task result"
+msgstr "Matokeo ya kazi"
+
 msgid "Site administration"
 msgstr "Usimamizi wa tovuti"
 

@@ -36,6 +36,87 @@ msgstr "RoboSats 协调者"
 msgid "RoboSats Ops Cockpit"
 msgstr "RoboSats 运营指挥中心"
 
+msgid "Панель управления координатора"
+msgstr "协调者管理面板"
+
+msgid "Командный центр P2P Координатора"
+msgstr "P2P 协调者指挥中心"
+
+msgid "Справка по экрану"
+msgstr "屏幕说明"
+
+msgid "🚨 АРБИТРАЖ И СПОРЫ"
+msgstr "🚨 仲裁与争议"
+
+msgid "Споры и сделки"
+msgstr "争议与订单"
+
+msgid "🏦 БАНКОВСКИЕ ЧЕКИ И ФИНАНСЫ"
+msgstr "🏦 银行凭证与财务"
+
+msgid "Почтовые ящики IMAP"
+msgstr "IMAP 邮箱"
+
+msgid "Taproot эскроу-контракты"
+msgstr "Taproot 托管合约"
+
+msgid "📊 ТОРГОВЛЯ И МОНИТОРИНГ"
+msgstr "📊 交易与监控"
+
+msgid "Все сделки"
+msgstr "全部交易"
+
+msgid "Роботы пользователей"
+msgstr "用户机器人"
+
+msgid "Ноды координаторов"
+msgstr "协调者节点"
+
+msgid "Логи проверок сети"
+msgstr "网络检查日志"
+
+msgid "📚 БАЗА ЗНАНИЙ И ДОКУМЕНТАЦИЯ"
+msgstr "📚 知识库与文档"
+
+msgid "Инструкция по запуску"
+msgstr "启动指南"
+
+msgid "Регламент арбитража споров"
+msgstr "争议仲裁守则"
+
+msgid "Руководство по локализации"
+msgstr "本地化指南"
+
+msgid "⚙️ СИСТЕМНЫЙ АУДИТ (READ-ONLY)"
+msgstr "⚙️ 系统审计 (只读)"
+
+msgid "Платежи Lightning"
+msgstr "闪电网络支付"
+
+msgid "Ончейн платежи"
+msgstr "主网链上支付"
+
+msgid "Тики курса"
+msgstr "行情报价"
+
+msgid "Валюты"
+msgstr "法定货币"
+
+msgid "Пользователи и права"
+msgstr "用户与权限"
+
+msgid "group results"
+msgstr "组任务结果"
+
+msgid "task results"
+msgstr "任务结果"
+
+msgid "group result"
+msgstr "组任务结果"
+
+msgid "task result"
+msgstr "任务结果"
+
 msgid "Site administration"
 msgstr "网站管理"
 

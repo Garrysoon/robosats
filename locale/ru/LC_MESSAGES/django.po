@@ -36,6 +36,87 @@ msgstr "Координатор RoboSats"
 msgid "RoboSats Ops Cockpit"
 msgstr "Командный центр RoboSats"
 
+msgid "Панель управления координатора"
+msgstr "Панель управления координатора"
+
+msgid "Командный центр P2P Координатора"
+msgstr "Командный центр P2P Координатора"
+
+msgid "Справка по экрану"
+msgstr "Справка по экрану"
+
+msgid "🚨 АРБИТРАЖ И СПОРЫ"
+msgstr "🚨 АРБИТРАЖ И СПОРЫ"
+
+msgid "Споры и сделки"
+msgstr "Споры и сделки"
+
+msgid "🏦 БАНКОВСКИЕ ЧЕКИ И ФИНАНСЫ"
+msgstr "🏦 БАНКОВСКИЕ ЧЕКИ И ФИНАНСЫ"
+
+msgid "Почтовые ящики IMAP"
+msgstr "Почтовые ящики IMAP"
+
+msgid "Taproot эскроу-контракты"
+msgstr "Taproot эскроу-контракты"
+
+msgid "📊 ТОРГОВЛЯ И МОНИТОРИНГ"
+msgstr "📊 ТОРГОВЛЯ И МОНИТОРИНГ"
+
+msgid "Все сделки"
+msgstr "Все сделки"
+
+msgid "Роботы пользователей"
+msgstr "Роботы пользователей"
+
+msgid "Ноды координаторов"
+msgstr "Ноды координаторов"
+
+msgid "Логи проверок сети"
+msgstr "Логи проверок сети"
+
+msgid "📚 БАЗА ЗНАНИЙ И ДОКУМЕНТАЦИЯ"
+msgstr "📚 БАЗА ЗНАНИЙ И ДОКУМЕНТАЦИЯ"
+
+msgid "Инструкция по запуску"
+msgstr "Инструкция по запуску"
+
+msgid "Регламент арбитража споров"
+msgstr "Регламент арбитража споров"
+
+msgid "Руководство по локализации"
+msgstr "Руководство по локализации"
+
+msgid "⚙️ СИСТЕМНЫЙ АУДИТ (READ-ONLY)"
+msgstr "⚙️ СИСТЕМНЫЙ АУДИТ (READ-ONLY)"
+
+msgid "Платежи Lightning"
+msgstr "Платежи Lightning"
+
+msgid "Ончейн платежи"
+msgstr "Ончейн платежи"
+
+msgid "Тики курса"
+msgstr "Тики курса"
+
+msgid "Валюты"
+msgstr "Валюты"
+
+msgid "Пользователи и права"
+msgstr "Пользователи и права"
+
+msgid "group results"
+msgstr "Результаты групп"
+
+msgid "task results"
+msgstr "Результаты задач"
+
+msgid "group result"
+msgstr "Результат группы"
+
+msgid "task result"
+msgstr "Результат задачи"
+
 msgid "Site administration"
 msgstr "Панель управления"
 

@@ -36,6 +36,87 @@ msgstr "Coordinador RoboSats"
 msgid "RoboSats Ops Cockpit"
 msgstr "Centro de Operaciones RoboSats"
 
+msgid "Панель управления координатора"
+msgstr "Panel de administración del coordinador"
+
+msgid "Командный центр P2P Координатора"
+msgstr "Centro de Comando del Coordinador P2P"
+
+msgid "Справка по экрану"
+msgstr "Ayuda de pantalla"
+
+msgid "🚨 АРБИТРАЖ И СПОРЫ"
+msgstr "🚨 ARBITRAJE Y DISPUTAS"
+
+msgid "Споры и сделки"
+msgstr "Disputas y transacciones"
+
+msgid "🏦 БАНКОВСКИЕ ЧЕКИ И ФИНАНСЫ"
+msgstr "🏦 COMPROBANTES BANCARIOS Y FINANZAS"
+
+msgid "Почтовые ящики IMAP"
+msgstr "Buzones de correo IMAP"
+
+msgid "Taproot эскроу-контракты"
+msgstr "Contratos de custodia Taproot"
+
+msgid "📊 ТОРГОВЛЯ И МОНИТОРИНГ"
+msgstr "📊 COMERCIO Y MONITOREO"
+
+msgid "Все сделки"
+msgstr "Todas las transacciones"
+
+msgid "Роботы пользователей"
+msgstr "Robots de usuarios"
+
+msgid "Ноды координаторов"
+msgstr "Nodos de coordinadores"
+
+msgid "Логи проверок сети"
+msgstr "Registros de verificación de red"
+
+msgid "📚 БАЗА ЗНАНИЙ И ДОКУМЕНТАЦИЯ"
+msgstr "📚 BASE DE CONOCIMIENTO Y DOCUMENTACIÓN"
+
+msgid "Инструкция по запуску"
+msgstr "Guía de inicio"
+
+msgid "Регламент арбитража споров"
+msgstr "Reglamento de arbitraje"
+
+msgid "Руководство по локализации"
+msgstr "Guía de localización"
+
+msgid "⚙️ СИСТЕМНЫЙ АУДИТ (READ-ONLY)"
+msgstr "⚙️ AUDITORÍA DEL SISTEMA (SOLO LECTURA)"
+
+msgid "Платежи Lightning"
+msgstr "Pagos Lightning"
+
+msgid "Ончейн платежи"
+msgstr "Pagos on-chain"
+
+msgid "Тики курса"
+msgstr "Tics de precios"
+
+msgid "Валюты"
+msgstr "Monedas"
+
+msgid "Пользователи и права"
+msgstr "Usuarios y permisos"
+
+msgid "group results"
+msgstr "Resultados de grupos"
+
+msgid "task results"
+msgstr "Resultados de tareas"
+
+msgid "group result"
+msgstr "Resultado de grupo"
+
+msgid "task result"
+msgstr "Resultado de tarea"
+
 msgid "Site administration"
 msgstr "Administración del sitio"
 
