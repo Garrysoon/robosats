@@ -85,6 +85,42 @@ class Nostr:
         await client.send_event(gift_wrap)
         print("Nostr NOTIFICATION event sent")
 
+    async def send_chat_message_event(
+        self, sender_robot, receiver_robot, order, encrypted_pgp_message, index
+    ):
+        """
+        Sends an end-to-end encrypted chat message over Nostr as a NIP-17 gift wrap
+        to the receiver's Nostr pubkey, tagged with the order ID and message index.
+        """
+        if not receiver_robot.nostr_pubkey:
+            return
+
+        if config("NOSTR_NSEC", cast=str, default="") == "":
+            return
+
+        try:
+            keys = Keys.parse(config("NOSTR_NSEC", cast=str))
+            client = await self.initialize_client()
+
+            sender_nick = await sync_to_async(lambda: sender_robot.user.username)()
+            rumor_extra_tags = [
+                Tag.parse(["order_id", f"{get_federation_short_alias()}/{order.id}"]),
+                Tag.parse(["index", str(index)]),
+                Tag.parse(["type", "chat_message"]),
+                Tag.parse(["sender_nick", sender_nick]),
+            ]
+
+            gift_wrap = await nip17_make_private_msg_async(
+                keys,
+                PublicKey.parse(receiver_robot.nostr_pubkey),
+                encrypted_pgp_message,
+                rumor_extra_tags=rumor_extra_tags,
+            )
+            await client.send_event(gift_wrap)
+            print(f"Nostr NIP-17 CHAT message index {index} sent for order {order.id}")
+        except Exception as e:
+            print(f"Error sending Nostr NIP-17 chat message: {e}")
+
     async def initialize_client(self):
         # Initialize a bare client (no signer needed on the client itself)
         client = Client()

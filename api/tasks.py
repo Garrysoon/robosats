@@ -460,6 +460,34 @@ def nostr_send_notification_event(robot_id=None, order_id=None, text=None):
     return
 
 
+@shared_task(name="nostr_send_chat_message_task", ignore_result=True, time_limit=120)
+def nostr_send_chat_message_task(chat_message_id=None):
+    if not chat_message_id:
+        return
+    try:
+        from chat.models import Message
+        from api.nostr import Nostr
+
+        chat_message = Message.objects.get(id=chat_message_id)
+        sender_robot = chat_message.sender.robot
+        receiver_robot = chat_message.receiver.robot
+        order = chat_message.order
+
+        if receiver_robot.nostr_pubkey:
+            nostr = Nostr()
+            async_to_sync(nostr.send_chat_message_event)(
+                sender_robot,
+                receiver_robot,
+                order,
+                chat_message.PGP_message,
+                chat_message.index,
+            )
+    except Exception as e:
+        logger.warning(f"Failed to mirror chat message over Nostr: {e}")
+
+    return
+
+
 @shared_task(name="send_notification", ignore_result=True, time_limit=120)
 def send_notification(order_id=None, chat_message_id=None, message=None):
     if order_id:

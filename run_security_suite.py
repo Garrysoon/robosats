@@ -27,12 +27,16 @@ for mod in [
     if mod not in sys.modules:
         sys.modules[mod] = MagicMock()
 
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "robosats.settings_dev_lite")
 os.environ.setdefault("FEE", "0.002")
 os.environ.setdefault("MAX_TRADE", "5000000")
 os.environ.setdefault("MIN_TRADE", "10000")
 os.environ.setdefault("LND_CERT_BASE64", "ZHVtbXk=")
 os.environ.setdefault("LND_MACAROON_BASE64", "ZHVtbXk=")
 os.environ.setdefault("LND_GRPC_HOST", "127.0.0.1:10009")
+
+import django
+django.setup()
 
 import unittest
 
@@ -45,6 +49,8 @@ def main():
         "api.tests.test_coordinator_monitor",
         "api.tests.test_dispute_automation",
         "api.tests.test_email_ingestion",
+        "api.tests.test_action_signatures",
+        "api.tests.test_nostr_chat_relay",
     ]
 
     suite = unittest.TestSuite()

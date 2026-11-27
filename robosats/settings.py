@@ -467,3 +467,8 @@ FIAT_EXCHANGE_DURATION = 24
 
 # The name of the request header used for CSRF authentication.
 CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', cast=lambda v: [s.strip() for s in v.split(',')], default=[])
+
+# Hardened Security Headers
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True
+X_FRAME_OPTIONS = "DENY"

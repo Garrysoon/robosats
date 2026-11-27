@@ -5,7 +5,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from django.db import transaction
 
 from api.models import Order
-from api.tasks import send_notification
+from api.tasks import nostr_send_chat_message_task, send_notification
 from chat.models import ChatRoom, Message
 
 
@@ -96,6 +96,8 @@ class ChatRoomConsumer(AsyncWebsocketConsumer):
 
         # send Telegram notification for new message (if conditions apply)
         send_notification.delay(chat_message_id=msg_obj.id, message="new_chat_message")
+        # Mirror chat message to Nostr relay as NIP-17 private gift wrap (if receiver has nostr pubkey)
+        nostr_send_chat_message_task.delay(chat_message_id=msg_obj.id)
         return msg_obj
 
     @database_sync_to_async
